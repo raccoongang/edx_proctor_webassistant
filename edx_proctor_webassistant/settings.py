@@ -41,6 +41,8 @@ INSTALLED_APPS = (
     'djangobower',
     'ws4redis',
     'rest_framework',
+
+    'api',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,10 +106,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_FINDERS = {
-    'djangobower.finders.BowerFinder',
-}
-
+STATIC_ROOT = BASE_DIR + '/static/'
+STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
+                       'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+                       'djangobower.finders.BowerFinder',)
 
 # Bower settings
 # https://github.com/nvbn/django-bower
