@@ -5,23 +5,30 @@
  * Main module of the application.
  */
 (function () {
-    var app = angular.module('proctor', []);
-    app.config(function ($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $httpProvider) {
-        app.controllerProvider = $controllerProvider;
-        app.compileProvider = $compileProvider;
+    var app = angular.module('proctor', [
+        'ngRoute'
+    ]);
+    app.config(function ($routeProvider, $controllerProvider, $locationProvider, $compileProvider, $filterProvider, $provide, $httpProvider) {
+        app.controller = $controllerProvider.register;
+        app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;
-        app.filterProvider = $filterProvider;
-        app.provide = $provide;
+        app.filter = $filterProvider.register;
+        app.service = $provide.service;
+        app.factory = $provide.factory;
+
+        app.path = window.rootPath;
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
         $routeProvider
             .when('/', {
-                templateUrl: 'home/view.html',
+                templateUrl: app.path + 'home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
                     deps: function(resolver){
-                        return resolver.load_deps('home/hmController.js');
+                        return resolver.load_deps([
+                            app.path + 'home/hmController.js'
+                        ]);
                     }
                 }
             })
@@ -39,14 +46,14 @@
         $rootScope.apiConf = {
             domain: domain,
             ioServer: domain + ':' + apiPort,
-            apiServer: 'http://' + domain + ':' + apiPort + '/api'
+            apiServer: 'http://' + domain + (apiPort?':' + apiPort:'') + '/api'
         };
 
         $rootScope.errors = null;
         $rootScope.msg = null;
     });
 
-    angular.module('proctor').factory('resolver', function ($rootScope, $q, $timeout) {
+    app.factory('resolver', function ($rootScope, $q, $timeout) {
         return {
             load_deps: function (dependencies, callback) {
                 var deferred = $q.defer();
@@ -64,5 +71,8 @@
         };
     });
 
+    app.controller('MainController', ['$scope', function($scope){
+
+    }]);
 
 })();

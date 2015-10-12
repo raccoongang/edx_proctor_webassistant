@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width">
+    <script src="{% static 'js/lib/script.min.js' %}"></script>
+    <script type="text/javascript" src='{% static 'jquery/dist/jquery.min.js' %}'></script>
+    <script type="text/javascript" src='{% static 'bootstrap/dist/js/bootstrap.js' %}'></script>
+    <script type="text/javascript" src='{% static 'angular/angular.js' %}'></script>
+    <script type="text/javascript" src='{% static 'angular-route/angular-route.min.js' %}'></script>
+    <script type="text/javascript" src='{% static 'js/app.js' %}'></script>
+
+    <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.css' %}">
+
+    <script>
+        window.rootPath = "{% static 'js/app/' %}";
+    </script>
+</head>
+<body ng-app="proctor">
+    <div class="container" ng-view ng-controller="MainController"></div>
+</body>
+</html>
