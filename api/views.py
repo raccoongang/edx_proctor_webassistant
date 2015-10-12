@@ -38,6 +38,7 @@ class ExamRegisterViewSet(viewsets.ViewSet):
 
     def create(self, request):
         return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
+
         # request.data
         # product_resource = ProductResource()
         # result = product_resource.import_data(data, dry_run=True)
