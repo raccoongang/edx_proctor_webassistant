@@ -2,7 +2,7 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 from serializers import ExamSerializer
 from models import Exam
 
@@ -40,7 +40,7 @@ class ExamViewSet(viewsets.ModelViewSet):
     serializer_class = ExamSerializer
     queryset = Exam.objects.all()
 
-    @csrf_exempt
+    # @csrf_exempt
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
