@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from ui.views import Index
+
+
 urlpatterns = patterns(
     '',
+    url(r'^$', Index.as_view(), name="index"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls'))
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'rest_framework',
 
     'api',
+    'ui',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,7 +62,7 @@ ROOT_URLCONF = 'edx_proctor_webassistant.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates/', ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,6 +119,9 @@ BOWER_PATH = '/usr/local/bin/bower'
 
 BOWER_INSTALLED_APPS = (
     'angular',
+    'angular-route',
+    'jquery',
+    'bootstrap'
 )
 
 # Websocket settings
