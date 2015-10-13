@@ -1,4 +1,4 @@
-from django.conf.urls import include, url,patterns
+from django.conf.urls import include, url, patterns
 from rest_framework.routers import DefaultRouter
 from views import ExamViewSet
 

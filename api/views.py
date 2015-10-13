@@ -7,7 +7,6 @@ from serializers import ExamSerializer
 from models import Exam
 
 # class ExamViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
-@csrf_exempt
 class ExamViewSet(viewsets.ModelViewSet):
     """
     This viewset regiter edx's exam on proctoring service and return generated code
@@ -41,6 +40,7 @@ class ExamViewSet(viewsets.ModelViewSet):
     serializer_class = ExamSerializer
     queryset = Exam.objects.all()
 
+    @csrf_exempt
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
