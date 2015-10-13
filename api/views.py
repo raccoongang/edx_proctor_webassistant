@@ -2,10 +2,12 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 from serializers import ExamSerializer
 from models import Exam
 
 # class ExamViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+@csrf_exempt
 class ExamViewSet(viewsets.ModelViewSet):
     """
     This viewset regiter edx's exam on proctoring service and return generated code
@@ -56,4 +58,3 @@ class ExamViewSet(viewsets.ModelViewSet):
             return {'Location': data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
-
