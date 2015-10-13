@@ -16,7 +16,7 @@ class Exam(models.Model):
         (FAILED, _("Failed")),
     }
 
-    examCode = models.CharField(max_length=60)
+    examCode = models.CharField(max_length=60, unique=True)
     organization = models.CharField(max_length=60)
     duration = models.IntegerField()
     reviewedExam = models.CharField(max_length=60)

@@ -133,3 +133,6 @@ BOWER_INSTALLED_APPS = (
 #     'db': 17,
 #     # 'password': 'verysecret',
 # }
+
+
+EDX_URL = "http://localhost:8000/"

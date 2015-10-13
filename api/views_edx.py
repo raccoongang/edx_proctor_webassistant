@@ -1,12 +1,26 @@
-from rest_framework import viewsets, status, mixins
+from rest_framework.reverse import reverse
+from rest_framework import viewsets, status
 from rest_framework.settings import api_settings
-from rest_framework.views import APIView
 from rest_framework.response import Response
-# from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
 from serializers import ExamSerializer
 from models import Exam
 
-# class ExamViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+
+class APIRoot(APIView):
+    """API Root for accounts module"""
+
+    def get(self, request):
+        result = {
+            "exam_register": reverse('exam-register-list', request=request),
+            "start_exam": reverse(
+                'start_exam',
+                request=request, args=('attempt_code',)
+            ),
+        }
+        return Response(result)
+
+
 class ExamViewSet(viewsets.ModelViewSet):
     """
     This viewset regiter edx's exam on proctoring service and return generated code
