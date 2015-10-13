@@ -1,10 +1,12 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from serializers import RegisterExamAttemptSerializer
+from serializers import ExamSerializer
+from models import Exam
 
-
-class ExamRegisterViewSet(viewsets.ViewSet):
+# class ExamViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class ExamViewSet(viewsets.ModelViewSet):
     """
     This viewset regiter edx's exam on proctoring service and return generated code
     Required parameters:
@@ -24,33 +26,34 @@ class ExamRegisterViewSet(viewsets.ViewSet):
     orgExtra contain json like this:
 
         {
-            "examStartDate": "start_time_str",
-            "examEndDate": "end_time_str",
+            "examStartDate": "2015-10-10 11:00",
+            "examEndDate": "2015-10-10 15:00",
             "noOfStudents": 1,
-            "examID": "id"
-            "courseID": "course_id",
+            "examId": "id",
+            "courseId": "course_id",
             "firstName": "first_name",
-            "lastName": "last_name",
+            "lastName": "last_name"
         }
 
     """
-    serializer_class = RegisterExamAttemptSerializer
 
-    def create(self, request):
-        return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
+    serializer_class = ExamSerializer
+    queryset = Exam.objects.all()
 
-        # request.data
-        # product_resource = ProductResource()
-        # result = product_resource.import_data(data, dry_run=True)
-        # if result.has_errors():
-        #     error_list = {}
-        #     for row_number, row in enumerate(result.rows):
-        #         if len(row.errors):
-        #             error_list[row_number] = []
-        #             for error in row.errors:
-        #                 error_list[row_number].append(error.error.message)
-        #     return Response({"import_errors": error_list},
-        #                     status=status.HTTP_400_BAD_REQUEST)
-        # result = product_resource.import_data(data, dry_run=False)
-        #
-        # return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response({'ID': serializer.instance.generate_key()},
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': data[api_settings.URL_FIELD_NAME]}
+        except (TypeError, KeyError):
+            return {}
