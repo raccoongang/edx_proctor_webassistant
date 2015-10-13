@@ -26,13 +26,13 @@ class Exam(models.Model):
     examName = models.CharField(max_length=60)
     ssiProduct = models.CharField(max_length=60)
     # org extra
-    examStartDate = models.DateTimeField()
-    examEndDate = models.DateTimeField()
-    noOfStudents = models.IntegerField()
-    examId = models.CharField(max_length=64)
-    courseId = models.CharField(max_length=64)
-    firstName = models.CharField(max_length=60)
-    lastName = models.CharField(max_length=60)
+    examStartDate = models.DateTimeField(blank=True, null=True)
+    examEndDate = models.DateTimeField(blank=True, null=True)
+    noOfStudents = models.IntegerField(blank=True, null=True)
+    examId = models.CharField(max_length=64, blank=True, null=True)
+    courseId = models.CharField(max_length=64, blank=True, null=True)
+    firstName = models.CharField(max_length=60, blank=True, null=True)
+    lastName = models.CharField(max_length=60, blank=True, null=True)
     # own fields
     examStatus = models.CharField(max_length=8, choices=EXAM_STATUS_CHOICES,
                                   default=NEW)
