@@ -125,6 +125,7 @@ BOWER_INSTALLED_APPS = (
 )
 
 # Websocket settings
+WEBSOCKET_EXAM_CHANNEL = 'attempts'
 # http://django-websocket-redis.readthedocs.org/en/latest/installation.html
 # WEBSOCKET_URL = '/ws/'
 # WS4REDIS_CONNECTION = {
@@ -135,4 +136,5 @@ BOWER_INSTALLED_APPS = (
 # }
 
 
-EDX_URL = "http://localhost:8000/"
+EDX_URL = "http://192.168.0.153:8000/"
+# EDX_URL = "http://localhost:8000/"

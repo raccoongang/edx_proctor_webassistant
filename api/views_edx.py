@@ -3,6 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from api.web_soket_methods import send_ws_msg
 from serializers import ExamSerializer
 from models import Exam
 
@@ -15,6 +16,10 @@ class APIRoot(APIView):
             "exam_register": reverse('exam-register-list', request=request),
             "start_exam": reverse(
                 'start_exam',
+                request=request, args=('attempt_code',)
+            ),
+            "poll_status": reverse(
+                'poll_status',
                 request=request, args=('attempt_code',)
             ),
         }
@@ -59,6 +64,7 @@ class ExamViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
+        send_ws_msg(request.data)
         headers = self.get_success_headers(serializer.data)
         return Response({'ID': serializer.instance.generate_key()},
                         status=status.HTTP_201_CREATED,
