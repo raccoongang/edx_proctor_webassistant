@@ -121,6 +121,7 @@ BOWER_PATH = '/usr/local/bin/bower'
 BOWER_INSTALLED_APPS = (
     'angular',
     'angular-route',
+    'angular-animate',
     'jquery',
     'bootstrap'
 )

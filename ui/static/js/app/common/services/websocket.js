@@ -22,7 +22,7 @@
             };
             ws.onmessage = function (e) {
                 try {
-                    console.log(e.data);
+                    ws_msg = JSON.parse(e.data);
                 }
                 catch (err) {
                     console.log(e.data);

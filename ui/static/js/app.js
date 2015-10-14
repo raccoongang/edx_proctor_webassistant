@@ -7,6 +7,7 @@
 (function () {
     var app = angular.module('proctor', [
         'ngRoute',
+        'ngAnimate',
         'websocket'
     ]);
     app.config(function ($routeProvider, $controllerProvider, $locationProvider, $compileProvider, $filterProvider, $provide, $httpProvider) {
@@ -28,7 +29,8 @@
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'ui/home/hmController.js'
+                            app.path + 'ui/home/hmController.js',
+                            app.path + 'common/services/backend_api.js'
                         ]);
                     }
                 }

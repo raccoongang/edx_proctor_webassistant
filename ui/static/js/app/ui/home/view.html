@@ -2,5 +2,41 @@
     <h1>Proctor Assistant</h1>
 </div>
 <div>
-    <button class="btn btn-default btn-success">Accept</button>
+    <div class="list-header">
+        <div class="col-xs-4">
+            Full Name
+        </div>
+        <div class="col-xs-3">
+            Exam Code
+        </div>
+        <div class="col-xs-3">
+            Course ID
+        </div>
+        <div class="col-xs-1">
+            Status
+        </div>
+        <div class="col-xs-1">
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div ng-repeat="attempt in ws_data" class="panel animate list-item" ng-if="ws_data.length">
+        <div class="col-xs-4">
+            {{ attempt.orgExtra.firstName }} {{ attempt.orgExtra.lastName }}
+        </div>
+        <div class="col-xs-3">
+            {{ attempt.examCode }}
+        </div>
+        <div class="col-xs-3">
+            {{ attempt.orgExtra.courseID }}
+        </div>
+        <div class="col-xs-1">
+            {{ attempt.status }}
+        </div>
+        <div class="col-xs-1">
+            <button class="btn btn-default btn-success">Accept</button>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div ng-if="!ws_data.length" class="col-xs-12">No users</div>
 </div>
