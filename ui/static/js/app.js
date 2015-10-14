@@ -6,7 +6,8 @@
  */
 (function () {
     var app = angular.module('proctor', [
-        'ngRoute'
+        'ngRoute',
+        'websocket'
     ]);
     app.config(function ($routeProvider, $controllerProvider, $locationProvider, $compileProvider, $filterProvider, $provide, $httpProvider) {
         app.controller = $controllerProvider.register;
@@ -22,12 +23,12 @@
 
         $routeProvider
             .when('/', {
-                templateUrl: app.path + 'home/view.html',
+                templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'home/hmController.js'
+                            app.path + 'ui/home/hmController.js'
                         ]);
                     }
                 }
@@ -42,10 +43,10 @@
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
             domain = match[1];
-        var apiPort = 8000;
+        var apiPort = '';
         $rootScope.apiConf = {
             domain: domain,
-            ioServer: domain + ':' + apiPort,
+            ioServer: domain + (apiPort?':' + apiPort:''),
             apiServer: 'http://' + domain + (apiPort?':' + apiPort:'') + '/api'
         };
 

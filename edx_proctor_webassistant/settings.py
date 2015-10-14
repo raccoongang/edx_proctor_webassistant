@@ -70,12 +70,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'ws4redis.context_processors.default',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'edx_proctor_webassistant.wsgi.application'
+# WSGI_APPLICATION = 'edx_proctor_webassistant.wsgi.application'
 
 
 # Database
@@ -127,14 +128,20 @@ BOWER_INSTALLED_APPS = (
 # Websocket settings
 WEBSOCKET_EXAM_CHANNEL = 'attempts'
 # http://django-websocket-redis.readthedocs.org/en/latest/installation.html
-# WEBSOCKET_URL = '/ws/'
-# WS4REDIS_CONNECTION = {
-#     'host': 'localhost',
-#     'port': 16379,
-#     'db': 17,
-#     # 'password': 'verysecret',
-# }
-
+WEBSOCKET_URL = '/ws/'
+WS4REDIS_CONNECTION = {
+    'host': 'localhost',
+    'port': 6379,
+    # 'db': 0,
+    # 'password': 'verysecret',
+}
+WS4REDIS_EXPIRE = 5
+WS4REDIS_PREFIX = 'ws'
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+WS4REDIS_ALLOWED_CHANNELS = (
+    'attempts'
+)
+WS4REDIS_HEARTBEAT = '--heartbeat--'
 
 EDX_URL = "http://192.168.0.153:8000/"
 # EDX_URL = "http://localhost:8000/"
