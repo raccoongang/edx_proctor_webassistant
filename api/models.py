@@ -43,6 +43,6 @@ class Exam(models.Model):
         :return: string
         '''
         return hashlib.md5(
-            str(self.examCode) + str(self.examStartDate) + str(
-                self.examEndDate)
+            str(self.examCode) + str(self.firstName) + str(
+                self.lastName) + str(self.examId)
         ).hexdigest()

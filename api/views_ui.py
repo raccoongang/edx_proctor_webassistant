@@ -15,7 +15,10 @@ def start_exam(request, attempt_code):
     if response.status_code == 200:
         exam.examStatus = exam.STARTED
         exam.save()
-        data = {'status': 'OK'}
+        data = {
+            'hash': exam.generate_key(),
+            'status': "OK"
+        }
     else:
         data = {'error': 'Edx response error. See logs'}
     return Response(data=data, status=response.status_code)
@@ -26,5 +29,9 @@ def poll_status(request, attempt_code):
     exam = get_object_or_404(Exam, examCode=attempt_code)
     response = pull_status_request(exam.examCode)
     status = json.loads(response.content)
+    data = {
+        'hash': exam.generate_key(),
+        'status': status.get('status')
+    }
     send_ws_msg(status)
-    return Response(data=status, status=response.status_code)
+    return Response(data=data, status=response.status_code)
