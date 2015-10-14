@@ -66,7 +66,7 @@ class ExamViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         data = request.data
         data['hash'] = serializer.instance.generate_key()
-        send_ws_msg(request.data)
+        send_ws_msg(data)
         headers = self.get_success_headers(serializer.data)
         return Response({'ID': data['hash']},
                         status=status.HTTP_201_CREATED,
