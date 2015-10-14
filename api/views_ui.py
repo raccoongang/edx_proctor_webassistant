@@ -19,6 +19,7 @@ def start_exam(request, attempt_code):
             'hash': exam.generate_key(),
             'status': "OK"
         }
+        send_ws_msg(data)
     else:
         data = {'error': 'Edx response error. See logs'}
     return Response(data=data, status=response.status_code)
@@ -33,5 +34,5 @@ def poll_status(request, attempt_code):
         'hash': exam.generate_key(),
         'status': status.get('status')
     }
-    send_ws_msg(status)
+    send_ws_msg(data)
     return Response(data=data, status=response.status_code)
