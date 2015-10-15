@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-    angular.module('proctor').controller('MainCtrl', ['$scope', 'WS', 'Api', function ($scope, WS, Api) {
+    angular.module('proctor').controller('MainCtrl', ['$scope', '$interval', 'WS', 'Api', function ($scope, $interval, WS, Api) {
 
         $scope.ws_data = {};
 
@@ -16,10 +16,22 @@
 
         WS.init('attempts', $scope.websocket_callback);
 
+        var update_status = function(idx, status){
+            $scope.ws_data[idx]['status'] = status;
+        };
+
         $scope.accept_exam_attempt = function (code) {
             Api.accept_exam_attempt(code)
                 .success(function (data) {
-                    $scope.ws_data[data['hash']]['status'] = data['status'];
+                    update_status(data['hash'], data['status']);
+                    if (data['status'] == 'OK') {
+                        $interval(function(){
+                            Api.get_exam_status(code)
+                                .success(function(data){
+                                    update_status(data['hash'], data['status']);
+                                })
+                        }, 1500);
+                    }
                 })
                 .error(function (data) {
 

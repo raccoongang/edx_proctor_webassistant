@@ -12,5 +12,12 @@
                 'method': 'GET'
             });
         };
+
+        this.get_exam_status = function(code){
+            return $http({
+                'url':  get_url('poll_status') + code,
+                'method': 'GET'
+            });
+        };
     }]);
 })();
