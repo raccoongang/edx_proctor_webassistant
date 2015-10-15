@@ -61,10 +61,10 @@ class ExamViewSet(viewsets.ModelViewSet):
 
     # @csrf_exempt
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        data = dict(request.data)
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        data = request.data
         data['hash'] = serializer.instance.generate_key()
         send_ws_msg(data)
         headers = self.get_success_headers(serializer.data)

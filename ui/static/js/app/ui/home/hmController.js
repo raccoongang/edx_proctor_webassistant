@@ -5,17 +5,16 @@
 
         $scope.ws_data = {};
 
-        WS.init('attempts');
-
-        $scope.$watch(function () {
-            return WS.get_msg();
-        }, function (val) {
-            if (val) {
-                var idx = val['hash'];
-                $scope.ws_data[idx] = val;
+        $scope.websocket_callback = function(msg){
+            if (msg) {
+                var idx = msg['hash'];
+                $scope.ws_data[idx] = msg;
                 $scope.ws_data[idx]['status'] = '';
+                $scope.$apply();
             }
-        });
+        };
+
+        WS.init('attempts', $scope.websocket_callback);
 
         $scope.accept_exam_attempt = function (code) {
             Api.accept_exam_attempt(code)

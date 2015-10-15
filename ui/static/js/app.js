@@ -40,21 +40,18 @@
             });
     });
 
-    app.run(function ($rootScope, $location) {
+    app.run(['$rootScope', '$location', function ($rootScope, $location) {
         var domain;
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
             domain = match[1];
-        var apiPort = '';
+        var port = '';
         $rootScope.apiConf = {
             domain: domain,
-            ioServer: domain + (apiPort?':' + apiPort:''),
-            apiServer: 'http://' + domain + (apiPort?':' + apiPort:'') + '/api'
+            ioServer: domain + (port?':' + port:''),
+            apiServer: 'http://' + domain + (port?':' + port:'') + '/api'
         };
-
-        $rootScope.errors = null;
-        $rootScope.msg = null;
-    });
+    }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
         return {

@@ -127,8 +127,9 @@ BOWER_INSTALLED_APPS = (
 )
 
 # Websocket settings
-WEBSOCKET_EXAM_CHANNEL = 'attempts'
 # http://django-websocket-redis.readthedocs.org/en/latest/installation.html
+#
+WEBSOCKET_EXAM_CHANNEL = 'attempts'
 WEBSOCKET_URL = '/ws/'
 WS4REDIS_CONNECTION = {
     'host': 'localhost',

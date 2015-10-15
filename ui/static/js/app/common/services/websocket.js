@@ -1,11 +1,8 @@
 (function () {
-    angular.module('websocket', []).service('WS', ['$rootScope', function ($rootScope) {
-        var ws, ws_msg, self = this;
+    angular.module('websocket', []).factory('WS', ['$rootScope', function ($rootScope) {
+        var ws, ws_msg = null;
 
-        this.get_msg = function () {
-            return ws_msg;
-        };
-        this.init = function (subcribe, callback) {
+        var init = function (subcribe, callback) {
             if (["function", "object"].indexOf(typeof window.WebSocket) >= 0)
                 ws = new WebSocket(
                     'ws://' +
@@ -23,12 +20,11 @@
             ws.onmessage = function (e) {
                 try {
                     ws_msg = JSON.parse(e.data);
+                    callback(ws_msg);
                 }
-                catch (err) {
-                    console.log(e.data);
-                }
+                catch (err) { }
             };
-            ws.onerror = function(e){
+            ws.onerror = function (e) {
                 console.log(e);
             };
             ws.onclose = function (e) {
@@ -37,6 +33,10 @@
             $rootScope.$on('$locationChangeStart', function (event, next, current) {
                 ws.close();
             });
+        };
+
+        return {
+            init: init
         };
     }]);
 })();
