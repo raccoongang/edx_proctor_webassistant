@@ -4,7 +4,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from api.web_soket_methods import send_ws_msg
 from models import Exam
-from edx_api import start_exam_request, pull_status_request, \
+from edx_api import start_exam_request, poll_status_request, \
     send_review_request
 
 
@@ -29,7 +29,7 @@ def start_exam(request, attempt_code):
 @api_view(['GET'])
 def poll_status(request, attempt_code):
     exam = get_object_or_404(Exam, examCode=attempt_code)
-    response = pull_status_request(exam.examCode)
+    response = poll_status_request(exam.examCode)
     status = json.loads(response.content)
     data = {
         'hash': exam.generate_key(),
@@ -115,7 +115,7 @@ def review(request):
 
     response = send_review_request(review_payload)
     if response.status_code == 200:
-        data = {'status': 'review_sent'}
+        data = {'status': 'review has sent'}
     else:
         data = {'error': "send review failed"}
 

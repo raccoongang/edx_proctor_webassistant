@@ -9,7 +9,7 @@ def start_exam_request(attempt_code):
     )
 
 
-def pull_status_request(attempt_code):
+def poll_status_request(attempt_code):
     return requests.get(
         settings.EDX_URL + "api/edx_proctoring/proctoring_poll_status/" + attempt_code
     )

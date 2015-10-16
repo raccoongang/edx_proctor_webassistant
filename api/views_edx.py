@@ -1,5 +1,5 @@
 from rest_framework.reverse import reverse
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -30,9 +30,12 @@ class APIRoot(APIView):
         return Response(result)
 
 
-class ExamViewSet(viewsets.ModelViewSet):
+class ExamViewSet(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     """
-    This viewset regiter edx's exam on proctoring service and return generated code
+    This viewset register edx's exam on proctoring service and return generated code
     Required parameters:
     ```
     examCode,
@@ -49,7 +52,7 @@ class ExamViewSet(viewsets.ModelViewSet):
 
     orgExtra contain json like this:
 
-        {"ex
+        {"
             "examStartDate": "2015-10-10 11:00",
             "examEndDate": "2015-10-10 15:00",
             "noOfStudents": 1,
@@ -65,7 +68,7 @@ class ExamViewSet(viewsets.ModelViewSet):
 
     # @csrf_exempt
     def create(self, request, *args, **kwargs):
-        data = dict(request.data)
+        data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
