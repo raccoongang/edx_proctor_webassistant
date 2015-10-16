@@ -22,6 +22,10 @@ class APIRoot(APIView):
                 'poll_status',
                 request=request, args=('attempt_code',)
             ),
+            "review": reverse(
+                'review',
+                request=request
+            ),
         }
         return Response(result)
 
@@ -45,7 +49,7 @@ class ExamViewSet(viewsets.ModelViewSet):
 
     orgExtra contain json like this:
 
-        {
+        {"ex
             "examStartDate": "2015-10-10 11:00",
             "examEndDate": "2015-10-10 15:00",
             "noOfStudents": 1,
