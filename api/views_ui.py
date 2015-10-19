@@ -114,10 +114,14 @@ def review(request):
     }
 
     response = send_review_request(review_payload)
+    data = {
+        'hash': exam.generate_key(),
+        'status': ''
+    }
     if response.status_code == 200:
-        data = {'status': 'review has sent'}
+        data['status'] ='review has sent'
     else:
-        data = {'error': "send review failed"}
+        data['status'] ='send review failed'
 
     return Response(data=data,
                     status=response.status_code)
