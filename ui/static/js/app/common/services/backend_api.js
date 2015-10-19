@@ -19,5 +19,13 @@
                 'method': 'GET'
             });
         };
+
+        this.send_review = function(code){
+            return $http({
+                'url':  get_url('review'),
+                'method': 'POST',
+                data: JSON.stringify({attempt_code: code})
+            });
+        };
     }]);
 })();

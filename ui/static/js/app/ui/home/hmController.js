@@ -8,7 +8,7 @@
         $scope.websocket_callback = function(msg){
             if (msg) {
                 var idx = msg['hash'];
-                $scope.ws_data[idx] = msg;
+                $scope.ws_data[idx] = angular.copy(msg);
                 $scope.ws_data[idx]['status'] = '';
                 $scope.$apply();
             }
@@ -36,6 +36,10 @@
                 .error(function (data) {
 
                 });
+        };
+
+        $scope.send_review = function(code){
+            Api.send_review(code);
         };
     }]);
 })();
