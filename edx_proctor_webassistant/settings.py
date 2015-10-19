@@ -148,3 +148,8 @@ WS4REDIS_HEARTBEAT = '--heartbeat--'
 # EDX_URL = "http://192.168.0.153:8000/"
 EDX_URL = "http://localhost:8000/"
 
+try:
+    from local_settings import *
+except ImportError:
+    print ('Local settings import error')
+
