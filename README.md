@@ -1,6 +1,6 @@
 # Instalation guide
 
-**Proctor veb assistant installation**
+**Proctor web assistant installation**
 
 Create venv and activate it
 ```
