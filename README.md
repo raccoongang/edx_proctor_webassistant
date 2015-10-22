@@ -18,7 +18,6 @@ git clone https://github.com/raccoongang/edx_proctor_webassistant
 Install few tools
 ```
 apt-get install redis-server
-npm install -g bower
 pip install cython git+git://github.com/gevent/gevent.git#egg=gevent
 ```
 Setup the project
