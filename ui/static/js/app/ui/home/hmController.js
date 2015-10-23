@@ -14,7 +14,7 @@
             }
         };
 
-        WS.init('attempts', $scope.websocket_callback);
+        WS.init('attempts', $scope.websocket_callback, true);
 
         var update_status = function(idx, status){
             $scope.ws_data[idx]['status'] = status;
