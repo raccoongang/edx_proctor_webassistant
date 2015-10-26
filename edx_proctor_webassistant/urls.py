@@ -20,10 +20,16 @@ from django.conf.urls.static import static
 
 from ui.views import Index
 
-
 urlpatterns = patterns(
     '',
     url(r'^$', Index.as_view(), name="index"),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/', include('api.urls'))
+    url(r'^api/', include('api.urls')),
+    url('', include('social.apps.django_app.urls', namespace='social')),
+    url(
+        r'^logout/$',
+        'django.contrib.auth.views.logout',
+        name='logout',
+        kwargs={'next_page': '/'}
+    ),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

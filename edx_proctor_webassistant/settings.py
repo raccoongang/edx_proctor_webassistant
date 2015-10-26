@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'djangobower',
     'ws4redis',
     'rest_framework',
+    'social.apps.django_app.default',
 
     'api',
     'ui',
@@ -71,6 +72,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ws4redis.context_processors.default',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -103,6 +106,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_URL ='/login/sso_npoed-oauth2'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -148,8 +152,17 @@ WS4REDIS_HEARTBEAT = '--heartbeat--'
 # EDX_URL = "http://192.168.0.153:8000/"
 EDX_URL = "http://localhost:8000/"
 
+#social auth settings
+AUTHENTICATION_BACKENDS = (
+    'api.social_auth_backends.NpoedBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SSO_NPOED_URL = "http://sso.local:8000"
+SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '469a30a89c007ddf3cf6'
+SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '66c9c347d12637535e9ca72efcc92205ea4a8aa1'
+SOCIAL_NEXT_URL = '/'
 try:
     from local_settings import *
 except ImportError:
     print ('Local settings import error')
-
