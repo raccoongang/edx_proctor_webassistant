@@ -45,11 +45,11 @@
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
             domain = match[1];
-        var port = '';
+        var api_port = '', socket_port = '';
         $rootScope.apiConf = {
             domain: domain,
-            ioServer: domain + (port?':' + port:''),
-            apiServer: 'http://' + domain + (port?':' + port:'') + '/api'
+            ioServer: domain + (socket_port?':' + socket_port:''),
+            apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
     }]);
 

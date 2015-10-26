@@ -6,7 +6,7 @@
         $scope.ws_data = {};
 
         $scope.websocket_callback = function(msg){
-            if (msg) {
+            if (msg && msg['examCode']) {
                 var idx = msg['hash'];
                 $scope.ws_data[idx] = angular.copy(msg);
                 $scope.ws_data[idx]['status'] = '';
@@ -14,7 +14,7 @@
             }
         };
 
-        WS.init('attempts', $scope.websocket_callback);
+        WS.init('attempts', $scope.websocket_callback, true);
 
         var update_status = function(idx, status){
             $scope.ws_data[idx]['status'] = status;
