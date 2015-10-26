@@ -40,13 +40,13 @@ python manage.py syncdb
 **SSO authorization setup**
 - Create new client i SSO
 - Enter client's KEY and SECRET in web assistant's settings:
-    ```
+```
     SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
     SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '<SECRET>'
-    ```
+```
 - Enter SSO application's url in web assistant's settings:
-    ```
+```
     SSO_NPOED_URL = "http://<SSO url>"
-    ```
+```
 
 
