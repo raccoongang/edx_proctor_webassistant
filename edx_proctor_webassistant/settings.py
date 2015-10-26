@@ -149,8 +149,7 @@ WS4REDIS_ALLOWED_CHANNELS = (
 )
 WS4REDIS_HEARTBEAT = '--heartbeat--'
 
-# EDX_URL = "http://192.168.0.153:8000/"
-EDX_URL = "http://localhost:8000/"
+EDX_URL = "<EDX_URL>"
 
 #social auth settings
 AUTHENTICATION_BACKENDS = (
@@ -158,11 +157,11 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-SSO_NPOED_URL = "http://sso.local:8000"
-SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '469a30a89c007ddf3cf6'
-SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '66c9c347d12637535e9ca72efcc92205ea4a8aa1'
+SSO_NPOED_URL = "http://<SSO url>"
+SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
+SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '<SECRET>'
 SOCIAL_NEXT_URL = '/'
 try:
-    from local_settings import *
+    from settings_local import *
 except ImportError:
     print ('Local settings import error')
