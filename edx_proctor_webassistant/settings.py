@@ -106,7 +106,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGIN_URL ='/login/sso_npoed-oauth2'
+LOGIN_URL = '/login/sso_npoed-oauth2'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -151,10 +151,22 @@ WS4REDIS_HEARTBEAT = '--heartbeat--'
 
 EDX_URL = "<EDX_URL>"
 
-#social auth settings
+# social auth settings
 AUTHENTICATION_BACKENDS = (
     'api.social_auth_backends.NpoedBackend',
     'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'api.pipeline.create_or_update_permissions',
+    'social.pipeline.user.user_details'
 )
 
 SSO_NPOED_URL = "http://<SSO url>"
