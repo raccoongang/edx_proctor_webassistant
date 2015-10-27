@@ -35,7 +35,8 @@ Also set `EDX_URL` in settings
 Then run commands
 ```
 python manage.py bower install
-python manage.py syncdb
+python manage.py migrate
+python manage.py collectstatic
 ```
 **SSO authorization setup**
 - Create new client i SSO
