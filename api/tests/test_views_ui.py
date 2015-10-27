@@ -27,8 +27,10 @@ class ViewsUITestCase(TestCase):
 
     def test_start_exam(self):
         factory = APIRequestFactory()
-        with patch('api.views_ui.start_exam_request') as edx_request:
+        with patch('api.views_ui.start_exam_request') as edx_request,\
+            patch('api.views_ui.send_ws_msg') as send_ws:
             edx_request.return_value = MockResponse()
+            send_ws.return_value = None
             request = factory.get(
                 '/api/start_exam/%s' % self.exam.examCode)
             response = start_exam(request, attempt_code=self.exam.examCode)
@@ -40,9 +42,11 @@ class ViewsUITestCase(TestCase):
 
     def test_poll_status(self):
         factory = APIRequestFactory()
-        with patch('api.views_ui.poll_status_request') as edx_request:
+        with patch('api.views_ui.poll_status_request') as edx_request,\
+            patch('api.views_ui.send_ws_msg') as send_ws:
             edx_request.return_value = MockResponse(
                 content='{"status": "started"}')
+            send_ws.return_value = None
             request = factory.get(
                 '/api/poll_status/%s' % self.exam.examCode)
             response = poll_status(request, attempt_code=self.exam.examCode)

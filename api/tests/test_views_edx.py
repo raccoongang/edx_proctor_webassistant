@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIRequestFactory
 from api.models import Exam
 from api.views_edx import APIRoot, ExamViewSet
+from mock import patch
 
 
 class APIRootTestCase(TestCase):
@@ -91,27 +92,29 @@ class ExamViewSetTestCase(TestCase):
                 "lastName": "last_name"
             }'''
         }
-        request = factory.post('/api/exam_register/',
-                               data=exam_data,
-                               )
-        view = ExamViewSet.as_view({'post': 'create'})
-        response = view(request)
-        response.render()
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        data = json.loads(response.content)
-        self.assertEqual(type(data), dict)
-        exam = Exam.objects.get(examCode=exam_data['examCode'])
-        self.assertDictContainsSubset({
-            "examCode": exam.examCode,
-            "duration ": exam.duration,
-            "organization ": exam.organization,
-            "reviewedExam ": exam.reviewedExam,
-            "reviewerNotes ": exam.reviewerNotes,
-            "examPassword ": exam.examPassword,
-            "examSponsor ": exam.examSponsor,
-            "examName ": exam.examName,
-            "ssiProduct ": exam.ssiProduct,
-        },
-            exam_data
-        )
-        self.assertEqual(Exam.objects.count(), 2)
+        with patch('api.views_edx.send_ws_msg') as send_ws:
+            send_ws.return_value = None
+            request = factory.post('/api/exam_register/',
+                                   data=exam_data,
+                                   )
+            view = ExamViewSet.as_view({'post': 'create'})
+            response = view(request)
+            response.render()
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            data = json.loads(response.content)
+            self.assertEqual(type(data), dict)
+            exam = Exam.objects.get(examCode=exam_data['examCode'])
+            self.assertDictContainsSubset({
+                "examCode": exam.examCode,
+                "duration ": exam.duration,
+                "organization ": exam.organization,
+                "reviewedExam ": exam.reviewedExam,
+                "reviewerNotes ": exam.reviewerNotes,
+                "examPassword ": exam.examPassword,
+                "examSponsor ": exam.examSponsor,
+                "examName ": exam.examName,
+                "ssiProduct ": exam.ssiProduct,
+            },
+                exam_data
+            )
+            self.assertEqual(Exam.objects.count(), 2)
