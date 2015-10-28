@@ -87,7 +87,7 @@ class ExamViewSetTestCase(TestCase):
                 "examEndDate": "2015-10-10 15:00",
                 "noOfStudents": 1,
                 "examId": "id",
-                "courseId": "course_id",
+                "courseId": "org1/course1/run1",
                 "firstName": "first_name",
                 "lastName": "last_name"
             }'''
@@ -116,5 +116,10 @@ class ExamViewSetTestCase(TestCase):
                 "ssiProduct ": exam.ssiProduct,
             },
                 exam_data
+            )
+            self.assertListEqual(
+                ["org1", "org1/course1", "org1/course1/run1"],
+                [exam.course_organization, exam.course_identify,
+                 exam.course_run]
             )
             self.assertEqual(Exam.objects.count(), 2)

@@ -24,9 +24,8 @@
 <body ng-app="proctor">
 {% if user.is_authenticated %}
     <ul>
-
     {% for exam in exams %}
-        <li>{{ exam.course_organization }} - {{ exam.course_identify }} - {{ exam.course_run }}</li>
+        <li>{{ exam.course_run }}</li>
     {% endfor %}
     </ul>
 {% endif %}

@@ -1,9 +1,10 @@
 import hashlib
+import operator
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
-import operator
 
 class ExamsByUserPermsManager(models.Manager):
     def by_user_perms(self, user):
