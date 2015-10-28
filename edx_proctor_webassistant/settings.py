@@ -127,7 +127,8 @@ BOWER_INSTALLED_APPS = (
     'angular-route',
     'angular-animate',
     'jquery',
-    'bootstrap'
+    'bootstrap',
+    'ng-table'
 )
 
 # Websocket settings
