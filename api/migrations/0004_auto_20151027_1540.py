@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.CharField(max_length=64)),
-                ('object_type', models.CharField(max_length=64)),
+                ('object_type', models.CharField(max_length=64, choices=[(b'edxorg', 'Organization'), (b'edxcourse', 'Course'), (b'edxcourserun', 'Courserun')])),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
         ),
@@ -34,17 +34,17 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='exam',
-            name='courseIdentify',
+            name='course_identify',
             field=models.CharField(db_index=True, max_length=64, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='exam',
-            name='courseOrganization',
+            name='course_organization',
             field=models.CharField(db_index=True, max_length=64, null=True, blank=True),
         ),
         migrations.AddField(
             model_name='exam',
-            name='courseRun',
+            name='course_run',
             field=models.CharField(db_index=True, max_length=64, null=True, blank=True),
         ),
     ]
