@@ -4,8 +4,8 @@
 
 Create venv and activate it
 ```
-virtualenv --no-site-packages edx_web_assistant_venv
-source edx_web_assistant_venv/bin/activate
+virtualenv --no-site-packages assistant_env
+source assistant_env/bin/activate
 ```
 
 Install bower using npm
