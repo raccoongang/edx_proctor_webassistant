@@ -85,6 +85,14 @@ class ExamSerializer(serializers.ModelSerializer):
         :return: clean data
         '''
         data.update(data['orgExtra'])
+        try:
+            course_org, course_id, course_run = data['courseId'].split('/')
+            data['course_organization'] = course_org
+            data['course_identify'] = "/".join((course_org, course_id))
+            data['course_run'] = data['courseId']
+        except ValueError as e:
+            raise serializers.ValidationError("Wrong courseId data")
+
         del (data['orgExtra'])
         try:
             Exam(**data).full_clean()
