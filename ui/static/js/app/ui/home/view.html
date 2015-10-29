@@ -1,46 +1,20 @@
-<div class="text-center">
-    <h1>Proctor Assistant</h1>
-</div>
 <div>
-    <div class="list-header">
-        <div class="col-xs-2">
-            Full Name
-        </div>
-        <div class="col-xs-4">
-            Exam Code
-        </div>
-        <div class="col-xs-4">
-            Course ID
-        </div>
-        <div class="col-xs-1">
-            Status
-        </div>
-        <div class="col-xs-1">
-
-        </div>
-        <div class="clearfix"></div>
+    <div>
+        {{ 'STUDENT_SESSIONS' | translate }}
     </div>
-    <div ng-repeat="(hash, attempt) in ws_data" class="panel animate list-item">
-        <div class="col-xs-2">
-            {{ attempt.orgExtra.firstName }} {{ attempt.orgExtra.lastName }}
-        </div>
-        <div class="col-xs-4">
-            {{ attempt.examCode }}
-        </div>
-        <div class="col-xs-4">
-            {{ attempt.orgExtra.courseID }}
-        </div>
-        <div class="col-xs-1">
-            {{ attempt.status }}
-        </div>
-        <div class="col-xs-1">
-            <button class="btn btn-default btn-success" ng-if="attempt.status != 'submitted'" ng-click="accept_exam_attempt(attempt.examCode)">
-                Accept
-            </button>
-            <button class="btn btn-default btn-success" ng-if="attempt.status == 'submitted'" ng-click="send_review(attempt.examCode)">
-                Send review
-            </button>
-        </div>
-        <div class="clearfix"></div>
-    </div>
+    <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
+        <tr ng-repeat="attempt in $data">
+            <td title="'FULL_NAME' | translate"
+                sortable="'orgExtra.firstName'">
+                {{attempt.orgExtra.firstName}}
+            </td>
+            <td title="'EXAM_START_TIME' | translate">
+                12:35
+            </td>
+            <td title="'EXAM_CODE' | translate"
+                sortable="'examCode'">
+                {{attempt.examCode}}ghjcns[ ytn
+            </td>
+        </tr>
+    </table>
 </div>

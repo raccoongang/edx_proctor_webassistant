@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'djangobower',
+    'pipeline',
     'ws4redis',
     'rest_framework',
     'social.apps.django_app.default',
@@ -111,11 +112,16 @@ LOGIN_URL = '/login/sso_npoed-oauth2'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR + '/static/'
 STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
                        'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-                       'djangobower.finders.BowerFinder',)
+                       'djangobower.finders.BowerFinder',
+                       'pipeline.finders.PipelineFinder',)
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(__file__), '..', 'components/bower_components'),
+)
 
 # Bower settings
 # https://github.com/nvbn/django-bower
@@ -126,10 +132,51 @@ BOWER_INSTALLED_APPS = (
     'angular',
     'angular-route',
     'angular-animate',
+    'angular-sanitize',
     'jquery',
     'bootstrap',
-    'ng-table'
+    'ng-table',
+    'angular-translate',
+    'angular-translate-storage-local',
+    'angular-translate-loader-static-files',
 )
+
+# Pipeline
+PIPELINE_DISABLE_WRAPPER = True
+PIPELINE_CSS = {
+    'css': {
+        'source_filenames': (
+            'css/*.css',
+            'ng-table/dist/ng-table.css',
+        ),
+        'output_filename': 'css/styles.css',
+        'extra_context': {
+            'media': 'screen,projection',
+        },
+    },
+}
+PIPELINE_JS = {
+    'js': {
+        'source_filenames': (
+            'jquery/dist/jquery.min.js',
+            'bootstrap/dist/js/bootstrap.js',
+            'angular/angular.js',
+            'angular-animate/angular-animate.min.js',
+            'angular-route/angular-route.min.js',
+            'angular-cookies/angular-cookies.min.js',
+            'angular-sanitize/angular-sanitize.min.js',
+            'ng-table/dist/ng-table.min.js',
+            'angular-translate/angular-translate.min.js',
+            'angular-translate-storage-local/angular-translate-storage-local.min.js',
+            'angular-translate-storage-cookie/angular-translate-storage-cookie.min.js',
+            'angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
+            'js/app/app.js',
+            'js/app/common/services/websocket.js',
+        ),
+        'output_filename': 'js/app.js',
+    }
+}
+
 
 # Websocket settings
 # http://django-websocket-redis.readthedocs.org/en/latest/installation.html

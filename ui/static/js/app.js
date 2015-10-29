@@ -7,10 +7,23 @@
 (function () {
     var app = angular.module('proctor', [
         'ngRoute',
+        'ngCookies',
         'ngAnimate',
-        'websocket'
+        'ngSanitize',
+        'ngTable',
+        'websocket',
+        'pascalprecht.translate'
     ]);
-    app.config(function ($routeProvider, $controllerProvider, $locationProvider, $compileProvider, $filterProvider, $provide, $httpProvider) {
+    app.config(function ($routeProvider,
+                         $controllerProvider,
+                         $locationProvider,
+                         $compileProvider,
+                         $filterProvider,
+                         $provide,
+                         $httpProvider,
+                         $translateProvider,
+                         $translateLocalStorageProvider
+    ) {
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;
@@ -21,6 +34,15 @@
         app.path = window.rootPath;
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+        // I18N
+        $translateProvider.useStaticFilesLoader({
+            prefix: app.path + 'i18n/',
+            suffix: '.json'
+        });
+        $translateProvider.preferredLanguage('en');
+        $translateProvider.useSanitizeValueStrategy('sanitize');
+        $translateProvider.useLocalStorage();
 
         $routeProvider
             .when('/', {
@@ -71,8 +93,20 @@
         };
     });
 
-    app.controller('MainController', ['$scope', function($scope){
+    app.controller('MainController', ['$scope', '$translate', function($scope, $translate){
+        $scope.changeLanguage = function (langKey) {
+            $translate.use(langKey);
+        };
 
+        $scope.logout_url = function(){};
+    }]);
+
+    app.directive('header', [function(){
+        return {
+            restrict: 'E',
+            templateUrl: app.path + 'ui/partials/header.html',
+            link: function(scope, e, attr) {}
+        };
     }]);
 
 })();

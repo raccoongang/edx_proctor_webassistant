@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-    angular.module('proctor').controller('MainCtrl', ['$scope', '$interval', 'WS', 'Api', function ($scope, $interval, WS, Api) {
+    angular.module('proctor').controller('MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', function ($scope, $interval, WS, Api, NgTableParams) {
 
         $scope.ws_data = {};
 
@@ -41,5 +41,18 @@
         $scope.send_review = function(code){
             Api.send_review(code);
         };
+
+        $scope.tableParams = new NgTableParams({
+            page: 1,
+            count: 10
+        }, {
+            data: function () {
+                var data = [];
+                angular.forEach($scope.ws_data, function(value, key){
+                    data.push(value);
+                });
+                return data;
+            }()
+        });
     }]);
 })();

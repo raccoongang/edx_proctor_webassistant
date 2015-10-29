@@ -1,16 +1,18 @@
-.list-item{}
-.list-header{
-  background-color: lightgray;
-  border: solid 1px gray;
+.navbar-left h4 {
+    margin: 0 50px;
+}
+
+.ng-table th{
+    text-align: left;
 }
 
 /* Angular animation */
 .animate.ng-enter, .animate.ng-move {
-  -webkit-transition:0.5s linear all;
-  -moz-transition:0.5s linear all;
-  -o-transition:0.5s linear all;
-  transition:0.5s linear all;
-  opacity:0;
+    -webkit-transition: 0.5s linear all;
+    -moz-transition: 0.5s linear all;
+    -o-transition: 0.5s linear all;
+    transition: 0.5s linear all;
+    opacity: 0;
 }
 
 /*
@@ -21,7 +23,7 @@
 */
 .animate.ng-enter.ng-enter-active,
 .animate.ng-move.ng-move-active {
-  opacity:1;
+    opacity: 1;
 }
 
 /*
@@ -30,15 +32,19 @@
   that has the .animate class
 */
 .animate.ng-leave {
-  -webkit-animation:0.5s my_animation;
-  -moz-animation:0.5s my_animation;
-  -o-animation:0.5s my_animation;
-  animation:0.5s my_animation;
+    -webkit-animation: 0.5s my_animation;
+    -moz-animation: 0.5s my_animation;
+    -o-animation: 0.5s my_animation;
+    animation: 0.5s my_animation;
 }
 
 @keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 /*
@@ -46,16 +52,28 @@
   its own definition of keyframe animation code...
 */
 @-webkit-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 @-moz-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }
 
 @-o-keyframes my_animation {
-  from { opacity:1; }
-  to { opacity:0; }
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
 }

@@ -1,3 +1,4 @@
+{% load pipeline %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,12 +7,8 @@
     <title></title>
     <meta name="viewport" content="width=device-width">
     <script src="{% static 'js/lib/script.min.js' %}"></script>
-    <script type="text/javascript" src='{% static 'jquery/dist/jquery.min.js' %}'></script>
-    <script type="text/javascript" src='{% static 'bootstrap/dist/js/bootstrap.js' %}'></script>
-    <script type="text/javascript" src='{% static 'angular/angular.js' %}'></script>
-    <script type="text/javascript" src='{% static 'angular-route/angular-route.min.js' %}'></script>
-    <script type="text/javascript" src='{% static 'angular-animate/angular-animate.min.js' %}'></script>
-    <script type="text/javascript" src='{% static 'js/app/common/services/websocket.js' %}'></script>
+    {% javascript 'js' %}
+    {% stylesheet 'css' %}
     <script type="text/javascript" src='{% static 'js/app.js' %}'></script>
 
     <link rel="stylesheet" href="{% static 'bootstrap/dist/css/bootstrap.css' %}">
@@ -23,15 +20,10 @@
 </head>
 <body ng-app="proctor">
 {% if user.is_authenticated %}
-    <ul>
-    {% for exam in exams %}
-        <li>{{ exam.course_run }}</li>
-    {% endfor %}
-    </ul>
-{% endif %}
-{% if user.is_authenticated %}
-    <p>{{ user.username }} <a href="{% url 'logout' %}">logout</a></p>
-    <div class="container" ng-view ng-controller="MainController"></div>
+    <div translate-cloak>
+        <header></header>
+        <div class="container-fluid" ng-view ng-controller="MainController"></div>
+    </div>
 {% else %}
     <p>Please <a href="/login/sso_npoed-oauth2">login</a> for start proctoring</p>
 {% endif %}
