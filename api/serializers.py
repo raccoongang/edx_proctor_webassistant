@@ -1,9 +1,11 @@
-from collections import OrderedDict
-from django.core.exceptions import ValidationError
-from rest_framework import serializers
+import re
 import json
-from django.utils.translation import ugettext as _
+from collections import OrderedDict
+from rest_framework import serializers
 from rest_framework.fields import SkipField
+
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 
 from models import Exam
 
@@ -39,7 +41,9 @@ class JSONSerializerField(serializers.Field):
         """
         result = {}
         for field in self.FIELD_LIST:
-            result[field] = getattr(instance, field)
+            result[field] = getattr(
+                instance, re.sub('([A-Z]+)', r'_\1', field).lower()
+            )
         return result
 
 
@@ -49,6 +53,15 @@ class ExamSerializer(serializers.ModelSerializer):
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
                   'reviewerNotes', 'examPassword', 'examSponsor',
                   'examName', 'ssiProduct', 'orgExtra')
+
+    examCode = serializers.CharField(source='exam_code', max_length=60)
+    reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
+    reviewerNotes = serializers.CharField(source='reviewer_notes',
+                                          max_length=60)
+    examPassword = serializers.CharField(source='exam_password', max_length=60)
+    examSponsor = serializers.CharField(source='exam_sponsor', max_length=60)
+    examName = serializers.CharField(source='exam_name', max_length=60)
+    ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
 
     orgExtra = JSONSerializerField(
         style={'base_template': 'textarea.html'},
@@ -84,12 +97,15 @@ class ExamSerializer(serializers.ModelSerializer):
         :param data: data from post/put request
         :return: clean data
         '''
-        data.update(data['orgExtra'])
+        # move fields from orgExtra to data and rename fieldname from camelCase
+        # to underscore
+        for key, value in data['orgExtra'].items():
+            data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
         try:
-            course_org, course_id, course_run = data['courseId'].split('/')
+            course_org, course_id, course_run = data['course_id'].split('/')
             data['course_organization'] = course_org
             data['course_identify'] = "/".join((course_org, course_id))
-            data['course_run'] = data['courseId']
+            data['course_run'] = data['course_id']
         except ValueError as e:
             raise serializers.ValidationError("Wrong courseId data")
 

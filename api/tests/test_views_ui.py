@@ -10,18 +10,18 @@ from mock import patch
 class ViewsUITestCase(TestCase):
     def setUp(self):
         exam = Exam()
-        exam.examCode = 'examCode'
+        exam.exam_code = 'examCode'
         exam.organization = 'organization'
         exam.duration = 1
-        exam.reviewedExam = 'reviewedExam'
-        exam.reviewerNotes = 'reviewerNotes'
-        exam.examPassword = 'examPassword'
-        exam.examSponsor = 'examSponsor'
-        exam.examName = 'examName'
-        exam.ssiProduct = 'ssiProduct'
-        exam.firstName = 'firstName'
-        exam.lastName = 'lastName'
-        exam.examId = '1'
+        exam.reviewed_exam = 'reviewedExam'
+        exam.reviewer_notes = 'reviewerNotes'
+        exam.exam_password = 'examPassword'
+        exam.exam_sponsor = 'examSponsor'
+        exam.exam_name = 'examName'
+        exam.ssi_product = 'ssiProduct'
+        exam.first_name = 'firstName'
+        exam.last_name = 'lastName'
+        exam.exam_id = '1'
         exam.save()
         self.exam = exam
 
@@ -32,8 +32,8 @@ class ViewsUITestCase(TestCase):
             edx_request.return_value = MockResponse()
             send_ws.return_value = None
             request = factory.get(
-                '/api/start_exam/%s' % self.exam.examCode)
-            response = start_exam(request, attempt_code=self.exam.examCode)
+                '/api/start_exam/%s' % self.exam.exam_code)
+            response = start_exam(request, attempt_code=self.exam.exam_code)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
@@ -48,8 +48,8 @@ class ViewsUITestCase(TestCase):
                 content='{"status": "started"}')
             send_ws.return_value = None
             request = factory.get(
-                '/api/poll_status/%s' % self.exam.examCode)
-            response = poll_status(request, attempt_code=self.exam.examCode)
+                '/api/poll_status/%s' % self.exam.exam_code)
+            response = poll_status(request, attempt_code=self.exam.exam_code)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
@@ -61,7 +61,7 @@ class ViewsUITestCase(TestCase):
         with patch('api.views_ui.send_review_request') as edx_request:
             edx_request.return_value = MockResponse()
             request = factory.post(
-                '/api/review/', data={'attempt_code': self.exam.examCode})
+                '/api/review/', data={'attempt_code': self.exam.exam_code})
             response = review(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)

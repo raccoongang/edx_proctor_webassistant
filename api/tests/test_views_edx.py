@@ -22,18 +22,18 @@ class APIRootTestCase(TestCase):
 class ExamViewSetTestCase(TestCase):
     def setUp(self):
         exam = Exam()
-        exam.examCode = 'examCode'
+        exam.exam_code = 'examCode'
         exam.organization = 'organization'
         exam.duration = 1
-        exam.reviewedExam = 'reviewedExam'
-        exam.reviewerNotes = 'reviewerNotes'
-        exam.examPassword = 'examPassword'
-        exam.examSponsor = 'examSponsor'
-        exam.examName = 'examName'
-        exam.ssiProduct = 'ssiProduct'
-        exam.firstName = 'firstName'
-        exam.lastName = 'lastName'
-        exam.examId = '1'
+        exam.reviewed_exam = 'reviewedExam'
+        exam.reviewer_notes = 'reviewerNotes'
+        exam.exam_password = 'examPassword'
+        exam.exam_sponsor = 'examSponsor'
+        exam.exam_name = 'examName'
+        exam.ssi_product = 'ssiProduct'
+        exam.first_name = 'firstName'
+        exam.last_name = 'lastName'
+        exam.exam_id = '1'
         exam.save()
         self.exam = exam
 
@@ -59,14 +59,14 @@ class ExamViewSetTestCase(TestCase):
         data = json.loads(response.content)
         self.assertEqual(type(data), dict)
         self.assertDictContainsSubset({
-            'examCode': self.exam.examCode,
+            'examCode': self.exam.exam_code,
             'duration': self.exam.duration,
-            'reviewedExam': self.exam.reviewedExam,
-            'reviewerNotes': self.exam.reviewerNotes,
-            'examPassword': self.exam.examPassword,
-            'examSponsor': self.exam.examSponsor,
-            'examName': self.exam.examName,
-            'ssiProduct': self.exam.ssiProduct,
+            'reviewedExam': self.exam.reviewed_exam,
+            'reviewerNotes': self.exam.reviewer_notes,
+            'examPassword': self.exam.exam_password,
+            'examSponsor': self.exam.exam_sponsor,
+            'examName': self.exam.exam_name,
+            'ssiProduct': self.exam.ssi_product,
         },
             data)
 
@@ -103,17 +103,17 @@ class ExamViewSetTestCase(TestCase):
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
             data = json.loads(response.content)
             self.assertEqual(type(data), dict)
-            exam = Exam.objects.get(examCode=exam_data['examCode'])
+            exam = Exam.objects.get(exam_code=exam_data['examCode'])
             self.assertDictContainsSubset({
-                "examCode": exam.examCode,
+                "examCode": exam.exam_code,
                 "duration ": exam.duration,
                 "organization ": exam.organization,
-                "reviewedExam ": exam.reviewedExam,
-                "reviewerNotes ": exam.reviewerNotes,
-                "examPassword ": exam.examPassword,
-                "examSponsor ": exam.examSponsor,
-                "examName ": exam.examName,
-                "ssiProduct ": exam.ssiProduct,
+                "reviewedExam ": exam.reviewed_exam,
+                "reviewerNotes ": exam.reviewer_notes,
+                "examPassword ": exam.exam_password,
+                "examSponsor ": exam.exam_sponsor,
+                "examName ": exam.exam_name,
+                "ssiProduct ": exam.ssi_product,
             },
                 exam_data
             )

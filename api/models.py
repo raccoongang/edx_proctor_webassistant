@@ -35,23 +35,23 @@ class Exam(models.Model):
         (FAILED, _("Failed")),
     }
 
-    examCode = models.CharField(max_length=60, unique=True)
+    exam_code = models.CharField(max_length=60, unique=True)
     organization = models.CharField(max_length=60)
     duration = models.IntegerField()
-    reviewedExam = models.CharField(max_length=60)
-    reviewerNotes = models.CharField(max_length=60)
-    examPassword = models.CharField(max_length=60)
-    examSponsor = models.CharField(max_length=60)
-    examName = models.CharField(max_length=60)
-    ssiProduct = models.CharField(max_length=60)
+    reviewed_exam = models.CharField(max_length=60)
+    reviewer_notes = models.CharField(max_length=60)
+    exam_password = models.CharField(max_length=60)
+    exam_sponsor = models.CharField(max_length=60)
+    exam_name = models.CharField(max_length=60)
+    ssi_product = models.CharField(max_length=60)
     # org extra
-    examStartDate = models.DateTimeField(blank=True, null=True)
-    examEndDate = models.DateTimeField(blank=True, null=True)
-    noOfStudents = models.IntegerField(blank=True, null=True)
-    examId = models.CharField(max_length=64, blank=True, null=True)
-    courseId = models.CharField(max_length=64, blank=True, null=True)
-    firstName = models.CharField(max_length=60, blank=True, null=True)
-    lastName = models.CharField(max_length=60, blank=True, null=True)
+    exam_start_date = models.DateTimeField(blank=True, null=True)
+    exam_end_date = models.DateTimeField(blank=True, null=True)
+    no_of_students = models.IntegerField(blank=True, null=True)
+    exam_id = models.CharField(max_length=64, blank=True, null=True)
+    course_id = models.CharField(max_length=64, blank=True, null=True)
+    first_name = models.CharField(max_length=60, blank=True, null=True)
+    last_name = models.CharField(max_length=60, blank=True, null=True)
     # own fields
     course_organization = models.CharField(
         max_length=64,
@@ -83,8 +83,8 @@ class Exam(models.Model):
         :return: string
         '''
         return hashlib.md5(
-            str(self.examCode) + str(self.firstName) + str(
-                self.lastName) + str(self.examId)
+            str(self.exam_code) + str(self.first_name) + str(
+                self.last_name) + str(self.exam_id)
         ).hexdigest()
 
 class Permission(models.Model):
@@ -113,5 +113,5 @@ class Permission(models.Model):
 class Student(models.Model):
     sso_id = models.IntegerField()
     email = models.EmailField()
-    firstName = models.CharField(max_length=60, blank=True, null=True)
-    lastName = models.CharField(max_length=60, blank=True, null=True)
+    first_name = models.CharField(max_length=60, blank=True, null=True)
+    last_name = models.CharField(max_length=60, blank=True, null=True)

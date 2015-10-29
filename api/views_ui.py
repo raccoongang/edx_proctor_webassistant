@@ -10,11 +10,11 @@ from edx_api import start_exam_request, poll_status_request, \
 
 @api_view(['GET'])
 def start_exam(request, attempt_code):
-    exam = get_object_or_404(Exam, examCode=attempt_code)
+    exam = get_object_or_404(Exam, exam_code=attempt_code)
 
-    response = start_exam_request(exam.examCode)
+    response = start_exam_request(exam.exam_code)
     if response.status_code == 200:
-        exam.examStatus = exam.STARTED
+        exam.exam_status = exam.STARTED
         exam.save()
         data = {
             'hash': exam.generate_key(),
@@ -28,8 +28,8 @@ def start_exam(request, attempt_code):
 
 @api_view(['GET'])
 def poll_status(request, attempt_code):
-    exam = get_object_or_404(Exam, examCode=attempt_code)
-    response = poll_status_request(exam.examCode)
+    exam = get_object_or_404(Exam, exam_code=attempt_code)
+    response = poll_status_request(exam.exam_code)
     status = json.loads(response.content)
     data = {
         'hash': exam.generate_key(),
@@ -49,7 +49,7 @@ def review(request):
     """
     passing_review_status = ['Clean', 'Rules Violation']
     failing_review_status = ['Not Reviewed', 'Suspicious']
-    exam = get_object_or_404(Exam, examCode=request.data.get('attempt_code'))
+    exam = get_object_or_404(Exam, exam_code=request.data.get('attempt_code'))
 
     review_payload = {
         "examDate": "",
@@ -60,21 +60,21 @@ def review(request):
         "keySetVersion": "",
         "examApiData": {
             "duration": exam.duration,
-            "examCode": exam.examCode,
-            "examName": exam.examName,
-            "examPassword": exam.examPassword,
-            "examSponsor": exam.examSponsor,
+            "examCode": exam.exam_code,
+            "examName": exam.exam_name,
+            "examPassword": exam.exam_password,
+            "examSponsor": exam.exam_sponsor,
             "examUrl": "http://localhost:8000/api/edx_proctoring/proctoring_launch_callback/start_exam/4d07a01a-1502-422e-b943-93ac04dc6ced",
             "orgExtra": {
-                "courseID": exam.courseId,
-                "examEndDate": exam.examEndDate,
-                "examID": exam.examId,
-                "examStartDate": exam.examStartDate,
-                "noOfStudents": exam.noOfStudents
+                "courseID": exam.course_id,
+                "examEndDate": exam.exam_end_date,
+                "examID": exam.exam_id,
+                "examStartDate": exam.exam_start_date,
+                "noOfStudents": exam.no_of_students
             },
             "organization": exam.organization,
-            "reviewedExam": exam.reviewedExam,
-            "reviewerNotes": exam.reviewerNotes,
+            "reviewedExam": exam.reviewed_exam,
+            "reviewerNotes": exam.reviewer_notes,
             "ssiProduct": "rp-now"
         },
         "overAllComments": "",
@@ -83,8 +83,8 @@ def review(request):
         "videoReviewLink": "",
         "examMetaData": {
             "examCode": request.data.get('attempt_code'),
-            "examName": exam.examName,
-            "examSponsor": exam.examSponsor,
+            "examName": exam.exam_name,
+            "examSponsor": exam.exam_sponsor,
             "organization": exam.organization,
             "reviewedExam": "True",
             "reviewerNotes": "Closed Book",

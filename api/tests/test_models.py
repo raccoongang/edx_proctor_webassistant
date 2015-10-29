@@ -89,16 +89,16 @@ class ExamTestCase(TestCase):
 
 def _create_exam(id):
     exam = Exam()
-    exam.examCode = 'examCode_%s' % id
+    exam.exam_code = 'examCode_%s' % id
     exam.duration = 1
-    exam.reviewedExam = 'reviewedExam_%s' % id
-    exam.reviewerNotes = 'reviewerNotes_%s' % id
-    exam.examPassword = 'examPassword_%s' % id
-    exam.examSponsor = 'examSponsor_%s' % id
-    exam.examName = 'examName_%s' % id
-    exam.ssiProduct = 'ssiProduct_%s' % id
-    exam.firstName = 'firstName_%s' % id
-    exam.lastName = 'lastName_%s' % id
-    exam.examId = '1'
+    exam.reviewed_exam = 'reviewedExam_%s' % id
+    exam.reviewer_notes = 'reviewerNotes_%s' % id
+    exam.exam_password = 'examPassword_%s' % id
+    exam.exam_sponsor = 'examSponsor_%s' % id
+    exam.exam_name = 'examName_%s' % id
+    exam.ssi_product = 'ssiProduct_%s' % id
+    exam.first_name = 'firstName_%s' % id
+    exam.last_name = 'lastName_%s' % id
+    exam.exam_id = '1'
     exam.save()
     return exam
