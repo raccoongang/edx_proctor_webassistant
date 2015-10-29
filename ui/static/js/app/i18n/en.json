@@ -1,0 +1,14 @@
+{
+  "TITLE": "Accounting system of test events",
+  "MY_PROFILE": "My Profile",
+  "--STUDENT_SESSION--": "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_",
+  "STUDENT_SESSIONS": "Student Sessions",
+  "FULL_NAME": "Full Name",
+  "EXAM_START_TIME": "Start time",
+  "EXAM_CODE": "Exam Code",
+  "COURSE_NAME": "Course Name",
+  "STATUS": "Status",
+  "--STUDENT_SESSION_ACTIONS--": "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_",
+  "START": "Start",
+  "STOP": "Stop"
+}
