@@ -31,7 +31,7 @@
         app.service = $provide.service;
         app.factory = $provide.factory;
 
-        app.path = window.rootPath;
+        app.path = window.app.rootPath;
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
@@ -93,12 +93,16 @@
         };
     });
 
-    app.controller('MainController', ['$scope', '$translate', function($scope, $translate){
+    app.controller('MainController', ['$scope', '$translate','$location', function($scope, $translate, $location){
         $scope.changeLanguage = function (langKey) {
             $translate.use(langKey);
         };
 
-        $scope.logout_url = function(){};
+        $scope.logout = function(){
+            console.log(window.app.logoutUrl);
+            $location.path(window.app.logoutUrl);
+
+        };
     }]);
 
     app.directive('header', [function(){

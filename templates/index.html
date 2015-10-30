@@ -15,7 +15,10 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
     <script>
-        window.rootPath = "{% static 'js/app/' %}";
+        window.app = {
+            rootPath : "{% static 'js/app/' %}",
+            logoutUrl : "{% url 'logout' %}"
+        }
     </script>
 </head>
 <body ng-app="proctor">
