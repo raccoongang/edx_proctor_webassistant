@@ -1,5 +1,5 @@
-{% load pipeline %}
 {% load static %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +21,11 @@
         }
     </script>
 </head>
-<body ng-app="proctor">
+<body ng-app="proctor" ng-controller="MainController">
 {% if user.is_authenticated %}
     <div translate-cloak>
         <header></header>
-        <div class="container-fluid" ng-view ng-controller="MainController"></div>
+        <div class="container-fluid" ng-view></div>
     </div>
 {% else %}
     <p>Please <a href="/login/sso_npoed-oauth2">login</a> for start proctoring</p>

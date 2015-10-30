@@ -93,15 +93,13 @@
         };
     });
 
-    app.controller('MainController', ['$scope', '$translate','$location', function($scope, $translate, $location){
+    app.controller('MainController', ['$scope', '$translate', function($scope, $translate){
         $scope.changeLanguage = function (langKey) {
             $translate.use(langKey);
         };
 
         $scope.logout = function(){
-            console.log(window.app.logoutUrl);
-            $location.path(window.app.logoutUrl);
-
+            window.location = window.app.logoutUrl;
         };
     }]);
 

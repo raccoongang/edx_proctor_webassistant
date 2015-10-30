@@ -142,6 +142,7 @@ BOWER_INSTALLED_APPS = (
 )
 
 # Pipeline
+# PIPELINE_ENABLED = True
 PIPELINE_DISABLE_WRAPPER = True
 PIPELINE_CSS = {
     'css': {
