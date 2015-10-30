@@ -1,7 +1,9 @@
 'use strict';
 
 (function () {
-    angular.module('proctor').controller('MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', function ($scope, $interval, WS, Api, NgTableParams) {
+    angular.module('proctor').controller(
+        'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal',
+            function ($scope, $interval, WS, Api, NgTableParams, $uibModal) {
 
         $scope.ws_data = {};
 
@@ -42,6 +44,23 @@
             Api.send_review(code);
         };
 
+        $scope.add_review = function () {
+
+            var modalInstance = $uibModal.open({
+                animation: true,
+                templateUrl: 'reviewContent.html',
+                controller: 'ReviewCtrl',
+                size: 'lg',
+                resolve: {}
+            });
+
+            modalInstance.result.then(function (data) {
+                console.log(data);
+            }, function () {
+                console.log('Modal dismissed at: ' + new Date());
+            });
+        };
+
         $scope.tableParams = new NgTableParams({
             page: 1,
             count: 10
@@ -55,4 +74,14 @@
             }()
         });
     }]);
+
+    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance) {
+        $scope.ok = function () {
+            $uibModalInstance.close({});
+        };
+
+        $scope.cancel = function () {
+            $uibModalInstance.dismiss('cancel');
+        };
+    });
 })();

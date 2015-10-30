@@ -13,8 +13,18 @@
             </td>
             <td title="'EXAM_CODE' | translate"
                 sortable="'examCode'">
-                {{attempt.examCode}}ghjcns[ ytn
+                {{attempt.examCode}}
+            </td>
+            <td title="'COURSE_NAME' | translate"
+                sortable="''">
+                course name
             </td>
         </tr>
     </table>
+
+    <button class="btn btn-default btn-success" ng-click="add_review()">
+        Add review
+    </button>
+
+    <review-modal></review-modal>
 </div>

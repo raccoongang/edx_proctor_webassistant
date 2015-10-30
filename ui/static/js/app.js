@@ -11,6 +11,7 @@
         'ngAnimate',
         'ngSanitize',
         'ngTable',
+        'ui.bootstrap',
         'websocket',
         'pascalprecht.translate'
     ]);
@@ -44,6 +45,15 @@
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
+        $provide.decorator('uibModalBackdropDirective', function($delegate) {
+            $delegate[0].templateUrl = app.path + 'ui/partials/modal/backdrop.html';
+            return $delegate;
+        });
+        $provide.decorator('uibModalWindowDirective', function($delegate) {
+            $delegate[0].templateUrl = app.path + 'ui/partials/modal/window.html';
+            return $delegate;
+        });
+
         $routeProvider
             .when('/', {
                 templateUrl: app.path + 'ui/home/view.html',
@@ -52,6 +62,7 @@
                     deps: function(resolver){
                         return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
+                            app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/backend_api.js'
                         ]);
                     }
