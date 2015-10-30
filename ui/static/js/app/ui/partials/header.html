@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default global-header">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -9,8 +9,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/#/">
-                LOGO
+            <a class="navbar-brand logo" href="/#/">
+                <img alt="" src="/static/img/logo-light.png">
             </a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
@@ -24,20 +24,24 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#/"
-                       class="dropdown-toggle"
-                       data-toggle="dropdown"
-                       role="button"
-                       aria-haspopup="true"
-                       aria-expanded="false">
-                        {{ 'MY_PROFILE' | translate }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a href="" ng-click="logout()">Logout</a>
-                        </li>
-                    </ul>
+                        <a href="#/"
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           role="button"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <span class="icon profile-icon"></span>
+                            {{ 'MY_PROFILE' | translate }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="">Profile</a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="logout()">Logout</a>
+                            </li>
+                        </ul>
                 </li>
             </ul>
         </div>

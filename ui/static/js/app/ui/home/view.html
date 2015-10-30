@@ -16,8 +16,15 @@
                 {{attempt.examCode}}
             </td>
             <td title="'COURSE_NAME' | translate"
-                sortable="''">
-                course name
+                sortable="'orgExtra.courseID'">
+                {{ attempt.orgExtra.courseID }}
+            </td>
+            <td title="'STATUS' | translate"
+                sortable="'orgExtra.courseID'">
+                {{ attempt.orgExtra.courseID }}
+            </td>
+            <td>
+                <button class="btn btn-xs"></button>
             </td>
         </tr>
     </table>

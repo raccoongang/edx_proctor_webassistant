@@ -1,5 +1,47 @@
+.global-header {
+    background: url('/static/img/body-bg-small.jpg');
+}
+
+.icon {
+    background-repeat: no-repeat;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 7px;
+    overflow: hidden;
+}
+
+.profile-icon {
+    background-image: url('/static/img/profile-icon.png');
+    background-position: 0 0;
+    width: 31px;
+    height: 31px;
+}
+
+.navbar {
+    min-height: 80px;
+}
+
 .navbar-left h4 {
     margin: 0 50px;
+}
+
+.navbar-nav li a {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+.navbar-default .navbar-nav li a {
+    color: lightgray;
+}
+
+.navbar-default .navbar-nav li a:hover {
+    color: gray;
+}
+
+.dropdown-menu li a {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    color: #333 !important;
 }
 
 .ng-table th{
