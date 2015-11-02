@@ -15,9 +15,11 @@ def start_exam(request, attempt_code):
     response = start_exam_request(exam.exam_code)
     if response.status_code == 200:
         exam.exam_status = exam.STARTED
+        exam.proctor = request.user
         exam.save()
         data = {
             'hash': exam.generate_key(),
+            'proctor': exam.proctor.username,
             'status': "OK"
         }
         send_ws_msg(data)
@@ -119,9 +121,9 @@ def review(request):
         'status': ''
     }
     if response.status_code == 200:
-        data['status'] ='review has sent'
+        data['status'] = 'review has sent'
     else:
-        data['status'] ='send review failed'
+        data['status'] = 'send review failed'
 
     return Response(data=data,
                     status=response.status_code)

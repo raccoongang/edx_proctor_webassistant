@@ -1,14 +1,23 @@
 import json
+from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIRequestFactory
-from api.models import Exam
+from rest_framework.test import APIRequestFactory, force_authenticate
+from api.models import Exam, Permission
 from api.views_ui import start_exam, poll_status, review
 from mock import patch
 
 
 class ViewsUITestCase(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(
+            'test', 'test@example.com', 'testpassword'
+        )
+        Permission.objects.create(
+            user=self.user,
+            object_id='*',
+            object_type='*'
+        )
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -33,6 +42,7 @@ class ViewsUITestCase(TestCase):
             send_ws.return_value = None
             request = factory.get(
                 '/api/start_exam/%s' % self.exam.exam_code)
+            force_authenticate(request, user=self.user)
             response = start_exam(request, attempt_code=self.exam.exam_code)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -6,9 +6,9 @@ class ExamAdmin(admin.ModelAdmin):
     list_display = ('exam_code', 'organization', 'exam_id', 'course_id',
                     'first_name', 'last_name', 'exam_status',
                     'exam_start_date', 'exam_end_date')
-    list_filter = ('exam_status',)
+    list_filter = ('exam_status', 'proctor')
     search_fields = ['exam_code', 'exam_id', 'first_name', 'last_name',
-                     'course_id']
+                     'course_id', 'proctor']
 
     fieldsets = (
         (None, {
@@ -25,7 +25,7 @@ class ExamAdmin(admin.ModelAdmin):
         ('Additional', {
             'fields': (
                 'course_organization', 'course_identify', 'course_run',
-                'exam_status')
+                'proctor', 'exam_status')
         }),
     )
 
