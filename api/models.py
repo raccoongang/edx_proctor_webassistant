@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
+
 class ExamsByUserPermsManager(models.Manager):
     def by_user_perms(self, user):
         qs = super(ExamsByUserPermsManager, self).get_queryset()
@@ -14,13 +15,14 @@ class ExamsByUserPermsManager(models.Manager):
             for permission in user.permission_set.all():
                 if permission.object_id != "*":
                     q_objects.append(Q(**{permission._get_exam_field_by_type():
-                        permission.object_id}))
+                                              permission.object_id}))
                 else:
                     return qs
             if len(q_objects):
                 return qs.filter(reduce(operator.or_, q_objects))
 
         return []
+
 
 class Exam(models.Model):
     NEW = 'new'
@@ -71,9 +73,10 @@ class Exam(models.Model):
         null=True,
         db_index=True
     )
-    examStatus = models.CharField(max_length=8,
-                                  choices=EXAM_STATUS_CHOICES,
-                                  default=NEW)
+    examStatus = models.CharField(
+        max_length=8,
+        choices=EXAM_STATUS_CHOICES,
+        default=NEW)
 
     objects = ExamsByUserPermsManager()
 
@@ -86,6 +89,7 @@ class Exam(models.Model):
             str(self.exam_code) + str(self.first_name) + str(
                 self.last_name) + str(self.exam_id)
         ).hexdigest()
+
 
 class Permission(models.Model):
     TYPE_ORG = 'edxorg'
@@ -109,6 +113,7 @@ class Permission(models.Model):
             self.TYPE_COURSERUN: "course_run"
         }
         return fields[self.object_type]
+
 
 class Student(models.Model):
     sso_id = models.IntegerField()

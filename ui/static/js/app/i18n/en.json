@@ -9,7 +9,7 @@
   "COURSE_NAME": "Course Name",
   "STATUS": "Status",
   "--STUDENT_SESSION_ACTIONS--": "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_",
-  "START": "Start",
+  "ACTIVATE": "Activate",
   "STOP": "Stop",
   "--REVIEW--": "-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_",
   "ADD_EXAM_REVIEW": "Add Exam Review"

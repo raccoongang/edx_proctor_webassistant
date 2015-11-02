@@ -24,14 +24,13 @@
                 {{ attempt.orgExtra.courseID }}
             </td>
             <td>
-                <button class="btn btn-xs"></button>
+                <button class="btn btn-xs">{{ 'START' | translate }}</button>
+                <button class="btn btn-default btn-success" ng-click="add_review()">
+                    Add review
+                </button>
             </td>
         </tr>
     </table>
-
-    <button class="btn btn-default btn-success" ng-click="add_review()">
-        Add review
-    </button>
 
     <review-modal></review-modal>
 </div>
