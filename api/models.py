@@ -73,7 +73,7 @@ class Exam(models.Model):
         null=True,
         db_index=True
     )
-    examStatus = models.CharField(
+    exam_status = models.CharField(
         max_length=8,
         choices=EXAM_STATUS_CHOICES,
         default=NEW)
