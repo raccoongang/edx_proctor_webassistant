@@ -22,14 +22,14 @@
     </script>
 </head>
 <body ng-app="proctor" ng-controller="MainController">
-{#{% if user.is_authenticated %}#}
+{% if user.is_authenticated %}
     <div translate-cloak>
         <header></header>
         <div class="container-fluid" ng-view></div>
     </div>
-{#{% else %}#}
-{#    <p>Please <a href="/login/sso_npoed-oauth2">login</a> for start proctoring</p>#}
-{#{% endif %}#}
+{% else %}
+    <p>Please <a href="/login/sso_npoed-oauth2">login</a> for start proctoring</p>
+{% endif %}
 
 </body>
 </html>
