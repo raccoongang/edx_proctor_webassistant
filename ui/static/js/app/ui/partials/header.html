@@ -15,14 +15,19 @@
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav navbar-left">
+            <ul class="nav navbar-nav navbar-left col-xs-12 col-sm-6">
                 <li>
                     <a href="">
-                        <h4>{{ 'TITLE' | translate }}</h4>
+                        <h4>{{ 'TITLE' | translate | trusted }}</h4>
                     </a>
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                <li ng-repeat="lng in supported_languages">
+                    <a href="" ng-click="changeLanguage(lng)">
+                        <img ng-src="/static/img/lng/{{lng}}.png" height="24">
+                    </a>
+                </li>
                 <li class="dropdown">
                         <a href="#/"
                            class="dropdown-toggle"
@@ -31,15 +36,19 @@
                            aria-haspopup="true"
                            aria-expanded="false">
                             <span class="icon profile-icon"></span>
-                            {{ 'MY_PROFILE' | translate }}
+                            <span class="hidden-sm">{{ 'MY_PROFILE' | translate | trusted }}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a href="">Profile</a>
+                                <a href="">
+                                    {{ 'PROFILE' | translate | trusted }}
+                                </a>
                             </li>
                             <li>
-                                <a href="" ng-click="logout()">Logout</a>
+                                <a href="" ng-click="logout()">
+                                    {{ 'LOGOUT' | translate | trusted }}
+                                </a>
                             </li>
                         </ul>
                 </li>

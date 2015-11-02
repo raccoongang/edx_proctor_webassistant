@@ -104,14 +104,29 @@
         };
     });
 
+    // MAIN CONTROLLER
     app.controller('MainController', ['$scope', '$translate', function($scope, $translate){
+        $scope.supported_languages = ['en', 'ru'];
+
+        var lng_is_supported = function(val){
+            return $scope.supported_languages.indexOf(val) >= 0?true:false;
+        };
+
         $scope.changeLanguage = function (langKey) {
-            $translate.use(langKey);
+            if (lng_is_supported(langKey)) {
+                $translate.use(langKey);
+            }
         };
 
         $scope.logout = function(){
             window.location = window.app.logoutUrl;
         };
+        //
+        //$scope.get_lng_img = function(lng){
+        //    if (lng_is_supported(lng)){
+        //
+        //    }
+        //};
     }]);
 
     app.directive('header', [function(){
@@ -119,6 +134,14 @@
             restrict: 'E',
             templateUrl: app.path + 'ui/partials/header.html',
             link: function(scope, e, attr) {}
+        };
+    }]);
+
+    app.filter('trusted', ['$sce', function($sce) {
+        var div = document.createElement('div');
+        return function(text) {
+            div.innerHTML = text;
+            return $sce.trustAsHtml(div.textContent);
         };
     }]);
 
