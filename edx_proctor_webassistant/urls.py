@@ -23,6 +23,7 @@ from ui.views import Index
 urlpatterns = patterns(
     '',
     url(r'^$', Index.as_view(), name="index"),
+    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
     url('', include('social.apps.django_app.urls', namespace='social')),

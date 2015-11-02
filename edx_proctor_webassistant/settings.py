@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for edx_proctor_webassistant project.
 
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -75,6 +77,7 @@ TEMPLATES = [
                 'ws4redis.context_processors.default',
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
+                "django.core.context_processors.request",
             ],
         },
     },
@@ -224,6 +227,9 @@ SSO_NPOED_URL = "http://<SSO url>"
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '<SECRET>'
 SOCIAL_NEXT_URL = '/'
+
+GRAPPELLI_ADMIN_TITLE = u"Открытое образование"
+
 try:
     from settings_local import *
 except ImportError:
