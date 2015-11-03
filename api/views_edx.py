@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.web_soket_methods import send_ws_msg
 from serializers import ExamSerializer
+from api.utils import catch_exception
 from models import Exam
 
 
@@ -67,6 +68,7 @@ class ExamViewSet(mixins.ListModelMixin,
     queryset = Exam.objects.all()
 
     # @csrf_exempt
+    @catch_exception
     def create(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)

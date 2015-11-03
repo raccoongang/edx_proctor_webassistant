@@ -1,34 +1,34 @@
 <div>
     <div>
-        {{ 'STUDENT_SESSIONS' | translate | trusted }}
+        {{ trust('STUDENT_SESSIONS') }}
     </div>
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
-            <td title="'FULL_NAME' | translate | trusted"
+            <td title="trust('FULL_NAME')"
                 sortable="'orgExtra.firstName'">
                 {{attempt.orgExtra.firstName}}
             </td>
-            <td title="'EXAM_START_TIME' | translate | trusted">
+            <td title="trust('EXAM_START_TIME')">
                 12:35
             </td>
-            <td title="'EXAM_CODE' | translate | trusted"
+            <td title="trust('EXAM_CODE')"
                 sortable="'examCode'">
                 {{attempt.examCode}}
             </td>
-            <td title="'COURSE_NAME' | translate | trusted"
+            <td title="trust('COURSE_NAME')"
                 sortable="'orgExtra.courseID'">
                 {{ attempt.orgExtra.courseID }}
             </td>
-            <td title="'STATUS' | translate | trusted"
+            <td title="trust('STATUS')"
                 sortable="'orgExtra.courseID'">
                 {{ attempt.orgExtra.courseID }}
             </td>
             <td>
                 <button class="btn btn-xs" ng-click="accept_exam_attempt(attempt.examCode)">
-                    {{ 'START' | translate | trusted }}
+                    {{ trust('START') }}
                 </button>
                 <button class="btn btn-default btn-success" ng-click="add_review()">
-                    {{ 'ADD_EXAM_REVIEW' | translate | trusted }}
+                    {{ trust('ADD_EXAM_REVIEW') }}
                 </button>
             </td>
         </tr>
