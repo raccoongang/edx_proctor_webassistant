@@ -1,6 +1,7 @@
 import hashlib
 import operator
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
@@ -41,7 +42,7 @@ class Exam(models.Model):
     organization = models.CharField(max_length=60)
     duration = models.IntegerField()
     reviewed_exam = models.CharField(max_length=60)
-    reviewer_notes = models.CharField(max_length=60)
+    reviewer_notes = models.CharField(max_length=60, blank=True, null=True)
     exam_password = models.CharField(max_length=60)
     exam_sponsor = models.CharField(max_length=60)
     exam_name = models.CharField(max_length=60)
@@ -91,6 +92,12 @@ class Exam(models.Model):
                 self.last_name) + str(self.exam_id)
         ).hexdigest()
 
+    @classmethod
+    def get_course_data(cls, course_id):
+        if settings.COURSE_ID_SLASH_SEPARATED:
+            return course_id.split('/')
+        else:
+            return course_id.split(':')[-1].split('+')
 
 class Permission(models.Model):
     TYPE_ORG = 'edxorg'

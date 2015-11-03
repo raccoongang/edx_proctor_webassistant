@@ -228,9 +228,12 @@ SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '<SECRET>'
 SOCIAL_NEXT_URL = '/'
 
+COURSE_ID_SLASH_SEPARATED = True
+
 GRAPPELLI_ADMIN_TITLE = u"Открытое образование"
 
 try:
     from settings_local import *
 except ImportError:
     print ('Local settings import error')
+

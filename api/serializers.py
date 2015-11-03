@@ -1,5 +1,5 @@
 import re
-import json
+from dateutil import parser
 from collections import OrderedDict
 from rest_framework import serializers
 from rest_framework.fields import SkipField
@@ -13,27 +13,29 @@ from models import Exam
 class JSONSerializerField(serializers.Field):
     """ Serializer for orgExtraField"""
     FIELD_LIST = [
-        'examStartDate',
-        'examEndDate',
-        'noOfStudents',
-        'examId',
-        'courseId',
-        'firstName',
-        'lastName',
+        u'courseID',
+        u'examEndDate',
+        u'examID',
+        u'examStartDate',
+        u'firstName',
+        u'lastName',
+        u'noOfStudents',
     ]
 
     def to_internal_value(self, data):
         json_data = {}
+        fields = data.keys()
+        fields.sort()
         try:
-            json_data = json.loads(data)
-            if cmp(json_data.keys(), self.FIELD_LIST) != 0:
+            if cmp(fields, self.FIELD_LIST) != 0:
                 raise serializers.ValidationError(
                     _("orgExtra fields list incorrect"))
+            else:
+                json_data = data
         except ValueError:
             raise serializers.ValidationError(
                 _("orgExtra field value error. Must be json"))
-        finally:
-            return json_data
+        return json_data
 
     def to_representation(self, instance):
         """
@@ -57,7 +59,7 @@ class ExamSerializer(serializers.ModelSerializer):
     examCode = serializers.CharField(source='exam_code', max_length=60)
     reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
     reviewerNotes = serializers.CharField(source='reviewer_notes',
-                                          max_length=60)
+                                          max_length=60, allow_blank=True)
     examPassword = serializers.CharField(source='exam_password', max_length=60)
     examSponsor = serializers.CharField(source='exam_sponsor', max_length=60)
     examName = serializers.CharField(source='exam_name', max_length=60)
@@ -102,13 +104,15 @@ class ExamSerializer(serializers.ModelSerializer):
         for key, value in data['orgExtra'].items():
             data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
         try:
-            course_org, course_id, course_run = data['course_id'].split('/')
-            data['course_organization'] = course_org
-            data['course_identify'] = "/".join((course_org, course_id))
-            data['course_run'] = data['course_id']
+            course_org, course_id, course_run = Exam.get_course_data(
+                data['course_id'])
         except ValueError as e:
             raise serializers.ValidationError("Wrong courseId data")
-
+        data['course_organization'] = course_org
+        data['course_identify'] = "/".join((course_org, course_id))
+        data['course_run'] = data['course_id']
+        data['exam_end_date'] = parser.parse(data['exam_end_date'])
+        data['exam_start_date'] = parser.parse(data['exam_start_date'])
         del (data['orgExtra'])
         try:
             Exam(**data).full_clean()
