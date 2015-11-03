@@ -100,6 +100,7 @@ class ExamSerializer(serializers.ModelSerializer):
         # move fields from orgExtra to data and rename fieldname from camelCase
         # to underscore
         for key, value in data['orgExtra'].items():
+            key.replace('ID', 'Id')
             data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
         try:
             course_org, course_id, course_run = data['course_id'].split('/')
