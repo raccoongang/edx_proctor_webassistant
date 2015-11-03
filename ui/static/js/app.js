@@ -126,8 +126,10 @@
 
         var div = document.createElement('div');
         $scope.trust = function(text) {
-            div.innerHTML = translateFilter(text);
-            return $sce.trustAsHtml(div.textContent);
+            var translated = translateFilter(text);
+            div.innerHTML = translated;
+            var ret = $sce.trustAsHtml(div.textContent);
+            return ret == translated?translated:ret;
         };
     }]);
 
