@@ -71,6 +71,12 @@
                 }, {
                     data: $scope.ws_data
                 });
+
+                $scope.$watch('ws_data', function(newValue, oldValue) {
+                    if (newValue!=oldValue){
+                        $scope.tableParams.reload();
+                    }
+                }, true);
             }]);
 
     angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance) {
