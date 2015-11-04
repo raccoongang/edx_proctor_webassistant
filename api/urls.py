@@ -1,4 +1,5 @@
 from django.conf.urls import include, url, patterns
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from views_edx import ExamViewSet, APIRoot
 from views_ui import start_exam, poll_status, review
@@ -15,7 +16,7 @@ urlpatterns = patterns(
         name='start_exam'),
     url(r'poll_status/(?P<attempt_code>[-\w]+)$', poll_status,
         name='poll_status'),
-    url(r'review/$', review,
+    url(r'review/$', csrf_exempt(review),
         name='review'),
     (r'^', include(router.urls)),
 
