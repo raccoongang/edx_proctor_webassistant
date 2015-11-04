@@ -8,6 +8,7 @@
         $scope.ws_data = {};
 
         $scope.websocket_callback = function(msg){
+            console.log("ws_callback", msg, msg['examCode'], msg && msg['examCode']);
             if (msg && msg['examCode']) {
                 var idx = msg['hash'];
                 $scope.ws_data[idx] = angular.copy(msg);

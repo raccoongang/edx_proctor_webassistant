@@ -20,7 +20,6 @@
             ws.onmessage = function (e) {
                 try {
                     ws_msg = JSON.parse(e.data);
-                    console.log("recieved message", ws_msg);
                     callback(ws_msg);
                 }
                 catch (err) { }
