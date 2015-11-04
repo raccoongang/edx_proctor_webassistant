@@ -35,7 +35,6 @@
                     {{ trust('STOP') }}
                 </button>
                 <button class="btn btn-xs btn-success"
-                        ng-click="add_review()"
                         ng-if="attempt.status == 'submitted'"
                         ng-click="send_review(attempt.examCode)">
                     {{ trust('ADD_EXAM_REVIEW') }}
