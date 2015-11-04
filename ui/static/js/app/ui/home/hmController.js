@@ -5,13 +5,11 @@
         'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal',
             function ($scope, $interval, WS, Api, NgTableParams, $uibModal) {
 
-                $scope.ws_data = {};
+                $scope.ws_data = [];
 
                 $scope.websocket_callback = function (msg) {
                     if (msg && msg['examCode']) {
-                        var idx = msg['hash'];
-                        $scope.ws_data[idx] = angular.copy(msg);
-                        $scope.ws_data[idx]['status'] = '';
+                        $scope.ws_data.push(angular.copy(msg));
                         $scope.$apply();
                         console.log("added student session", $scope.ws_data);
                     }
@@ -20,7 +18,12 @@
                 WS.init('attempts', $scope.websocket_callback, true);
 
                 var update_status = function (idx, status) {
-                    $scope.ws_data[idx]['status'] = status;
+                    var obj = $.grep($scope.ws_data, function(e){
+                        return e.hash == idx;
+                    });
+                    if (obj.length > 0) {
+                        obj[0]['status'] = status;
+                    }
                 };
 
                 $scope.accept_exam_attempt = function (code) {
@@ -62,20 +65,11 @@
                     });
                 };
 
-                function list_from_obj(obj){
-                    var data = [];
-                    angular.forEach(obj, function (value, key) {
-                        data.push(value);
-                    });
-                    console.log(data);
-                    return data;
-                }
-
                 $scope.tableParams = new NgTableParams({
                     page: 1,
                     count: 10
                 }, {
-                    data: list_from_obj($scope.ws_data)
+                    data: $scope.ws_data
                 });
             }]);
 
