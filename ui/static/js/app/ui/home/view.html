@@ -20,12 +20,17 @@
                 {{ attempt.orgExtra.courseID }}
             </td>
             <td title="trust('STATUS')"
-                sortable="'orgExtra.courseID'">
-                {{ attempt.orgExtra.courseID }}
+                sortable="'status'">
+                {{ attempt.status }}
             </td>
             <td>
-                <button class="btn btn-xs" ng-click="accept_exam_attempt(attempt.examCode)">
+                <button class="btn btn-xs"
+                        ng-click="accept_exam_attempt(attempt.examCode)"
+                        ng-if="true">
                     {{ trust('START') }}
+                </button>
+                <button class="btn btn-xs" ng-click="stop_exam(attempt.examCode)">
+                    {{ trust('STOP') }}
                 </button>
                 <button class="btn btn-default btn-success" ng-click="add_review()">
                     {{ trust('ADD_EXAM_REVIEW') }}
