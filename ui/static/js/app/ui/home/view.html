@@ -26,7 +26,7 @@
             <td>
                 <button class="btn btn-xs btn-success"
                         ng-click="accept_exam_attempt(attempt.examCode)"
-                        ng-if="attempt.status !== 'started'">
+                        ng-if="attempt.status == 'ready_to_start'">
                     {{ trust('ACTIVATE') }}
                 </button>
                 <button class="btn btn-xs btn-warning"
@@ -36,7 +36,8 @@
                 </button>
                 <button class="btn btn-xs btn-success"
                         ng-click="add_review()"
-                        ng-if="attempt.status == 'submitted'">
+                        ng-if="attempt.status == 'submitted'"
+                        ng-click="send_review(attempt.examCode)">
                     {{ trust('ADD_EXAM_REVIEW') }}
                 </button>
             </td>
