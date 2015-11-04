@@ -29,7 +29,7 @@
         <div class="container-fluid" ng-view></div>
     </div>
 {% else %}
-    <p>Please <a href="/login/sso_npoed-oauth2">login</a> for start proctoring</p>
+    <p>Please <a href="{% url 'social:begin' 'sso_npoed-oauth2' %}">login</a> for start proctoring</p>
 {% endif %}
 
 </body>

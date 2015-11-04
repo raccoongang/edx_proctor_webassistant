@@ -37,12 +37,15 @@ cd edx_proctor_webassistant
 pip install -r requirements.txt 
 ```
 
-Create file `local_settings.py` in one level with settings.py and specify BOWER_PATH there. For example:
+Create file `settings_local.py` in one level with settings.py and specify BOWER_PATH there. For example:
 ```
 BOWER_PATH = '/usr/local/bin/bower'
 ```
 
 Also set `EDX_URL` in settings
+
+If EDX use course_id pattern as 'foo:bar+fooo+bar' add 
+`COURSE_ID_SLASH_SEPARATED = False` into your local_settings
 
 Then run commands
 ```

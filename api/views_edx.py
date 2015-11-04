@@ -68,7 +68,6 @@ class ExamViewSet(mixins.ListModelMixin,
     queryset = Exam.objects.all()
 
     # @csrf_exempt
-    @catch_exception
     def create(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)

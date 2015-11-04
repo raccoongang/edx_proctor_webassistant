@@ -1,4 +1,5 @@
 import re
+import json
 from dateutil import parser
 from collections import OrderedDict
 from rest_framework import serializers
@@ -24,6 +25,8 @@ class JSONSerializerField(serializers.Field):
 
     def to_internal_value(self, data):
         json_data = {}
+        if isinstance(data, basestring):
+            data = json.loads(data)
         fields = data.keys()
         fields.sort()
         try:
