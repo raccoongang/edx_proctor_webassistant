@@ -13,6 +13,14 @@
             });
         };
 
+        this.stop_exam_attempt = function(code){
+            return $http({
+                'url':  get_url('stop_exam') + code,
+                'method': 'PUT',
+                'data': JSON.stringify({})
+            });
+        };
+
         this.get_exam_status = function(code){
             return $http({
                 'url':  get_url('poll_status') + code,

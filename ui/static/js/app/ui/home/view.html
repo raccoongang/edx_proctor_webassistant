@@ -24,15 +24,19 @@
                 {{ attempt.status }}
             </td>
             <td>
-                <button class="btn btn-xs"
+                <button class="btn btn-xs btn-success"
                         ng-click="accept_exam_attempt(attempt.examCode)"
                         ng-if="true">
-                    {{ trust('START') }}
+                    {{ trust('ACTIVATE') }}
                 </button>
-                <button class="btn btn-xs" ng-click="stop_exam(attempt.examCode)">
+                <button class="btn btn-xs btn-warning"
+                        ng-click="stop_exam(attempt.examCode)"
+                        ng-if="attempt.status == 'started'">
                     {{ trust('STOP') }}
                 </button>
-                <button class="btn btn-default btn-success" ng-click="add_review()">
+                <button class="btn btn-xs btn-success"
+                        ng-click="add_review()"
+                        ng-if="attempt.status == 'submitted'">
                     {{ trust('ADD_EXAM_REVIEW') }}
                 </button>
             </td>
