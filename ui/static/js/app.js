@@ -23,7 +23,8 @@
                          $provide,
                          $httpProvider,
                          $translateProvider,
-                         $translateLocalStorageProvider
+                         $translateLocalStorageProvider,
+                         $interpolateProvider
     ) {
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
@@ -37,6 +38,9 @@
         $locationProvider.html5Mode(true);
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+        $interpolateProvider.startSymbol('{[');
+        $interpolateProvider.endSymbol(']}');
 
         // I18N
         $translateProvider.useStaticFilesLoader({

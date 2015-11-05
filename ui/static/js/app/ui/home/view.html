@@ -1,43 +1,43 @@
 <div>
     <div>
-        {{ trust('STUDENT_SESSIONS') }}
+        {[ trust('STUDENT_SESSIONS') ]}
     </div>
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
             <td title="trust('FULL_NAME')"
                 sortable="'orgExtra.firstName'">
-                {{attempt.orgExtra.firstName}}
+                {[attempt.orgExtra.firstName]}
             </td>
             <td title="trust('EXAM_START_TIME')">
                 12:35
             </td>
             <td title="trust('EXAM_CODE')"
                 sortable="'examCode'">
-                {{attempt.examCode}}
+                {[attempt.examCode]}
             </td>
             <td title="trust('COURSE_NAME')"
                 sortable="'orgExtra.courseID'">
-                {{ attempt.orgExtra.courseID }}
+                {[ attempt.orgExtra.courseID ]}
             </td>
             <td title="trust('STATUS')"
                 sortable="'status'">
-                {{ attempt.status }}
+                {[ attempt.status ]}
             </td>
             <td>
                 <button class="btn btn-xs btn-success"
                         ng-click="accept_exam_attempt(attempt.examCode)"
                         ng-if="!attempt.status">
-                    {{ trust('ACTIVATE') }}
+                    {[ trust('ACTIVATE') ]}
                 </button>
                 <button class="btn btn-xs btn-warning"
                         ng-click="stop_exam(attempt.examCode)"
                         ng-if="attempt.status == 'started'">
-                    {{ trust('STOP') }}
+                    {[ trust('STOP') ]}
                 </button>
                 <button class="btn btn-xs btn-success"
                         ng-if="attempt.status == 'submitted'"
                         ng-click="send_review(attempt.examCode)">
-                    {{ trust('ADD_EXAM_REVIEW') }}
+                    {[ trust('ADD_EXAM_REVIEW') ]}
                 </button>
             </td>
         </tr>
