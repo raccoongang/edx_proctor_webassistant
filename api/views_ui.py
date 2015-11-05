@@ -129,7 +129,7 @@ class Review(APIView):
         if response.status_code == 200:
             data['status'] = 'review_was_sent'
         else:
-            data['status'] = 'send review failed'
+            data['status'] = response.json()['reason']
 
         return Response(data=data,
                         status=response.status_code)
