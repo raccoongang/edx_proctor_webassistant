@@ -1,17 +1,22 @@
 import json
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, \
+    permission_classes
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, \
+    TokenAuthentication
 from api.web_soket_methods import send_ws_msg
 from models import Exam
 from edx_api import start_exam_request, poll_status_request, \
     send_review_request
-from api.auth import CsrfExemptSessionAuthentication
+from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
 
 
 @api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def start_exam(request, attempt_code):
     exam = get_object_or_404(Exam, exam_code=attempt_code)
 
@@ -32,6 +37,8 @@ def start_exam(request, attempt_code):
 
 
 @api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
 def poll_status(request, attempt_code):
     exam = get_object_or_404(Exam, exam_code=attempt_code)
     response = poll_status_request(exam.exam_code)
@@ -45,8 +52,10 @@ def poll_status(request, attempt_code):
 
 
 class Review(APIView):
-
-    authentication_classes = (CsrfExemptSessionAuthentication, BasicAuthentication)
+    authentication_classes = (
+    SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+    BasicAuthentication)
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         """
@@ -57,7 +66,8 @@ class Review(APIView):
         """
         passing_review_status = ['Clean', 'Rules Violation']
         failing_review_status = ['Not Reviewed', 'Suspicious']
-        exam = get_object_or_404(Exam, exam_code=request.data.get('attempt_code'))
+        exam = get_object_or_404(Exam,
+                                 exam_code=request.data.get('attempt_code'))
 
         review_payload = {
             "examDate": "",
