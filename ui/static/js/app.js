@@ -13,7 +13,8 @@
         'ngTable',
         'ui.bootstrap',
         'websocket',
-        'pascalprecht.translate'
+        'pascalprecht.translate',
+        'Auth'
     ]);
     app.config(function ($routeProvider,
                          $controllerProvider,
