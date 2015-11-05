@@ -152,6 +152,7 @@ PIPELINE_CSS = {
     'css': {
         'source_filenames': (
             'css/*.css',
+            'bootstrap/dist/css/bootstrap.min.css',
             'ng-table/dist/ng-table.css',
         ),
         'output_filename': 'css/styles.css',

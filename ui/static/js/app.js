@@ -79,7 +79,7 @@
             });
     });
 
-    app.run(['$rootScope', '$location', function ($rootScope, $location) {
+    app.run(['$rootScope', '$location', '$http', 'Auth', function ($rootScope, $location, $http, Auth) {
         var domain;
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
@@ -90,6 +90,9 @@
             ioServer: domain + (socket_port?':' + socket_port:''),
             apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
+
+        Auth.authenticate();
+        $http.defaults.headers.common['Authorization'] = 'Token ' + Auth.get_token();
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -133,7 +136,7 @@
         };
 
         var div = document.createElement('div');
-        $scope.trust = function(text) {
+        $scope.i18n = function(text) {
             var translated = translateFilter(text);
             div.innerHTML = translated;
             var ret = $sce.trustAsHtml(div.textContent);

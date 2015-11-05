@@ -53,8 +53,8 @@ def poll_status(request, attempt_code):
 
 class Review(APIView):
     authentication_classes = (
-    SsoTokenAuthentication, CsrfExemptSessionAuthentication,
-    BasicAuthentication)
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
