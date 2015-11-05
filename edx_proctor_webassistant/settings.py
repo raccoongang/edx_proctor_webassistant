@@ -151,9 +151,9 @@ PIPELINE_DISABLE_WRAPPER = True
 PIPELINE_CSS = {
     'css': {
         'source_filenames': (
-            'css/*.css',
             'bootstrap/dist/css/bootstrap.min.css',
             'ng-table/dist/ng-table.css',
+            'css/*.css',
         ),
         'output_filename': 'css/styles.css',
         'extra_context': {

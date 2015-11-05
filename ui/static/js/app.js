@@ -72,6 +72,9 @@
                             app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/backend_api.js'
                         ]);
+                    },
+                    auth: function(Auth){
+                        Auth.authenticate();
                     }
                 }
             })
@@ -80,7 +83,7 @@
             });
     });
 
-    app.run(['$rootScope', '$location', '$http', 'Auth', function ($rootScope, $location, $http, Auth) {
+    app.run(['$rootScope', '$location', function ($rootScope, $location) {
         var domain;
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
@@ -91,9 +94,6 @@
             ioServer: domain + (socket_port?':' + socket_port:''),
             apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
-
-        Auth.authenticate();
-        $http.defaults.headers.common['Authorization'] = 'Token ' + Auth.get_token();
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
