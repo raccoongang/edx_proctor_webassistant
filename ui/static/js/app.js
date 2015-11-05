@@ -14,7 +14,7 @@
         'ui.bootstrap',
         'websocket',
         'pascalprecht.translate',
-        'Auth'
+        'tokenAuth'
     ]);
     app.config(function ($routeProvider,
                          $controllerProvider,

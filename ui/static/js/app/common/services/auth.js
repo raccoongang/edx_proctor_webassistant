@@ -1,7 +1,7 @@
 'use strict';
 
 (function(){
-    angular.module('proctor', []).service('Auth', ['$cookies', function($cookies){
+    angular.module('tokenAuth', []).service('Auth', ['$cookies', function($cookies){
         var token = '';
 
         this.authenticate = function(){
