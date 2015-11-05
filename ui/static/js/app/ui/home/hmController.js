@@ -11,7 +11,6 @@
                     if (msg && msg['examCode']) {
                         $scope.ws_data.push(angular.copy(msg));
                         $scope.$apply();
-                        console.log("added student session", $scope.ws_data);
                     }
                 };
 
