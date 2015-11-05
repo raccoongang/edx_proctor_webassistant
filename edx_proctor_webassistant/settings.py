@@ -179,6 +179,7 @@ PIPELINE_JS = {
             'angular-translate-loader-static-files/angular-translate-loader-static-files.min.js',
             'js/app/app.js',
             'js/app/common/services/websocket.js',
+            'js/app/common/services/auth.js',
         ),
         'output_filename': 'js/app.js',
     }
