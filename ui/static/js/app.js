@@ -120,6 +120,10 @@
             }
         };
 
+        $scope.sso_auth = function(){
+            window.location = window.app.loginUrl;
+        };
+
         $scope.logout = function(){
             window.location = window.app.logoutUrl;
         };

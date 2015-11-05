@@ -18,7 +18,8 @@
     <script>
         window.app = {
             rootPath : "{% static 'js/app/' %}",
-            logoutUrl : "{% url 'logout' %}"
+            logoutUrl : "{% url 'logout' %}",
+            loginUrl : "{% url 'social:begin' 'sso_npoed-oauth2' %}"
         }
     </script>
 </head>
@@ -29,7 +30,13 @@
         <div class="container-fluid" ng-view></div>
     </div>
 {% else %}
-    <p>Please <a href="{% url 'social:begin' 'sso_npoed-oauth2' %}">login</a> for start proctoring</p>
+    <div class="container text-center">
+        <h1>
+            <button class="btn btn-default" ng-click="sso_auth()">
+                {{ trust('AUTHORIZE') }}
+            </button>
+        </h1>
+    </div>
 {% endif %}
 
 </body>
