@@ -1,4 +1,5 @@
 import traceback
+import datetime
 
 
 def catch_exception(f):
@@ -8,3 +9,9 @@ def catch_exception(f):
         except:
             traceback.print_exc()
     return wrapper
+
+
+def date_handler(obj):
+    return obj.isoformat() if isinstance(obj, datetime.datetime) \
+                              or isinstance(obj, datetime.date) \
+        else None
