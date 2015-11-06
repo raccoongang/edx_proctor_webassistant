@@ -19,6 +19,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from ui.views import Index
+from social.utils import setting_name
+from social.apps.django_app.views import complete
+from edx_proctor_webassistant.decorators import set_token_cookie
+
+extra = getattr(settings, setting_name('TRAILING_SLASH'), True) and '/' or ''
 
 urlpatterns = patterns(
     '',
@@ -26,6 +31,8 @@ urlpatterns = patterns(
     url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
+    url(r'^complete/(?P<backend>[^/]+){0}$'.format(extra), set_token_cookie(complete),
+        name='complete'),
     url('', include('social.apps.django_app.urls', namespace='social')),
     url(
         r'^logout/$',
