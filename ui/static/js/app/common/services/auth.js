@@ -1,10 +1,12 @@
 'use strict';
 
 (function(){
-    angular.module('tokenAuth', []).service('Auth', ['$cookies', function($cookies){
+    var module = angular.module('tokenAuth', []);
+    module.service('Auth', ['$cookies', function($cookies){
         var token = '';
 
         this.authenticate = function(){
+            console.log($cookies);
             if ($cookies.authenticated_token !== undefined){
                 token = $cookies.authenticated_token;
                 $cookies.remove('authenticated_token');

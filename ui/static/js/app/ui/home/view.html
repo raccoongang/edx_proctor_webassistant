@@ -1,25 +1,25 @@
 <div>
     <div>
-        {[ trust('STUDENT_SESSIONS') ]}
+        {[ i18n('STUDENT_SESSIONS') ]}
     </div>
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
-            <td title="trust('FULL_NAME')"
+            <td title="i18n('FULL_NAME')"
                 sortable="'orgExtra.firstName'">
                 {[attempt.orgExtra.firstName]}
             </td>
-            <td title="trust('EXAM_START_TIME')">
+            <td title="i18n('EXAM_START_TIME')">
                 12:35
             </td>
-            <td title="trust('EXAM_CODE')"
+            <td title="i18n('EXAM_CODE')"
                 sortable="'examCode'">
                 {[attempt.examCode]}
             </td>
-            <td title="trust('COURSE_NAME')"
+            <td title="i18n('COURSE_NAME')"
                 sortable="'orgExtra.courseID'">
                 {[ attempt.orgExtra.courseID ]}
             </td>
-            <td title="trust('STATUS')"
+            <td title="i18n('STATUS')"
                 sortable="'status'">
                 {[ attempt.status ]}
             </td>
@@ -27,17 +27,17 @@
                 <button class="btn btn-xs btn-success"
                         ng-click="accept_exam_attempt(attempt.examCode)"
                         ng-if="!attempt.status">
-                    {[ trust('ACTIVATE') ]}
+                    {[ i18n('ACTIVATE') ]}
                 </button>
                 <button class="btn btn-xs btn-warning"
                         ng-click="stop_exam(attempt.examCode)"
                         ng-if="attempt.status == 'started'">
-                    {[ trust('STOP') ]}
+                    {[ i18n('STOP') ]}
                 </button>
                 <button class="btn btn-xs btn-success"
                         ng-if="attempt.status == 'submitted'"
                         ng-click="send_review(attempt.examCode)">
-                    {[ trust('ADD_EXAM_REVIEW') ]}
+                    {[ i18n('ADD_EXAM_REVIEW') ]}
                 </button>
             </td>
         </tr>
