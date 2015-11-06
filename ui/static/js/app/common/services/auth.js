@@ -10,6 +10,7 @@
             if (c !== undefined){
                 token = c;
                 $cookies.remove('authenticated_token');
+                console.log("token = ", token);
             }
             console.log($cookies.getAll());
             //else {
