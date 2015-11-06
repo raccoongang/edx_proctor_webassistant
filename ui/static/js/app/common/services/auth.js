@@ -6,11 +6,12 @@
         var token = '';
 
         this.authenticate = function(){
-            console.log($cookies);
-            if ($cookies.authenticated_token !== undefined){
-                token = $cookies.authenticated_token;
+            var c = $cookies.get('authenticated_token');
+            if (c !== undefined){
+                token = c;
                 $cookies.remove('authenticated_token');
             }
+            console.log($cookies.getAll());
             //else {
             //    var cookies = $cookies.getAll();
             //    angular.forEach(cookies, function (v, k) {
