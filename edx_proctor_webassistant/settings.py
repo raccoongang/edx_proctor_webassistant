@@ -156,7 +156,7 @@ PIPELINE_CSS = {
             'ng-table/dist/ng-table.css',
             'css/*.css',
         ),
-        'output_filename': 'css/styles.css',
+        'output_filename': 'styles.css',
         'extra_context': {
             'media': 'screen,projection',
         },
@@ -182,7 +182,7 @@ PIPELINE_JS = {
             'js/app/common/services/websocket.js',
             'js/app/common/services/auth.js',
         ),
-        'output_filename': 'js/app.js',
+        'output_filename': 'app.js',
     }
 }
 
