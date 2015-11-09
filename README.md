@@ -56,7 +56,7 @@ python manage.py collectstatic
 
 ## SSO authorization setup
 
-- Create new client i SSO
+- Create new client in SSO admin panel. Set redirect uri as `http://<domain>/complete/sso_npoed-oauth2/`
 - Enter client's KEY and SECRET in web assistant's settings:
 ```
     SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
@@ -67,6 +67,10 @@ python manage.py collectstatic
 ```
     SSO_NPOED_URL = "http://<SSO url>"
 ```
+- Set up an `AUTH_SESSION_COOKIE_DOMAIN`. It must be proctor domain address without subdomain. For example `.yourdomain.com` for `proctor.yourdomain.com`
+
+- By default webassistant supports slash separated course id (for example `org/course/course_run`). If course id pattern looks like `course-v1:org+course+course_run` set `COURSE_ID_SLASH_SEPARATED = False` 
+
 
 ## Setup uWSGI
 
