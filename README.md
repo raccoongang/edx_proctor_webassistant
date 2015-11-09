@@ -44,8 +44,8 @@ BOWER_PATH = '/usr/local/bin/bower'
 
 Also set `EDX_URL` in settings
 
-If EDX use course_id pattern as 'foo:bar+fooo+bar' add 
-`COURSE_ID_SLASH_SEPARATED = False` into your local_settings
+`COURSE_ID_SLASH_SEPARATED = False` 
+By default webassistant supports slash separated course id (for example `org/course/course_run`). If course id pattern in EDX looks like `foo:org+course+course_run` set `COURSE_ID_SLASH_SEPARATED = False` into your local_settings
 
 Then run commands
 ```
@@ -68,8 +68,6 @@ python manage.py collectstatic
     SSO_NPOED_URL = "http://<SSO url>"
 ```
 - Set up an `AUTH_SESSION_COOKIE_DOMAIN`. It must be proctor domain address without subdomain. For example `.yourdomain.com` for `proctor.yourdomain.com`
-
-- By default webassistant supports slash separated course id (for example `org/course/course_run`). If course id pattern looks like `course-v1:org+course+course_run` set `COURSE_ID_SLASH_SEPARATED = False` 
 
 
 ## Setup uWSGI
