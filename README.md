@@ -44,7 +44,6 @@ BOWER_PATH = '/usr/local/bin/bower'
 
 Also set `EDX_URL` in settings
 
-`COURSE_ID_SLASH_SEPARATED = False` 
 By default webassistant supports slash separated course id (for example `org/course/course_run`). If course id pattern in EDX looks like `foo:org+course+course_run` set `COURSE_ID_SLASH_SEPARATED = False` into your local_settings
 
 Then run commands
