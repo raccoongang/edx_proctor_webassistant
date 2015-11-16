@@ -148,7 +148,6 @@ BOWER_INSTALLED_APPS = (
 # Pipeline
 # PIPELINE_ENABLED = True
 PIPELINE_DISABLE_WRAPPER = True
-PIPELINE_YUGLIFY_BINARY = '/bin/true'
 PIPELINE_CSS = {
     'css': {
         'source_filenames': (
