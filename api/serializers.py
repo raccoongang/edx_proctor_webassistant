@@ -29,12 +29,12 @@ class JSONSerializerField(serializers.Field):
             data = json.loads(data)
         try:
             for field_name in self.FIELD_LIST:
-                if field_name not in data:
+                if field_name in data:
+                    json_data[field_name] = data[field_name]
+                else:
                     raise serializers.ValidationError(
                         _(
                             "orgExtra fields list incorrect. Missed %s" % field_name))
-            else:
-                json_data = data
         except ValueError:
             raise serializers.ValidationError(
                 _("orgExtra field value error. Must be json"))
