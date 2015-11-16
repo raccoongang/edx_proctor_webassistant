@@ -57,8 +57,8 @@ class ExamViewSet(mixins.ListModelMixin,
             "examStartDate": "2015-10-10 11:00",
             "examEndDate": "2015-10-10 15:00",
             "noOfStudents": 1,
-            "examId": "id",
-            "courseId": "edx_org/edx_course/edx_courserun",
+            "examID": "id",
+            "courseID": "edx_org/edx_course/edx_courserun",
             "firstName": "first_name",
             "lastName": "last_name"
         }

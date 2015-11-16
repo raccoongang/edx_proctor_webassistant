@@ -27,12 +27,12 @@ class JSONSerializerField(serializers.Field):
         json_data = {}
         if isinstance(data, basestring):
             data = json.loads(data)
-        fields = data.keys()
-        fields.sort()
         try:
-            if cmp(fields, self.FIELD_LIST) != 0:
-                raise serializers.ValidationError(
-                    _("orgExtra fields list incorrect"))
+            for field_name in self.FIELD_LIST:
+                if field_name not in data:
+                    raise serializers.ValidationError(
+                        _(
+                            "orgExtra fields list incorrect. Missed %s" % field_name))
             else:
                 json_data = data
         except ValueError:
