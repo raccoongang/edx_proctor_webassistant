@@ -86,8 +86,8 @@ class ExamViewSetTestCase(TestCase):
                 "examStartDate": "2015-10-10 11:00",
                 "examEndDate": "2015-10-10 15:00",
                 "noOfStudents": 1,
-                "examId": "id",
-                "courseId": "app:org1+course1+run1",
+                "examID": "id",
+                "courseID": "org1/course1/run1",
                 "firstName": "first_name",
                 "lastName": "last_name"
             }'''

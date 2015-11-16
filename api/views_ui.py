@@ -138,7 +138,7 @@ class Review(APIView):
         review_payload = {
             "examDate": "",
             "examProcessingStatus": "Review Completed",
-            "examTakerEmail": "",
+            "examTakerEmail": " ",
             "examTakerFirstName": "John",
             "examTakerLastName": "Doe",
             "keySetVersion": "",
