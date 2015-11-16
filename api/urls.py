@@ -1,11 +1,13 @@
 from django.conf.urls import include, url, patterns
 from rest_framework.routers import DefaultRouter
 from views_edx import ExamViewSet, APIRoot
-from views_ui import start_exam, poll_status, Review
+from views_ui import start_exam, poll_status, Review, EventSessionViewSet
 
 router = DefaultRouter()
 router.register(r'exam_register', ExamViewSet,
                 base_name="exam-register")
+router.register(r'event_session', EventSessionViewSet,
+                base_name="event-session")
 #
 urlpatterns = patterns(
     '',

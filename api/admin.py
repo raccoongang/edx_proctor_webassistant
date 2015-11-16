@@ -1,14 +1,14 @@
 from django.contrib import admin
-from api.models import Exam, Permission, Student
+from api import models
 
 
 class ExamAdmin(admin.ModelAdmin):
     list_display = ('exam_code', 'organization', 'exam_id', 'course_id',
                     'first_name', 'last_name', 'exam_status',
                     'exam_start_date', 'exam_end_date')
-    list_filter = ('exam_status', 'proctor')
+    list_filter = ('exam_status',)
     search_fields = ['exam_code', 'exam_id', 'first_name', 'last_name',
-                     'course_id', 'proctor']
+                     'course_id']
 
     fieldsets = (
         (None, {
@@ -25,9 +25,18 @@ class ExamAdmin(admin.ModelAdmin):
         ('Additional', {
             'fields': (
                 'course_organization', 'course_identify', 'course_run',
-                'proctor', 'exam_status')
+                'exam_status')
         }),
     )
+
+
+class EventSessionAdmin(admin.ModelAdmin):
+    list_display = (
+        'testing_center', 'course_id', 'course_event_id', 'proctor', 'status',
+        'start_date', 'end_date')
+    list_filter = ('proctor', 'status')
+    search_fields = (
+    'testing_center', 'course_id', 'course_event_id', 'start_date', 'end_date')
 
 
 class PermissionAdmin(admin.ModelAdmin):
@@ -41,6 +50,7 @@ class StudentAdmin(admin.ModelAdmin):
     search_fields = ['sso_id', 'email', 'first_name', 'last_name']
 
 
-admin.site.register(Exam, ExamAdmin)
-admin.site.register(Permission, PermissionAdmin)
-admin.site.register(Student, StudentAdmin)
+admin.site.register(models.Exam, ExamAdmin)
+admin.site.register(models.EventSession, EventSessionAdmin)
+admin.site.register(models.Permission, PermissionAdmin)
+admin.site.register(models.Student, StudentAdmin)

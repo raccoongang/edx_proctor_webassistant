@@ -27,6 +27,7 @@ class APIRoot(APIView):
                 'review',
                 request=request
             ),
+            "event_session": reverse('event-session-list', request=request),
         }
         return Response(result)
 

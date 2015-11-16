@@ -8,7 +8,7 @@ from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 
-from models import Exam
+from models import Exam, EventSession
 
 
 class JSONSerializerField(serializers.Field):
@@ -122,3 +122,11 @@ class ExamSerializer(serializers.ModelSerializer):
         except ValidationError as e:
             raise serializers.ValidationError(e.message_dict)
         return super(ExamSerializer, self).validate(data)
+
+
+class EventSessionSerializer(serializers.ModelSerializer):
+    start_date = serializers.DateTimeField(read_only=True)
+    end_date = serializers.DateTimeField(read_only=True)
+
+    class Meta:
+        model = EventSession

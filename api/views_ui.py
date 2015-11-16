@@ -1,14 +1,18 @@
 import json
+from datetime import datetime
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
+from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam
+from models import Exam, EventSession
+from serializers import EventSessionSerializer
 from edx_api import start_exam_request, poll_status_request, \
     send_review_request
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
@@ -49,6 +53,68 @@ def poll_status(request, attempt_code):
     }
     send_ws_msg(data)
     return Response(data=data, status=response.status_code)
+
+
+class EventSessionViewSet(mixins.ListModelMixin,
+                          mixins.CreateModelMixin,
+                          mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          viewsets.GenericViewSet):
+    """
+    Event managment API
+
+    For **create** send `testing_center`,`course_id`,`course_event_id`
+    Other fields filling automaticaly
+
+    You can **update** only `status` and `notify` fields
+    """
+    serializer_class = EventSessionSerializer
+    queryset = EventSession.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        fields_for_create = ['testing_center', 'course_id', 'course_event_id']
+        data = {}
+        for field in fields_for_create:
+            data[field] = request.data.get(field)
+        data['proctor'] = request.user.pk
+        data['status'] = EventSession.IN_PROGRESS
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        send_ws_msg(data)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': data[api_settings.URL_FIELD_NAME]}
+        except (TypeError, KeyError):
+            return {}
+
+    def update(self, request, *args, **kwargs):
+
+        instance = self.get_object()
+        fields_for_update = ['status', 'notify']
+        data = {}
+
+        for field in fields_for_update:
+            data[field] = request.data.get(field)
+        change_end_date = instance.status == EventSession.IN_PROGRESS and \
+                          data.get('status') == EventSession.FINISHED
+
+        serializer = self.get_serializer(instance, data=data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if change_end_date:
+            event_session = EventSession.objects.get(pk=instance.pk)
+            event_session.end_date = datetime.now()
+            event_session.save()
+            serializer = self.get_serializer(event_session)
+        return Response(serializer.data)
 
 
 class Review(APIView):

@@ -74,7 +74,6 @@ class Exam(models.Model):
         null=True,
         db_index=True
     )
-    proctor = models.ForeignKey(User,        blank=True,  null=True)
     exam_status = models.CharField(
         max_length=8,
         choices=EXAM_STATUS_CHOICES,
@@ -98,6 +97,29 @@ class Exam(models.Model):
             return course_id.split('/')
         else:
             return course_id.split(':')[-1].split('+')
+
+
+class EventSession(models.Model):
+    IN_PROGRESS = 'in_progress'
+    FINISHED = 'finished'
+
+    SESSION_STATUS_CHOICES = {
+        (IN_PROGRESS, _("In progress")),
+        (FINISHED, _("Finished")),
+    }
+    testing_center = models.CharField(max_length=64)
+    course_id = models.CharField(max_length=128, blank=True, null=True)
+    course_event_id = models.CharField(max_length=128, blank=True, null=True)
+    proctor = models.ForeignKey(User)
+    status = models.CharField(
+        max_length=11,
+        choices=SESSION_STATUS_CHOICES,
+        default=IN_PROGRESS
+    )
+    notify = models.TextField(blank=True, null=True)
+    start_date = models.DateTimeField(auto_now_add=True, blank=True)
+    end_date = models.DateTimeField(null=True, blank=True)
+
 
 class Permission(models.Model):
     TYPE_ORG = 'edxorg'
