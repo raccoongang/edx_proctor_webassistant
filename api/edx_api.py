@@ -21,3 +21,10 @@ def send_review_request(payload):
         settings.EDX_URL + "api/edx_proctoring/proctoring_review_callback/",
         data=json.dumps(payload, default=date_handler)
     )
+
+
+def get_proctored_exams(payload):
+    return requests.post(
+        settings.EDX_URL + "api/edx_proctoring/proctoring_review_callback/",
+        data=json.dumps(payload, default=date_handler)
+    )
