@@ -78,7 +78,6 @@ class EventSessionViewSet(mixins.ListModelMixin,
             data[field] = request.data.get(field)
         data['proctor'] = request.user.pk
         data['status'] = EventSession.IN_PROGRESS
-
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

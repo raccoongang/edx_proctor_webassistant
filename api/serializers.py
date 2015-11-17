@@ -125,6 +125,7 @@ class ExamSerializer(serializers.ModelSerializer):
 
 
 class EventSessionSerializer(serializers.ModelSerializer):
+    hash_key = serializers.CharField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
     end_date = serializers.DateTimeField(read_only=True)
 

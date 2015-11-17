@@ -1,8 +1,8 @@
 import hashlib
 import operator
-
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
@@ -116,9 +116,23 @@ class EventSession(models.Model):
         choices=SESSION_STATUS_CHOICES,
         default=IN_PROGRESS
     )
+    hash_key = models.CharField(max_length=128, db_index=True, blank=True, null=True)
     notify = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+
+
+    @staticmethod
+    def post_save(sender, instance,created, **kwargs):
+        if created:
+            instance.hash_key = hashlib.md5(
+                str(instance.testing_center) + str(instance.course_id) + str(
+                    instance.course_event_id) + str(instance.proctor.pk) + str(
+                    instance.start_date)).hexdigest()
+            instance.save()
+
+
+post_save.connect(EventSession.post_save, EventSession, dispatch_uid='add_hash')
 
 
 class Permission(models.Model):

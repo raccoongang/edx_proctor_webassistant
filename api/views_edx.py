@@ -3,10 +3,10 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils.translation import ugettext_lazy as _
 from api.web_soket_methods import send_ws_msg
 from serializers import ExamSerializer
-from api.utils import catch_exception
-from models import Exam
+from models import Exam, EventSession
 
 
 class APIRoot(APIView):
@@ -74,7 +74,15 @@ class ExamViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        data['hash'] = serializer.instance.generate_key()
+        try:
+            event = EventSession.objects.get(
+                course_id=data['course_id'],
+                course_event_id=data['exam_id']
+            )
+            data['hash'] = event.hash_key
+        except EventSession.DoesNotExist:
+            return Response({'error': _("No event was found. Forbidden")},
+                            status=status.HTTP_403_FORBIDDEN)
         send_ws_msg(data)
         headers = self.get_success_headers(serializer.data)
         return Response({'ID': data['hash']},

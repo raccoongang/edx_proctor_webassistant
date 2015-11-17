@@ -37,6 +37,8 @@ class EventSessionAdmin(admin.ModelAdmin):
     list_filter = ('proctor', 'status')
     search_fields = (
     'testing_center', 'course_id', 'course_event_id', 'start_date', 'end_date')
+    readonly_fields = ('hash_key', 'start_date', 'end_date')
+
 
 
 class PermissionAdmin(admin.ModelAdmin):
