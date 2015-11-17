@@ -1,8 +1,10 @@
 import json
+from datetime import datetime
+from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory
-from api.models import Exam
+from api.models import Exam, EventSession
 from api.views_edx import APIRoot, ExamViewSet
 from mock import patch
 
@@ -34,8 +36,20 @@ class ExamViewSetTestCase(TestCase):
         exam.first_name = 'firstName'
         exam.last_name = 'lastName'
         exam.exam_id = '1'
+        exam.course_id = 'org1/course1/run1'
         exam.save()
         self.exam = exam
+        self.event = EventSession()
+        self.event.testing_center = 'testing center'
+        self.event.course_id = exam.course_id
+        self.event.course_event_id = exam.exam_id
+        self.event.status = EventSession.IN_PROGRESS
+        self.event.proctor = User.objects.create_user(
+            'test',
+            'test@test.com',
+            'password'
+        )
+        self.event.save()
 
     def test_get_list_exams(self):
         factory = APIRequestFactory()
@@ -86,8 +100,8 @@ class ExamViewSetTestCase(TestCase):
                 "examStartDate": "2015-10-10 11:00",
                 "examEndDate": "2015-10-10 15:00",
                 "noOfStudents": 1,
-                "examID": "id",
-                "courseID": "org1/course1/run1",
+                "examID": "wrong_exam",
+                "courseID": "wrong/course/id",
                 "firstName": "first_name",
                 "lastName": "last_name"
             }'''
@@ -100,7 +114,24 @@ class ExamViewSetTestCase(TestCase):
             view = ExamViewSet.as_view({'post': 'create'})
             response = view(request)
             response.render()
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+            exam_data['orgExtra'] = '''{
+                "examStartDate": "2015-10-10 11:00",
+                "examEndDate": "2015-10-10 15:00",
+                "noOfStudents": 1,
+                "examID": "1",
+                "courseID": "org1/course1/run1",
+                "firstName": "first_name",
+                "lastName": "last_name"
+            }'''
+            request = factory.post(
+                '/api/exam_register/',
+                data=exam_data,
+            )
+            view = ExamViewSet.as_view({'post': 'create'})
+            response = view(request)
+            response.render()
             data = json.loads(response.content)
             self.assertEqual(type(data), dict)
             exam = Exam.objects.get(exam_code=exam_data['examCode'])
@@ -122,4 +153,5 @@ class ExamViewSetTestCase(TestCase):
                 [exam.course_organization, exam.course_identify,
                  exam.course_run]
             )
+            self.assertEqual(data['ID'], self.event.hash_key)
             self.assertEqual(Exam.objects.count(), 2)
