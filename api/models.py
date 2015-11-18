@@ -55,6 +55,9 @@ class Exam(models.Model):
     course_id = models.CharField(max_length=64, blank=True, null=True)
     first_name = models.CharField(max_length=60, blank=True, null=True)
     last_name = models.CharField(max_length=60, blank=True, null=True)
+    email = models.EmailField(max_length=60, blank=True, null=True)
+    user_id = models.IntegerField(blank=True, null=True)
+    username = models.CharField(max_length=50, blank=True, null=True)
     # own fields
     course_organization = models.CharField(
         max_length=64,
@@ -87,10 +90,9 @@ class Exam(models.Model):
         generate key for edx
         :return: string
         '''
-        return hashlib.md5(
-            str(self.exam_code) + str(self.first_name) + str(
-                self.last_name) + str(self.exam_id)
-        ).hexdigest()
+        unicode_str = self.exam_code + self.first_name + self.last_name + str(self.exam_id)
+        str_to_hash = unicode_str.decode('utf-8')
+        return hashlib.md5(str_to_hash).hexdigest()
 
     @classmethod
     def get_course_data(cls, course_id):

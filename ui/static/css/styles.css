@@ -17,6 +17,14 @@
     height: 31px;
 }
 
+.fc-margin-item{
+    margin-bottom: 15px;
+}
+
+.logo-small img{
+    height: 45px;
+}
+
 .navbar {
     min-height: 80px;
 }

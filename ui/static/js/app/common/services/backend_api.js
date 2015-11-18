@@ -42,5 +42,19 @@
                 data: JSON.stringify({attempt_code: code})
             });
         };
+
+        this.get_session_courses = function(){
+            return generic_api_call({
+                'url':  get_url('get_session_courses'),
+                'method': 'GET'
+            });
+        };
+
+        this.get_session_exams = function(){
+            return generic_api_call({
+                'url':  get_url('get_session_exams'),
+                'method': 'GET'
+            });
+        };
     }]);
 })();

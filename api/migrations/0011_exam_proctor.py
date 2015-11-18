@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0009_eventsession_hash_key'),
+        ('api', '0010_auto_20151118_0010'),
     ]
 
     operations = [

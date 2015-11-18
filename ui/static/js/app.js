@@ -73,8 +73,23 @@
                             app.path + 'common/services/backend_api.js'
                         ]);
                     },
-                    auth: function(Auth){
+                    auth: function($cookies, Auth){
                         Auth.authenticate();
+                        if (Auth.get_token() && $cookies.get('authenticated_token') == undefined){
+
+                        }
+                    }
+                }
+            })
+            .when('/session', {
+                templateUrl: app.path + 'ui/sessions/view.html',
+                controller: 'SessionCtrl',
+                resolve: {
+                    deps: function(resolver){
+                        return resolver.load_deps([
+                            app.path + 'ui/sessions/rsController.js',
+                            app.path + 'common/services/backend_api.js'
+                        ]);
                     }
                 }
             })

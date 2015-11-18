@@ -15,12 +15,15 @@ class JSONSerializerField(serializers.Field):
     """ Serializer for orgExtraField"""
     FIELD_LIST = [
         u'courseID',
+        u'email',
         u'examEndDate',
         u'examID',
         u'examStartDate',
         u'firstName',
         u'lastName',
         u'noOfStudents',
+        u'userID',
+        u'username'
     ]
 
     def to_internal_value(self, data):
