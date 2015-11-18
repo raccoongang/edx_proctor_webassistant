@@ -89,10 +89,9 @@ class Exam(models.Model):
         generate key for edx
         :return: string
         '''
-        return hashlib.md5(
-            str(self.exam_code) + str(self.first_name) + str(
-                self.last_name) + str(self.exam_id)
-        ).hexdigest()
+        unicode_str = self.exam_code + self.first_name + self.last_name + self.exam_id
+        str_to_hash = unicode_str.decode('utf-8')
+        return hashlib.md5(str_to_hash).hexdigest()
 
     @classmethod
     def get_course_data(cls, course_id):
