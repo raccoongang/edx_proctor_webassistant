@@ -55,6 +55,9 @@ class Exam(models.Model):
     course_id = models.CharField(max_length=64, blank=True, null=True)
     first_name = models.CharField(max_length=60, blank=True, null=True)
     last_name = models.CharField(max_length=60, blank=True, null=True)
+    email = models.EmailField(max_length=60, blank=True, null=True)
+    user_id = models.IntegerField(blank=True, null=True)
+    username = models.CharField(max_length=50, blank=True, null=True)
     # own fields
     course_organization = models.CharField(
         max_length=64,
