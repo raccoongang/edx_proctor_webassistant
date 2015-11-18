@@ -7,7 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from api.web_soket_methods import send_ws_msg
 from serializers import ExamSerializer
 from models import Exam, EventSession
-from api.utils import catch_exception
 
 
 class APIRoot(APIView):
@@ -70,7 +69,6 @@ class ExamViewSet(mixins.ListModelMixin,
     queryset = Exam.objects.all()
 
     # @csrf_exempt
-    @catch_exception
     def create(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)
@@ -94,7 +92,6 @@ class ExamViewSet(mixins.ListModelMixin,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
 
-    @catch_exception
     def perform_create(self, serializer):
         serializer.save()
 

@@ -10,8 +10,6 @@ from django.utils.translation import ugettext as _
 
 from models import Exam, EventSession
 
-from api.utils import catch_exception
-
 
 class JSONSerializerField(serializers.Field):
     """ Serializer for orgExtraField"""
@@ -28,7 +26,6 @@ class JSONSerializerField(serializers.Field):
         u'username'
     ]
 
-    @catch_exception
     def to_internal_value(self, data):
         json_data = {}
         if isinstance(data, basestring):
@@ -46,7 +43,6 @@ class JSONSerializerField(serializers.Field):
                 _("orgExtra field value error. Must be json"))
         return json_data
 
-    @catch_exception
     def to_representation(self, instance):
         """
         Field value -> String.
