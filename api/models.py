@@ -89,7 +89,7 @@ class Exam(models.Model):
         generate key for edx
         :return: string
         '''
-        unicode_str = self.exam_code + self.first_name + self.last_name + self.exam_id
+        unicode_str = self.exam_code + self.first_name + self.last_name + str(self.exam_id)
         str_to_hash = unicode_str.decode('utf-8')
         return hashlib.md5(str_to_hash).hexdigest()
 
