@@ -74,6 +74,7 @@ class Exam(models.Model):
         null=True,
         db_index=True
     )
+    proctor = models.ForeignKey(User,        blank=True,  null=True)
     exam_status = models.CharField(
         max_length=8,
         choices=EXAM_STATUS_CHOICES,

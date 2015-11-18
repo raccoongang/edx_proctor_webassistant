@@ -208,3 +208,25 @@ class Review(APIView):
 
         return Response(data=data,
                         status=response.status_code)
+
+
+@api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
+def bulk_start_exams(request, exam_codes):
+    """
+    Start list of exams by exam codes.
+
+    :param request:
+    :param exam_codes: comaseparated list of exam codes
+    :return:
+    """
+
+    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
+    response = bulk_start_exams_request(exam_list)
+    status = json.loads(response.content)
+    data = {
+        'status': status.get('status')
+    }
+    send_ws_msg(data)
+    return Response(data=data, status=response.status_code)
