@@ -163,7 +163,7 @@
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
-        $scope.logout = function(){
+        $scope.session = function(){
             $location.path('/session');
         };
     }]);
