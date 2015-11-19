@@ -1,7 +1,7 @@
 (function(){
     angular.module('sessionEvents', [])
         .service('TestSession', function(){
-            var Session = {};
+            var Session = null;
 
             this.registerSession = function(){
 

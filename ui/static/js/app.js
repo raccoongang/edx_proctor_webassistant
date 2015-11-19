@@ -50,6 +50,7 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
+        $translateProvider.preferredLanguage('ru');
         $translateProvider.preferredLanguage('en');
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
@@ -74,8 +75,11 @@
                             app.path + 'ui/home/hmDirectives.js'
                         ]);
                     },
-                    auth: function($cookies, Auth){
+                    before: function($cookies, $location, Auth, TestSession){
                         Auth.authenticate();
+                        if (!TestSession.getSession()){
+                            $location.path('/session');
+                        }
                     }
                 }
             })
