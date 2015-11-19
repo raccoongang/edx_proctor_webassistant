@@ -31,7 +31,10 @@
             </label>
         </div>
         <div class="col-xs-8">
-            <input type="text" class="form-control" ng-model="session.exam">
+            <select class="form-control"
+                    ng-model="session.exam"
+                    ng-options="item.id as item.exam_name for item in exams">
+            </select>
         </div>
         <div class="clearfix"></div>
     </div>
