@@ -229,7 +229,12 @@ class BulkReview(APIView):
 @authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def get_exams_proctored(request):
-    return get_proctored_exams()
+    response = get_proctored_exams()
+    return Response(
+        status=response.status_code,
+        data=json.loads(response.content),
+        headers=response.headers
+    )
 
 
 @api_view(['GET'])
