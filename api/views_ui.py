@@ -72,6 +72,9 @@ class EventSessionViewSet(mixins.ListModelMixin,
     """
     serializer_class = EventSessionSerializer
     queryset = EventSession.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
 
     def create(self, request, *args, **kwargs):
         fields_for_create = ['testing_center', 'course_id', 'course_event_id']
