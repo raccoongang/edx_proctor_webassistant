@@ -181,6 +181,7 @@ PIPELINE_JS = {
             'js/app/common/services/websocket.js',
             'js/app/common/services/auth.js',
             'js/app/common/services/backend_api.js',
+            'js/app/common/services/session.js',
         ),
         'output_filename': 'js/app.js',
     }

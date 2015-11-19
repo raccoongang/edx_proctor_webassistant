@@ -15,7 +15,8 @@
         'websocket',
         'pascalprecht.translate',
         'tokenAuth',
-        'proctorApi'
+        'proctorApi',
+        'sessionEvents'
     ]);
     app.config(function ($routeProvider,
                          $controllerProvider,
@@ -75,9 +76,6 @@
                     },
                     auth: function($cookies, Auth){
                         Auth.authenticate();
-                        if (Auth.get_token() && $cookies.get('authenticated_token') == undefined){
-
-                        }
                     }
                 }
             })
@@ -153,11 +151,17 @@
             window.location = window.app.logoutUrl;
         };
 
+        var language_cache = {};
+
         var div = document.createElement('div');
         $scope.i18n = function(text) {
+            if (language_cache[text] !== undefined) {
+                return language_cache[text];
+            }
             var translated = translateFilter(text);
             div.innerHTML = translated;
             var ret = $sce.trustAsHtml(div.textContent);
+            language_cache[text] = ret;
             return ret == translated?translated:ret;
         };
     }]);
