@@ -2,6 +2,7 @@ import json
 import requests
 from django.conf import settings
 from api.utils import date_handler
+from api.utils import catch_exception
 
 
 def start_exam_request(attempt_code):
@@ -22,9 +23,9 @@ def send_review_request(payload):
         data=json.dumps(payload, default=date_handler)
     )
 
-
+@catch_exception
 def get_proctored_exams():
-    r = requests.post(
+    r = requests.get(
         settings.EDX_URL + "api/extended/courses/proctored"
     )
     r.headers.update({'X-Edx-Api-Key': settings.EDX_API_KEY})
