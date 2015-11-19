@@ -8,11 +8,11 @@
                     url: $rootScope.apiConf.apiServer + '/event_session/',
                     method: 'POST',
                     headers: {Authorization: "Token " + Auth.get_token()},
-                    data: {
+                    data: JSON.stringify({
                         testing_center: testing_center,
                         course_id: course_id,
                         course_event_id: exam_id
-                    }
+                    })
                 }).then(function(data){
                     console.log(data);
                 });
