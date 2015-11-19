@@ -9,7 +9,7 @@
                 c_list.push({name: val.name, id: val.id});
             });
             $scope.courses = c_list;
-            $scope.session.course = c_list[0];
+            $scope.session.course = c_list[0].id;
         }
 
         $scope.$watch('session.course', function(val, old){
@@ -19,7 +19,9 @@
                 });
                 if (e_list.length){
                     $scope.exams = e_list[0].proctored_exams;
-                    $scope.session.exam = e_list[0].proctored_exams[0].id;
+                    if ($scope.exams.length) {
+                        $scope.session.exam = e_list[0].proctored_exams[0].id;
+                    }
                 }
             }
         });
