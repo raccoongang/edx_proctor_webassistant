@@ -27,7 +27,11 @@
         });
 
         $scope.start_session = function(){
-            TestSession.registerSession();
+            TestSession.registerSession(
+                $scope.session.testing_centre,
+                $scope.session.course,
+                $scope.session.exam
+            );
         };
     });
 })();
