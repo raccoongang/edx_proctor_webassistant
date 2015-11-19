@@ -31,7 +31,6 @@ def get_proctored_exams():
     return r
 
 
-
 def bulk_start_exams_request(exam_list):
     result = {}
     for exam in exam_list:
@@ -49,5 +48,6 @@ def bulk_send_review_request(payload_list):
             settings.EDX_URL + "api/edx_proctoring/proctoring_review_callback/",
             data=json.dumps(payload, default=date_handler)
         )
-        result[payload_list["examMetaData"]["examCode"]] = json.loads(response.content)
+        result[payload_list["examMetaData"]["examCode"]] = json.loads(
+            response.content)
     return result

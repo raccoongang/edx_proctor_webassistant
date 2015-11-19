@@ -13,8 +13,10 @@ from rest_framework.authentication import BasicAuthentication, \
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession
 from serializers import EventSessionSerializer
-from edx_api import start_exam_request, poll_status_request, \
-    send_review_request, get_proctored_exams, bulk_start_exams_request
+from edx_api import (start_exam_request, poll_status_request,
+                     send_review_request, get_proctored_exams,
+                     bulk_start_exams_request,
+                     bulk_send_review_request)
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
 
 
@@ -219,18 +221,43 @@ class BulkReview(APIView):
                 exam.get('desktopComments', {})
             ))
 
-        response = send_review_request(review_payload_list)
-        data = {
-            'hash': exam_obj.generate_key(),
-            'status': ''
-        }
+        response = bulk_send_review_request(review_payload_list)
         if response.status_code == 200:
-            data['status'] = 'review_was_sent'
+            data = {'status': 'review_was_sent'}
         else:
-            data['status'] = 'review_send_failed'
+            data = {'status': 'review_send_failed'}
 
         return Response(data=data,
                         status=response.status_code)
+
+
+@api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
+def bulk_start_exams(request, exam_codes):
+    """
+    Start list of exams by exam codes.
+
+    :param request:
+    :param exam_codes: comaseparated list of exam codes
+    :return:
+    """
+
+    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
+    response = bulk_start_exams_request(exam_list)
+    status = json.loads(response.content)
+    data = {
+        'status': status.get('status')
+    }
+    send_ws_msg(data)
+    return Response(data=data, status=response.status_code)
+
+
+@api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
+def get_exams_proctored(request):
+    return get_proctored_exams()
 
 
 @api_view(['GET'])
@@ -310,44 +337,3 @@ def _review_payload(exam, exam_code, review_status, video_link,
             }
         ]
     }
-
-        response = send_review_request(review_payload)
-        data = {
-            'hash': exam.generate_key(),
-            'status': ''
-        }
-        if response.status_code == 200:
-            data['status'] = 'review_was_sent'
-        else:
-            data['status'] = 'review_send_failed'
-
-        return Response(data=data,
-                        status=response.status_code)
-
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
-def get_exams_proctored(request):
-
-    return get_proctored_exams()
-
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
-def bulk_start_exams(request, exam_codes):
-    """
-    Start list of exams by exam codes.
-
-    :param request:
-    :param exam_codes: comaseparated list of exam codes
-    :return:
-    """
-
-    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
-    response = bulk_start_exams_request(exam_list)
-    status = json.loads(response.content)
-    data = {
-        'status': status.get('status')
-    }
-    send_ws_msg(data)
-    return Response(data=data, status=response.status_code)
