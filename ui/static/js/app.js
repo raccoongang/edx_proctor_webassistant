@@ -131,6 +131,8 @@
 
     // MAIN CONTROLLER
     app.controller('MainController', ['$scope', '$translate', '$sce', 'translateFilter', function($scope, $translate, $sce, translateFilter){
+
+        var language_cache = {};
         $scope.supported_languages = ['en', 'ru'];
 
         var lng_is_supported = function(val){
@@ -140,6 +142,7 @@
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
+                language_cache = {};
             }
         };
 
@@ -150,8 +153,6 @@
         $scope.logout = function(){
             window.location = window.app.logoutUrl;
         };
-
-        var language_cache = {};
 
         var div = document.createElement('div');
         $scope.i18n = function(text) {
