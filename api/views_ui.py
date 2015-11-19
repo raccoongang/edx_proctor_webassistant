@@ -221,36 +221,8 @@ class BulkReview(APIView):
                 exam.get('desktopComments', {})
             ))
 
-        response = bulk_send_review_request(review_payload_list)
-        if response.status_code == 200:
-            data = {'status': 'review_was_sent'}
-        else:
-            data = {'status': 'review_send_failed'}
-
-        return Response(data=data,
-                        status=response.status_code)
-
-
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
-def bulk_start_exams(request, exam_codes):
-    """
-    Start list of exams by exam codes.
-
-    :param request:
-    :param exam_codes: comaseparated list of exam codes
-    :return:
-    """
-
-    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
-    response = bulk_start_exams_request(exam_list)
-    status = json.loads(response.content)
-    data = {
-        'status': status.get('status')
-    }
-    send_ws_msg(data)
-    return Response(data=data, status=response.status_code)
+        data = bulk_send_review_request(review_payload_list)
+        return Response(data=data, status=200)
 
 
 @api_view(['GET'])
@@ -277,13 +249,9 @@ def bulk_start_exams(request, exam_codes):
     """
 
     exam_list = Exam.objects.filter(exam_code__in=exam_codes)
-    response = bulk_start_exams_request(exam_list)
-    status = json.loads(response.content)
-    data = {
-        'status': status.get('status')
-    }
+    data = bulk_start_exams_request(exam_list)
     send_ws_msg(data)
-    return Response(data=data, status=response.status_code)
+    return Response(data=data, status=200)
 
 
 def _review_payload(exam, exam_code, review_status, video_link,
