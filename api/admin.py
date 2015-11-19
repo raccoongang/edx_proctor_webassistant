@@ -5,10 +5,10 @@ from api import models
 class ExamAdmin(admin.ModelAdmin):
     list_display = ('exam_code', 'organization', 'exam_id', 'course_id',
                     'first_name', 'last_name', 'exam_status',
-                    'exam_start_date', 'exam_end_date')
+                    'username', 'exam_start_date', 'exam_end_date')
     list_filter = ('exam_status',)
     search_fields = ['exam_code', 'exam_id', 'first_name', 'last_name',
-                     'course_id']
+                     'course_id', 'user_id', 'username', 'email']
 
     fieldsets = (
         (None, {
@@ -20,7 +20,8 @@ class ExamAdmin(admin.ModelAdmin):
         ('Org Extra', {
             'fields': (
                 'exam_start_date', 'exam_end_date', 'no_of_students',
-                'exam_id', 'course_id', 'first_name', 'last_name')
+                'exam_id', 'course_id', 'user_id', 'first_name', 'last_name',
+                'username', 'email')
         }),
         ('Additional', {
             'fields': (
@@ -36,9 +37,9 @@ class EventSessionAdmin(admin.ModelAdmin):
         'start_date', 'end_date')
     list_filter = ('proctor', 'status')
     search_fields = (
-    'testing_center', 'course_id', 'course_event_id', 'start_date', 'end_date')
+        'testing_center', 'course_id', 'course_event_id', 'start_date',
+        'end_date')
     readonly_fields = ('hash_key', 'start_date', 'end_date')
-
 
 
 class PermissionAdmin(admin.ModelAdmin):

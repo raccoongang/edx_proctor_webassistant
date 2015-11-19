@@ -15,6 +15,10 @@ class APIRoot(APIView):
     def get(self, request):
         result = {
             "exam_register": reverse('exam-register-list', request=request),
+            "bulk_start_exams": reverse(
+                'bulk_start_exams',
+                request=request, args=('attempt_codes',)
+            ),
             "start_exam": reverse(
                 'start_exam',
                 request=request, args=('attempt_code',)
