@@ -14,7 +14,8 @@
         'ui.bootstrap',
         'websocket',
         'pascalprecht.translate',
-        'tokenAuth'
+        'tokenAuth',
+        'proctorApi'
     ]);
     app.config(function ($routeProvider,
                          $controllerProvider,
@@ -69,8 +70,7 @@
                     deps: function(resolver){
                         return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
-                            app.path + 'ui/home/hmDirectives.js',
-                            app.path + 'common/services/backend_api.js'
+                            app.path + 'ui/home/hmDirectives.js'
                         ]);
                     },
                     auth: function($cookies, Auth){
@@ -87,9 +87,11 @@
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js',
-                            app.path + 'common/services/backend_api.js'
+                            app.path + 'ui/sessions/rsController.js'
                         ]);
+                    },
+                    data: function(Api){
+                        return Api.get_session_data();
                     }
                 }
             })

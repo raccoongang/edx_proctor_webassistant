@@ -14,7 +14,7 @@ from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession
 from serializers import EventSessionSerializer
 from edx_api import start_exam_request, poll_status_request, \
-    send_review_request
+    send_review_request, get_proctored_exams
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
 
 
@@ -208,6 +208,14 @@ class Review(APIView):
 
         return Response(data=data,
                         status=response.status_code)
+
+
+@api_view(['GET'])
+@authentication_classes((SsoTokenAuthentication,))
+@permission_classes((IsAuthenticated,))
+def get_exams_proctored(request):
+
+    return get_proctored_exams()
 
 
 @api_view(['GET'])

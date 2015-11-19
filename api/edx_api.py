@@ -23,11 +23,13 @@ def send_review_request(payload):
     )
 
 
-def get_proctored_exams(payload):
-    return requests.post(
-        settings.EDX_URL + "api/edx_proctoring/proctoring_review_callback/",
-        data=json.dumps(payload, default=date_handler)
+def get_proctored_exams():
+    r = requests.post(
+        settings.EDX_URL + "api/extended/courses/proctored"
     )
+    r.headers.update({'X-Edx-Api-Key': settings.EDX_API_KEY})
+    return r
+
 
 def bulk_start_exams_request(exam_list):
     for exam in exam_list:

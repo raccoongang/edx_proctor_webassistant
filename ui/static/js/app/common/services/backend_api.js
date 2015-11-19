@@ -1,7 +1,7 @@
 'use strict';
 
 (function(){
-    angular.module('proctor').service('Api', ['$rootScope', '$http', 'Auth', function($rootScope, $http, Auth){
+    angular.module('proctorApi', []).service('Api', ['$rootScope', '$http', 'Auth', function($rootScope, $http, Auth){
         var get_url = function(call){
             return '' + $rootScope.apiConf.apiServer + '/' + call + '/';
         };
@@ -43,16 +43,10 @@
             });
         };
 
-        this.get_session_courses = function(){
+        this.get_session_data = function(){
             return generic_api_call({
-                'url':  get_url('get_session_courses'),
-                'method': 'GET'
-            });
-        };
-
-        this.get_session_exams = function(){
-            return generic_api_call({
-                'url':  get_url('get_session_exams'),
+                //'url':  get_url('proctored_exams'),
+                'url': 'http://localhost:8080/api/proctored_exams',
                 'method': 'GET'
             });
         };
