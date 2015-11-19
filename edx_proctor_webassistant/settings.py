@@ -180,6 +180,7 @@ PIPELINE_JS = {
             'js/app/app.js',
             'js/app/common/services/websocket.js',
             'js/app/common/services/auth.js',
+            'js/app/common/services/backend_api.js',
         ),
         'output_filename': 'js/app.js',
     }
@@ -235,6 +236,8 @@ AUTH_SESSION_COOKIE_DOMAIN = ".localhost"
 COURSE_ID_SLASH_SEPARATED = True
 
 GRAPPELLI_ADMIN_TITLE = u"Открытое образование"
+
+EDX_API_KEY = "kjbdsf7y45unga94tm53he0n"
 
 try:
     from settings_local import *
