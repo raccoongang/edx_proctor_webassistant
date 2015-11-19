@@ -2,7 +2,7 @@ from django.conf.urls import include, url, patterns
 from rest_framework.routers import DefaultRouter
 from views_edx import ExamViewSet, APIRoot
 from views_ui import (start_exam, bulk_start_exams, poll_status, Review,
-                      EventSessionViewSet)
+                      BulkReview, EventSessionViewSet)
 
 router = DefaultRouter()
 router.register(r'exam_register', ExamViewSet,
@@ -22,6 +22,8 @@ urlpatterns = patterns(
         name='poll_status'),
     url(r'review/$', Review.as_view(),
         name='review'),
+    url(r'bulk_review/$', BulkReview.as_view(),
+        name='bulk_review'),
     (r'^', include(router.urls)),
 
 )

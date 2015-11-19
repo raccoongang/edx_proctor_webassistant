@@ -29,11 +29,23 @@ def get_proctored_exams(payload):
         data=json.dumps(payload, default=date_handler)
     )
 
+
 def bulk_start_exams_request(exam_list):
+    result = {}
     for exam in exam_list:
-        result = {}
         response = requests.get(
-            settings.EDX_URL + "api/edx_proctoring/proctoring_launch_callback/start_exam/" + attempt_code
+            settings.EDX_URL + "api/edx_proctoring/proctoring_launch_callback/start_exam/" + exam.exam_code
         )
         result[exam.exam_code] = json.loads(response.content)
+    return result
+
+
+def bulk_send_review_request(payload_list):
+    result = {}
+    for payload in payload_list:
+        response = requests.post(
+            settings.EDX_URL + "api/edx_proctoring/proctoring_review_callback/",
+            data=json.dumps(payload, default=date_handler)
+        )
+        result[payload_list["examMetaData"]["examCode"]] = json.loads(response.content)
     return result
