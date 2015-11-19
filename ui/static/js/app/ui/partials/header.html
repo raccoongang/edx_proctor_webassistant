@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default global-header">
+<nav class="navbar navbar-default global-header" ng-controller="HeaderController">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -53,6 +53,11 @@
                             <li>
                                 <a href="" ng-click="logout()">
                                     {[ i18n('LOGOUT') ]}
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" ng-click="session()">
+                                    Session
                                 </a>
                             </li>
                         </ul>

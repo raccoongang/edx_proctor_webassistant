@@ -162,6 +162,12 @@
         };
     }]);
 
+    app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
+        $scope.logout = function(){
+            $location.path('/session');
+        };
+    }]);
+
     app.directive('header', [function(){
         return {
             restrict: 'E',

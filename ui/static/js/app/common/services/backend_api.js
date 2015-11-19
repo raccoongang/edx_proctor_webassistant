@@ -45,8 +45,7 @@
 
         this.get_session_data = function(){
             return generic_api_call({
-                //'url':  get_url('proctored_exams'),
-                'url': 'http://localhost:8080/api/proctored_exams',
+                'url':  get_url('proctored_exams'),
                 'method': 'GET'
             });
         };
