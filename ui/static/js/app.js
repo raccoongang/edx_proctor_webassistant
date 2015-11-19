@@ -137,6 +137,7 @@
     app.controller('MainController', ['$scope', '$translate', '$sce', 'translateFilter', function($scope, $translate, $sce, translateFilter){
 
         var language_cache = {};
+        var language_changed_once = false;
         $scope.supported_languages = ['en', 'ru'];
 
         var lng_is_supported = function(val){
@@ -146,6 +147,11 @@
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
+                // hack: if language file was just loaded, apply language again
+                if (!language_changed_once){
+                    $translate.use(langKey);
+                    language_changed_once = true;
+                }
                 language_cache = {};
             }
         };

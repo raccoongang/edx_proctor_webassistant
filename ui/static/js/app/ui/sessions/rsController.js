@@ -1,5 +1,5 @@
 (function(){
-    angular.module('proctor').controller('SessionCtrl', function($scope, data){
+    angular.module('proctor').controller('SessionCtrl', function($scope, data, TestSession){
         $scope.courses = [];
         $scope.exams = [];
         $scope.session = {};
@@ -27,7 +27,7 @@
         });
 
         $scope.start_session = function(){
-
+            TestSession.registerSession();
         };
     });
 })();

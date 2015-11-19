@@ -4,19 +4,20 @@
   "PROFILE": "Profile",
   "LOGOUT": "Logout",
   "AUTHORIZE": "Authorize",
-  "--STUDENT_SESSION--": "*********************************************",
+
   "STUDENT_SESSIONS": "Student Sessions",
   "FULL_NAME": "Full Name",
   "EXAM_START_TIME": "Start time",
   "EXAM_CODE": "Exam Code",
   "COURSE_NAME": "Course Name",
   "STATUS": "Status",
-  "--STUDENT_SESSION_ACTIONS--": "*************************************",
+
   "ACTIVATE": "Activate",
   "STOP": "Stop",
-  "--REVIEW--": "******************************************************",
+
   "ADD_EXAM_REVIEW": "Add Exam Review",
-  "SESSION_CREATE": "**************************************************",
+
+  "TODAY": "Today",
   "TESTING_CENTRE": "Testing Centre",
   "SESSION_COURSE": "Course",
   "SESSION_EXAM": "Exam",
