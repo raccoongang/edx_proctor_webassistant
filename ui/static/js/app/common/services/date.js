@@ -1,6 +1,6 @@
 (function(){
     var app = angular.module('proctor');
-    app.service('DateTimeService', function(){
+    app.service('DateTimeService', function($interval){
         var ticker = null;
         var self = this;
 
