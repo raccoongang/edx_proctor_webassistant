@@ -2,7 +2,7 @@
     <h3>
         {[ test_center ]}
     </h3>
-    {[ course_name ]} {[ exam_name ]}
+    {[ course_name.name ]} {[ exam_name.exam_name ]}
     <br>
     <div>
         {[ i18n('STUDENT_SESSIONS') ]}
@@ -39,13 +39,13 @@
                         ng-if="attempt.status == 'started'">
                     {[ i18n('STOP') ]}
                 </button>
-                <div ng-if="attempt.status == 'submitted'">
-                    <button class="btn btn-xs btn-success"
+                <div ng-if="attempt.status == 'submitted'" class="text-center">
+                    <button class="btn btn-xs btn-success fc-margin-item"
                             ng-click="send_review(attempt.examCode, 'Clean')">
                         {[ i18n('PASSED') ]}
                     </button>
                     <br>
-                    <button class="btn btn-xs btn-warning"
+                    <button class="btn btn-xs btn-warning fc-margin-item"
                             ng-click="send_review(attempt.examCode, 'Suspicious')">
                         {[ i18n('NOT_PASSED') ]}
                     </button>
