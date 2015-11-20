@@ -38,7 +38,7 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: window.localStorage['NG_TRANSLATE_LANG_KEY'],
+            current: 'ru',
             supported: ['en', 'ru']
         };
 
@@ -54,7 +54,7 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage('ru');
+        $translateProvider.preferredLanguage(app.language.current);
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
@@ -120,7 +120,9 @@
 
         // Preload language files
         angular.forEach(app.language.supported, function(val){
-            $translate.use(val);
+            if (val !== app.language.current) {
+                $translate.use(val);
+            }
         });
         $translate.use(app.language.current !== undefined?app.language.current:'ru');
     }]);
