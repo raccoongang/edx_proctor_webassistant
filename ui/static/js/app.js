@@ -37,6 +37,10 @@
         app.factory = $provide.factory;
 
         app.path = window.app.rootPath;
+        app.language = {
+            current: window.localStorage['NG_TRANSLATE_LANG_KEY'],
+            supported: ['en', 'ru']
+        };
 
         $locationProvider.html5Mode(true);
 
@@ -50,7 +54,7 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage('en');
+        $translateProvider.preferredLanguage('ru');
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
@@ -114,14 +118,11 @@
             apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
 
-        app.language = {
-            current: window.localStorage['NG_TRANSLATE_LANG_KEY'],
-            supported: ['en', 'ru']
-        };
         // Preload language files
         angular.forEach(app.language.supported, function(val){
             $translate.use(val);
         });
+        $translate.use(app.language.current !== undefined?app.language.current:'ru');
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
