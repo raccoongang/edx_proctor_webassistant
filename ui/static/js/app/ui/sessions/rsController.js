@@ -32,8 +32,10 @@
                 $scope.session.course,
                 $scope.session.exam
             )
-                .success(function(){
+                .then(function(){
                     $location.path('/');
+                }, function(){
+                    
                 });
         };
 
