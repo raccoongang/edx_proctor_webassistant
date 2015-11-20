@@ -50,7 +50,6 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage('ru');
         $translateProvider.preferredLanguage('en');
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
@@ -102,7 +101,7 @@
             });
     });
 
-    app.run(['$rootScope', '$location', function ($rootScope, $location) {
+    app.run(['$rootScope', '$location', '$translate', function ($rootScope, $location, $translate) {
         var domain;
         var match = $location.absUrl().match(/(?:https?:\/\/)?(?:www\.)?(.*?)\//);
         if (match !== null)
@@ -113,6 +112,15 @@
             ioServer: domain + (socket_port?':' + socket_port:''),
             apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
+
+        app.language = {
+            current: window.localStorage['NG_TRANSLATE_LANG_KEY'],
+            supported: ['en', 'ru']
+        };
+        // Preload language files
+        angular.forEach(app.language.supported, function(val){
+            $translate.uses(val);
+        });
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -134,28 +142,20 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$sce', '$interval', 'translateFilter',
-        function($scope, $translate, $sce, $interval, translateFilter){
+    app.controller('MainController', ['$scope', '$sce', '$translate', '$interval', 'translateFilter',
+        function($scope, $sce, $translate, $interval, translateFilter){
 
         var language_cache = {};
-        var language_changed_once = false;
-        var current_language = window.localStorage['NG_TRANSLATE_LANG_KEY'];
-        $scope.supported_languages = ['en', 'ru'];
 
         var lng_is_supported = function(val){
-            return $scope.supported_languages.indexOf(val) >= 0?true:false;
+            return app.language.supported.indexOf(val) >= 0?true:false;
         };
 
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
-                // hack: if language file was just loaded, apply language again
-                if (!language_changed_once){
-                    $translate.use(langKey);
-                    language_changed_once = true;
-                }
                 language_cache = {};
-                current_language = langKey;
+                app.language.current = langKey;
             }
         };
 

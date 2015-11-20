@@ -77,24 +77,22 @@ class ExamViewSet(mixins.ListModelMixin,
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        # try:
-        #     event = EventSession.objects.get(
-        #         course_id=serializer.validated_data.get('course_id'),
-        #         course_event_id=serializer.validated_data.get('exam_id'),
-        #         status=EventSession.IN_PROGRESS
-        #     )
-        #     data['hash'] = event.hash_key
-        # except EventSession.DoesNotExist:
-        #     return Response({'error': _("No event was found. Forbidden")},
-        #                     status=status.HTTP_403_FORBIDDEN)
-
-        self.perform_create(serializer)
-        data['hash'] = serializer.instance.generate_key()
-        send_ws_msg(data)
-        headers = self.get_success_headers(serializer.data)
-        return Response({'ID': data['hash']},
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
+        try:
+            event = EventSession.objects.get(
+                course_id=serializer.validated_data.get('course_id'),
+                course_event_id=serializer.validated_data.get('exam_id'),
+                status=EventSession.IN_PROGRESS
+            )
+            self.perform_create(serializer)
+            data['hash'] = serializer.instance.generate_key()
+            send_ws_msg(data, channel=event.hash_key)
+            headers = self.get_success_headers(serializer.data)
+            return Response({'ID': data['hash']},
+                            status=status.HTTP_201_CREATED,
+                            headers=headers)
+        except EventSession.DoesNotExist:
+            return Response({'error': _("No event was found. Forbidden")},
+                            status=status.HTTP_403_FORBIDDEN)
 
     def perform_create(self, serializer):
         serializer.save()
