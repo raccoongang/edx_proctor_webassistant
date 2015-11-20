@@ -1,5 +1,6 @@
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, status, mixins
+from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -69,10 +70,32 @@ class ExamViewSet(mixins.ListModelMixin,
         }
 
     """
+
     serializer_class = ExamSerializer
     queryset = Exam.objects.all()
 
-    # @csrf_exempt
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        hash_key = self.request.query_params.get('session')
+        if hash_key is not None:
+            try:
+                event = EventSession.objects.get(
+                    hash_key=hash_key,
+                    status=EventSession.IN_PROGRESS
+                )
+                return Exam.objects.filter(
+                    course_id=event.course_id,
+                    exam_id=event.course_event_id,
+                )
+            except EventSession.DoesNotExist:
+                return Exam.objects.filter(pk__lt=0)
+        else:
+            return Exam.objects.all()
+
+
     def create(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)

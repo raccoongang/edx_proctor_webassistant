@@ -9,7 +9,7 @@ router.register(r'exam_register', ExamViewSet,
                 base_name="exam-register")
 router.register(r'event_session', EventSessionViewSet,
                 base_name="event-session")
-#
+
 urlpatterns = patterns(
     '',
     url(r'^$', APIRoot.as_view()),
