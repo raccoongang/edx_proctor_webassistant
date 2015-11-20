@@ -134,7 +134,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$sce', 'translateFilter', function($scope, $translate, $sce, translateFilter){
+    app.controller('MainController', ['$scope', '$translate', '$sce', '$interval', 'translateFilter',
+        function($scope, $translate, $sce, $interval, translateFilter){
 
         var language_cache = {};
         var language_changed_once = false;
