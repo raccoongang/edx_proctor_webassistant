@@ -1,6 +1,6 @@
 (function(){
     var app = angular.module('proctor');
-    app.service('DateTimeService', function($interval){
+    app.service('DateTimeService', function($rootScope, $interval){
         var ticker = null;
         var self = this;
 
@@ -24,6 +24,16 @@
 
         this.stop_timer = function(){
             $interval.cancel(ticker);
+            ticker = null;
         };
+
+        $rootScope.$watch(function(){
+            return app.language.current;
+        }, function(){
+            if (ticker) {
+                self.stop_timer();
+                self.start_timer();
+            }
+        }, true);
     });
 })();

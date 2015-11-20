@@ -28,7 +28,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <a href="">
-                        <span ng-repeat="lng in supported_languages" ng-click="changeLanguage(lng)">
+                        <span ng-repeat="lng in get_supported_languages()" ng-click="changeLanguage(lng)">
                             <img ng-src="/static/img/lng/{[lng]}.png" height="24">
                         </span>
                     </a>

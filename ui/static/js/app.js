@@ -152,6 +152,10 @@
             return app.language.supported.indexOf(val) >= 0?true:false;
         };
 
+        $scope.get_supported_languages = function(){
+            return app.language.supported;
+        };
+
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
