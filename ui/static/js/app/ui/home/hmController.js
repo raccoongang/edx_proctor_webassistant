@@ -48,8 +48,8 @@
                         });
                 };
 
-                $scope.send_review = function (code) {
-                    Api.send_review(code).success(function(){
+                $scope.send_review = function (code, status) {
+                    Api.send_review(code, status).success(function(){
                         var idx = 0;
                         while ($scope.ws_data[idx].examCode !== code) {
                             idx++;

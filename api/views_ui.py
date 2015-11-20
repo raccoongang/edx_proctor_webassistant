@@ -139,6 +139,8 @@ class Review(APIView):
         exam = get_object_or_404(Exam,
                                  exam_code=request.data.get('attempt_code'))
 
+        status = request.GET.get('status', 'Clean')
+
         desktop_comments = [
             {
                 "comments": "Browsing other websites",
@@ -151,7 +153,7 @@ class Review(APIView):
         review_payload = _review_payload(
             exam,
             request.data.get('attempt_code'),
-            passing_review_status[0],
+            status,
             '',
             desktop_comments
         )

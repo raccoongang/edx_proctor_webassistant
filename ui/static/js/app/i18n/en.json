@@ -22,5 +22,8 @@
   "SESSION_COURSE": "Course",
   "SESSION_EXAM": "Exam",
   "START_SESSION": "Start Session",
-  "SESSION_HISTORY": "Check Session History"
+  "SESSION_HISTORY": "Check Session History",
+
+  "PASSED": "Test passed",
+  "NOT_PASSED": "Test not passed"
 }

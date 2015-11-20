@@ -35,11 +35,12 @@
             });
         };
 
-        this.send_review = function(code){
+        this.send_review = function(code, status){
             return generic_api_call({
                 'url':  get_url('review'),
                 'method': 'POST',
-                data: JSON.stringify({attempt_code: code})
+                data: JSON.stringify({attempt_code: code}),
+                params: {status: status}
             });
         };
 
