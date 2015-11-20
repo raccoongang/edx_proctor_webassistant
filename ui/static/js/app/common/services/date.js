@@ -17,6 +17,7 @@
         };
 
         this.start_timer = function(){
+            console.log(app.language.current);
             ticker = $interval(function(){
                 self.value = localDate(app.language.current);
             }, 1000);
@@ -30,6 +31,7 @@
         $rootScope.$watch(function(){
             return app.language.current;
         }, function(){
+            console.log(restarting timer);
             if (ticker) {
                 self.stop_timer();
                 self.start_timer();
