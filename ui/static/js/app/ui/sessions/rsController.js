@@ -35,7 +35,7 @@
                 .then(function(){
                     $location.path('/');
                 }, function(){
-                    
+
                 });
         };
 

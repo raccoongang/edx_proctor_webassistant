@@ -5,7 +5,12 @@
         'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal', 'TestSession',
             function ($scope, $interval, WS, Api, NgTableParams, $uibModal, TestSession) {
 
+                var session = TestSession.getSession();
+
                 $scope.ws_data = [];
+                $scope.test_center = session.testing_center;
+                $scope.course_name = session.course_name;
+                $scope.exam_name = session.exam_name;
 
                 $scope.websocket_callback = function (msg) {
                     if (msg && msg['examCode']) {
@@ -14,7 +19,7 @@
                     }
                 };
 
-                WS.init(TestSession.getSession().hash_key, $scope.websocket_callback, true);
+                WS.init(session.hash_key, $scope.websocket_callback, true);
 
                 var update_status = function (idx, status) {
                     var obj = $.grep($scope.ws_data, function(e){

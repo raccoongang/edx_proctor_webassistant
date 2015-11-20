@@ -3,7 +3,7 @@
         .service('TestSession', function($rootScope, $http, Auth){
             var Session = null;
 
-            this.registerSession = function(testing_center, course_id, exam_id){
+            this.registerSession = function(testing_center, course_id, exam_id, course_name, exam_name){
                 return $http({
                     url: $rootScope.apiConf.apiServer + '/event_session/',
                     method: 'POST',
@@ -15,6 +15,10 @@
                     })
                 }).then(function(data){
                     Session = data.data;
+                    if (course_name !== undefined && exam_name !== undefined) {
+                        Session.course_name = course_name;
+                        Session.exam_name = exam_name;
+                    }
                 });
             };
 
