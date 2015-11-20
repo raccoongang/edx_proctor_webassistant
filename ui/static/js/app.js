@@ -119,7 +119,7 @@
         };
         // Preload language files
         angular.forEach(app.language.supported, function(val){
-            $translate.uses(val);
+            $translate.use(val);
         });
     }]);
 
