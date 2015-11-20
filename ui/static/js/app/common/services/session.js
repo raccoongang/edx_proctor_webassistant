@@ -4,7 +4,7 @@
             var Session = null;
 
             this.registerSession = function(testing_center, course_id, exam_id){
-                $http({
+                return $http({
                     url: $rootScope.apiConf.apiServer + '/event_session/',
                     method: 'POST',
                     headers: {Authorization: "Token " + Auth.get_token()},
@@ -14,7 +14,7 @@
                         course_event_id: exam_id
                     })
                 }).then(function(data){
-                    console.log(data);
+                    Session = data.data;
                 });
             };
 

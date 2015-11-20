@@ -1,5 +1,5 @@
 (function(){
-    angular.module('proctor').controller('SessionCtrl', function($scope, data, TestSession){
+    angular.module('proctor').controller('SessionCtrl', function($scope, $location, $interval, data, TestSession){
         $scope.courses = [];
         $scope.exams = [];
         $scope.session = {};
@@ -31,7 +31,11 @@
                 $scope.session.testing_centre,
                 $scope.session.course,
                 $scope.session.exam
-            );
+            )
+                .success(function(){
+                    $location.path('/');
+                });
         };
+
     });
 })();

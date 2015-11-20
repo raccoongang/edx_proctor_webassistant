@@ -2,8 +2,8 @@
 
 (function () {
     angular.module('proctor').controller(
-        'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal',
-            function ($scope, $interval, WS, Api, NgTableParams, $uibModal) {
+        'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal', 'TestSession',
+            function ($scope, $interval, WS, Api, NgTableParams, $uibModal, TestSession) {
 
                 $scope.ws_data = [];
 
@@ -14,7 +14,7 @@
                     }
                 };
 
-                WS.init('attempts', $scope.websocket_callback, true);
+                WS.init(TestSession.getSession().hash_key, $scope.websocket_callback, true);
 
                 var update_status = function (idx, status) {
                     var obj = $.grep($scope.ws_data, function(e){
