@@ -123,6 +123,9 @@ class EventSession(models.Model):
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
+    class Meta:
+        unique_together = ("course_id", "course_event_id")
+
 
     @staticmethod
     def post_save(sender, instance,created, **kwargs):
