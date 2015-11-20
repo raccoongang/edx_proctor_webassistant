@@ -88,7 +88,8 @@
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js'
+                            app.path + 'ui/sessions/rsController.js',
+                            app.path + 'common/services/date.js'
                         ]);
                     },
                     data: function(Api){
@@ -179,18 +180,7 @@
             return ret == translated?translated:ret;
         };
 
-        var date_options = {
-            year: 'numeric', month: 'long',  day: 'numeric',
-            weekday: 'long', hour: 'numeric', minute: 'numeric', second: 'numeric'
-        };
-        var date = function(loc){
-            var d = new Date();
-            return d.toLocaleString(loc, date_options);
-        };
 
-        $interval(function(){
-            $scope.date = date(current_language);
-        }, 1000);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){

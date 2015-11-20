@@ -1,8 +1,17 @@
 (function(){
-    angular.module('proctor').controller('SessionCtrl', function($scope, $location, data, TestSession){
+    angular.module('proctor').controller('SessionCtrl', function($scope, $location, data, TestSession, DateTimeService){
         $scope.courses = [];
         $scope.exams = [];
         $scope.session = {};
+
+        DateTimeService.start_timer();
+        $scope.$watch(function(){
+            return DateTimeService.value;
+        }, function(val){
+            $scope.date = val;
+        }, true);
+
+
         if (data.data.results !== undefined && data.data.results.length) {
             var c_list = [];
             angular.forEach(data.data.results, function (val, key) {
@@ -30,7 +39,9 @@
             TestSession.registerSession(
                 $scope.session.testing_centre,
                 $scope.session.course,
-                $scope.session.exam
+                $scope.session.exam,
+                $.grep($scope.courses, function(e){return e.id == $scope.session.course})[0],
+                $.grep($scope.exams, function(e){return e.id == $scope.session.exam})[0]
             )
                 .then(function(){
                     $location.path('/');
@@ -38,6 +49,10 @@
 
                 });
         };
+
+        $scope.$on('$locationChangeStart', function (event, next, current) {
+            DateTimeService.stop_timer();
+        });
 
     });
 })();
