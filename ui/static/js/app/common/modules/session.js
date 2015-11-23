@@ -43,5 +43,11 @@
             this.getSession = function(){
                 return angular.copy(Session);
             };
+
+            this.setSession = function(obj){
+                if (!Session){
+                    Session = obj;
+                }
+            };
         });
 })();

@@ -80,10 +80,21 @@
                             app.path + 'ui/home/hmDirectives.js'
                         ]);
                     },
-                    before: function($cookies, $location, Auth, TestSession){
+                    students: function($location, Auth, TestSession, Api){
                         Auth.authenticate();
+                        if (window.sessionStorage['proctoring'] !== undefined){
+                            TestSession.setSession(window.sessionStorage['proctoring']);
+                        }
                         if (!TestSession.getSession()){
                             $location.path('/session');
+                        }
+                        else{
+                            var ret = Api.restore_session();
+                            if (ret == undefined){
+                                $location.path('/session');
+                            }
+                            else
+                                return ret;
                         }
                     }
                 }

@@ -2,27 +2,28 @@
 
 (function () {
     angular.module('proctor').controller(
-        'MainCtrl', ['$scope', '$interval', '$location', 'WS', 'Api', 'NgTableParams', '$uibModal', 'TestSession',
-            function ($scope, $interval, $location, WS, Api, NgTableParams, $uibModal, TestSession) {
+        'MainCtrl', ['$scope',
+                     '$interval',
+                     '$location',
+                     'WS',
+                     'Api',
+                     'NgTableParams',
+                     '$uibModal',
+                     'TestSession',
+                     'students',
+            function ($scope, $interval, $location, WS, Api, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
 
-                $scope.ws_data = [
-                    {
-                        examCode: "sdfhsdhs54h425hwehttae",
-                        orgExtra: {
-                            firstName: "dsfhdhjs",
-                            courseID: "dgfsdfhsd23623626wdfh+5422"
-                        }
-                    },
-                    {
-                        examCode: "24576245ywth242452gch24h2",
-                        orgExtra: {
-                            firstName: "Dsdsdgge",
-                            courseID: "ktejtkhj23ht252nhh24+245y245"
-                        }
-                    }
-                ];
+                $scope.ws_data = [];
+
+                // get student exams from session
+                if (students !== undefined){
+                    angular.forEach(students.data, function(val, key){
+                        $scope.ws_data.push(val);
+                    });
+                }
+
                 $scope.test_center = session.testing_center;
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;

@@ -1,7 +1,8 @@
 'use strict';
 
 (function(){
-    angular.module('proctor.api', []).service('Api', ['$rootScope', '$http', 'Auth', function($rootScope, $http, Auth){
+    angular.module('proctor.api', []).service('Api', ['$rootScope', '$http', 'Auth', 'TestSession',
+        function($rootScope, $http, Auth, TestSession){
         var get_url = function(call){
             return '' + $rootScope.apiConf.apiServer + '/' + call + '/';
         };
@@ -52,10 +53,13 @@
         };
 
         this.restore_session = function(){
-            return generic_api_call({
-                'url':  get_url(''),
-                'method': 'GET'
-            });
+            if (window.sessionStorage['proctoring'] !== undefined){
+                return generic_api_call({
+                    'url':  get_url('exam_register'),
+                    'method': 'GET',
+                    params: {session: TestSession.getSession().hash_key}
+                });
+            }
         };
     }]);
 })();
