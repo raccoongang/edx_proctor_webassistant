@@ -23,7 +23,11 @@
   "SESSION_EXAM": "Exam",
   "START_SESSION": "Start Session",
   "SESSION_HISTORY": "Check Session History",
+  "END_SESSION": "End Session",
 
   "PASSED": "Test passed",
-  "NOT_PASSED": "Test not passed"
+  "NOT_PASSED": "Test not passed",
+
+  "SESSION_ERROR_1": "Failed to create/join session",
+  "SESSION_ERROR_2": "Failed to end current session"
 }

@@ -2,8 +2,8 @@
 
 (function () {
     angular.module('proctor').controller(
-        'MainCtrl', ['$scope', '$interval', 'WS', 'Api', 'NgTableParams', '$uibModal', 'TestSession',
-            function ($scope, $interval, WS, Api, NgTableParams, $uibModal, TestSession) {
+        'MainCtrl', ['$scope', '$interval', '$location', 'WS', 'Api', 'NgTableParams', '$uibModal', 'TestSession',
+            function ($scope, $interval, $location, WS, Api, NgTableParams, $uibModal, TestSession) {
 
                 var session = TestSession.getSession();
 
@@ -114,6 +114,13 @@
 
                 $scope.uncheck_all_student_sessions = function() {
                     $scope.checked_exams = [];
+                };
+
+                $scope.end_session = function(){
+                    TestSession.endSession().then(function(){
+                        delete window.sessionStorage['proctoring'];
+                        $location.path('/session');
+                    });
                 };
             }]);
 

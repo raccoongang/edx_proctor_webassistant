@@ -13,11 +13,12 @@
         'ngTable',
         'ui.bootstrap',
         'checklist-model',
+        'proctor.i18n',
+        'proctor.api',
+        'proctor.session',
         'websocket',
         'pascalprecht.translate',
-        'tokenAuth',
-        'proctorApi',
-        'sessionEvents'
+        'tokenAuth'
     ]);
     app.config(function ($routeProvider,
                          $controllerProvider,
@@ -147,10 +148,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$sce', '$translate', '$interval', 'translateFilter',
-        function($scope, $sce, $translate, $interval, translateFilter){
-
-        var language_cache = {};
+    app.controller('MainController', ['$scope', '$translate', 'i18n',
+        function($scope, $translate, i18n){
 
         var lng_is_supported = function(val){
             return app.language.supported.indexOf(val) >= 0?true:false;
@@ -163,7 +162,7 @@
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
-                language_cache = {};
+                i18n.clear_cache();
                 app.language.current = langKey;
             }
         };
@@ -176,19 +175,9 @@
             window.location = window.app.logoutUrl;
         };
 
-        var div = document.createElement('div');
         $scope.i18n = function(text) {
-            if (language_cache[text] !== undefined) {
-                return language_cache[text];
-            }
-            var translated = translateFilter(text);
-            div.innerHTML = translated;
-            var ret = $sce.trustAsHtml(div.textContent);
-            language_cache[text] = ret;
-            return ret == translated?translated:ret;
+            return i18n.translate(text);
         };
-
-
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){

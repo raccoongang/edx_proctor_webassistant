@@ -81,12 +81,18 @@ class EventSessionViewSet(mixins.ListModelMixin,
         data = {}
         for field in fields_for_create:
             data[field] = request.data.get(field)
+        # Return existing session if match test_center, ourse_id and exam_id
+        # so the proctor is able to connect ot existing session
         try:
             session = EventSession.objects.get(**data)
-            serializer = EventSessionSerializer(session)
-            return Response(serializer.data,
-                            status=200,
-                            headers=self.get_success_headers(serializer.data))
+            if session.status == EventSession.IN_PROGRESS:
+                serializer = EventSessionSerializer(session)
+                return Response(serializer.data,
+                                status=status.HTTP_200_OK,
+                                headers=self.get_success_headers(serializer.data))
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         except EventSession.DoesNotExist:
             pass
         data['proctor'] = request.user.pk
@@ -94,7 +100,6 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        send_ws_msg(data)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
