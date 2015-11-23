@@ -2,13 +2,18 @@
     <h3>
         {[ test_center ]}
     </h3>
-    {[ course_name.name ]} {[ exam_name.exam_name ]}
+    <h5>
+        {[ course_name.name ]} | {[ exam_name.exam_name ]}
+    </h5>
     <br>
     <div>
         {[ i18n('STUDENT_SESSIONS') ]}
     </div>
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
+            <td>
+                <input type="checkbox" checklist-model="checked_exams" checklist-value="attempt.examCode">
+            </td>
             <td title="i18n('FULL_NAME')"
                 sortable="'orgExtra.firstName'">
                 {[attempt.orgExtra.firstName]}

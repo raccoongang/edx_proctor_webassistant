@@ -7,10 +7,26 @@
 
                 var session = TestSession.getSession();
 
-                $scope.ws_data = [];
+                $scope.ws_data = [
+                    {
+                        examCode: "sdfhsdhs54h425hwehttae",
+                        orgExtra: {
+                            firstName: "dsfhdhjs",
+                            courseID: "dgfsdfhsd23623626wdfh+5422"
+                        }
+                    },
+                    {
+                        examCode: "24576245ywth242452gch24h2",
+                        orgExtra: {
+                            firstName: "Dsdsdgge",
+                            courseID: "ktejtkhj23ht252nhh24+245y245"
+                        }
+                    }
+                ];
                 $scope.test_center = session.testing_center;
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;
+                $scope.checked_exams = [];
 
                 $scope.websocket_callback = function (msg) {
                     if (msg && msg['examCode']) {
@@ -87,6 +103,18 @@
                         $scope.tableParams.reload();
                     }
                 }, true);
+
+                $scope.check_all_student_sessions = function() {
+                    var list = [];
+                    angular.forEach($scope.ws_data, function(val, key){
+                        list.push(val.examCode);
+                    });
+                    $scope.checked_exams = list;
+                };
+
+                $scope.uncheck_all_student_sessions = function() {
+                    $scope.checked_exams = [];
+                };
             }]);
 
     angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance) {

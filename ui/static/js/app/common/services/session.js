@@ -19,6 +19,9 @@
                         Session.course_name = course_name;
                         Session.exam_name = exam_name;
                     }
+                    window.sessionStorage['proctoring'] = Session;
+                }, function(data){
+                    alert("Failed to create/join session");
                 });
             };
 

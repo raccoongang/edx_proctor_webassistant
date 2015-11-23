@@ -12,6 +12,7 @@
         'ngSanitize',
         'ngTable',
         'ui.bootstrap',
+        'checklist-model',
         'websocket',
         'pascalprecht.translate',
         'tokenAuth',

@@ -95,7 +95,6 @@ class ExamViewSet(mixins.ListModelMixin,
         else:
             return Exam.objects.all()
 
-
     def create(self, request, *args, **kwargs):
         data = request.data
         serializer = self.get_serializer(data=data)

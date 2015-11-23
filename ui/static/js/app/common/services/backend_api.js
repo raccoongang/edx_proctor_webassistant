@@ -50,5 +50,12 @@
                 'method': 'GET'
             });
         };
+
+        this.restore_session = function(){
+            return generic_api_call({
+                'url':  get_url(''),
+                'method': 'GET'
+            });
+        };
     }]);
 })();
