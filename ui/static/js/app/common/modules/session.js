@@ -31,7 +31,8 @@
                     method: 'POST',
                     headers: {Authorization: "Token " + Auth.get_token()},
                     data: JSON.stringify({
-                        status: 'finished'
+                        status: 'finished',
+                        notify: null
                     })
                 }).then(function(){
                     Session = null;

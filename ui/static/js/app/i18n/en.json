@@ -24,6 +24,8 @@
   "START_SESSION": "Start Session",
   "SESSION_HISTORY": "Check Session History",
   "END_SESSION": "End Session",
+  "SELECT_ALL": "Check All",
+  "DESELECT_ALL": "Uncheck All",
 
   "PASSED": "Test passed",
   "NOT_PASSED": "Test not passed",
