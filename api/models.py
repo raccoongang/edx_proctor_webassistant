@@ -124,10 +124,10 @@ class EventSession(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
 
     @staticmethod
-    def post_save(sender, instance,created, **kwargs):
-        if created:
+    def post_save(sender, instance, created, **kwargs):
+        if created and not instance.hash_key:
             instance.hash_key = hashlib.md5(
-                str(instance.testing_center) + str(instance.course_id) + str(
+                unicode(instance.testing_center) + str(instance.course_id) + str(
                     instance.course_event_id) + str(instance.proctor.pk) + str(
                     instance.start_date)).hexdigest()
             instance.save()
