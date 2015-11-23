@@ -37,6 +37,10 @@
         app.factory = $provide.factory;
 
         app.path = window.app.rootPath;
+        app.language = {
+            current: 'ru',
+            supported: ['en', 'ru']
+        };
 
         $locationProvider.html5Mode(true);
 
@@ -50,7 +54,7 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage('en');
+        $translateProvider.preferredLanguage(app.language.current);
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
@@ -88,7 +92,8 @@
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js'
+                            app.path + 'ui/sessions/rsController.js',
+                            app.path + 'common/services/date.js'
                         ]);
                     },
                     data: function(Api){
@@ -113,14 +118,13 @@
             apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
         };
 
-        app.language = {
-            current: window.localStorage['NG_TRANSLATE_LANG_KEY'],
-            supported: ['en', 'ru']
-        };
         // Preload language files
         angular.forEach(app.language.supported, function(val){
-            $translate.uses(val);
+            if (val !== app.language.current) {
+                $translate.use(val);
+            }
         });
+        $translate.use(app.language.current !== undefined?app.language.current:'ru');
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -151,6 +155,10 @@
             return app.language.supported.indexOf(val) >= 0?true:false;
         };
 
+        $scope.get_supported_languages = function(){
+            return app.language.supported;
+        };
+
         $scope.changeLanguage = function (langKey) {
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
@@ -179,18 +187,7 @@
             return ret == translated?translated:ret;
         };
 
-        var date_options = {
-            year: 'numeric', month: 'long',  day: 'numeric',
-            weekday: 'long', hour: 'numeric', minute: 'numeric', second: 'numeric'
-        };
-        var date = function(loc){
-            var d = new Date();
-            return d.toLocaleString(loc, date_options);
-        };
 
-        $interval(function(){
-            $scope.date = date(current_language);
-        }, 1000);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){

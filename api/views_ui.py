@@ -81,6 +81,14 @@ class EventSessionViewSet(mixins.ListModelMixin,
         data = {}
         for field in fields_for_create:
             data[field] = request.data.get(field)
+        try:
+            session = EventSession.objects.get(**data)
+            serializer = EventSessionSerializer(session)
+            return Response(serializer.data,
+                            status=200,
+                            headers=self.get_success_headers(serializer.data))
+        except EventSession.DoesNotExist:
+            pass
         data['proctor'] = request.user.pk
         data['status'] = EventSession.IN_PROGRESS
         serializer = self.get_serializer(data=data)
@@ -139,6 +147,8 @@ class Review(APIView):
         exam = get_object_or_404(Exam,
                                  exam_code=request.data.get('attempt_code'))
 
+        status = request.GET.get('status', 'Clean')
+
         desktop_comments = [
             {
                 "comments": "Browsing other websites",
@@ -151,7 +161,7 @@ class Review(APIView):
         review_payload = _review_payload(
             exam,
             request.data.get('attempt_code'),
-            passing_review_status[0],
+            status,
             '',
             desktop_comments
         )
