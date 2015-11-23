@@ -28,7 +28,7 @@
             this.endSession = function(){
                 return $http({
                     url: $rootScope.apiConf.apiServer + '/event_session/',
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {Authorization: "Token " + Auth.get_token()},
                     data: JSON.stringify({
                         status: 'finished'

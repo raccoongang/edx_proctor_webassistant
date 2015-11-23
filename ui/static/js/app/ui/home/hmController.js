@@ -118,7 +118,7 @@
                 };
 
                 $scope.end_session = function(){
-                    TestSession.endSession().then(function(){
+                    TestSession.endSession().success(function(){
                         delete window.sessionStorage['proctoring'];
                         $location.path('/session');
                     });
