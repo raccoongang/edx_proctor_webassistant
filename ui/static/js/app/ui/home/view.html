@@ -81,7 +81,7 @@
                 sortable="'status'">
                 {[ attempt.status ]}
             </td>
-            <td>
+            <td class="text-center">
                 <div ng-if="!attempt.status">
                     <button class="btn btn-xs btn-success fc-margin-item"
                             ng-click="accept_student(attempt)"
@@ -96,11 +96,11 @@
                     </button>
                 </div>
                 <div ng-if="attempt.status == 'started'">
-                    <button class="btn btn-xs btn-warning"
+                    <button class="btn btn-xs btn-success fc-margin-item"
                             ng-click="add_review()">
                         {[ i18n('ADD_COMMENT') ]}
                     </button>
-                    <button class="btn btn-xs btn-warning"
+                    <button class="btn btn-xs btn-warning fc-margin-item"
                             ng-click="stop_exam(attempt.examCode)">
                         {[ i18n('STOP') ]}
                     </button>
