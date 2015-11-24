@@ -82,6 +82,7 @@ class Exam(models.Model):
         max_length=8,
         choices=EXAM_STATUS_CHOICES,
         default=NEW)
+
     event = models.ForeignKey('EventSession', blank=True, null=True)
 
     objects = ExamsByUserPermsManager()

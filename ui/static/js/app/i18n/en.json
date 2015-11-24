@@ -25,8 +25,11 @@
   "START_SESSION": "Start Session",
   "SESSION_HISTORY": "Check Session History",
   "END_SESSION": "End Session",
+  "TIME_ELAPSED": "Elapsed Time",
+
   "SELECT_ALL": "Check All",
   "DESELECT_ALL": "Uncheck All",
+  "ACTIVATE_SELECTED": "Activate selected",
 
   "PASSED": "Test passed",
   "NOT_PASSED": "Test not passed",
