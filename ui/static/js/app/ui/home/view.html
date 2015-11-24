@@ -95,11 +95,16 @@
                         {[ i18n('ACTIVATE') ]}
                     </button>
                 </div>
-                <button class="btn btn-xs btn-warning"
-                        ng-click="stop_exam(attempt.examCode)"
-                        ng-if="attempt.status == 'started'">
-                    {[ i18n('STOP') ]}
-                </button>
+                <div ng-if="attempt.status == 'started'">
+                    <button class="btn btn-xs btn-warning"
+                            ng-click="add_review()">
+                        {[ i18n('ADD_COMMENT') ]}
+                    </button>
+                    <button class="btn btn-xs btn-warning"
+                            ng-click="stop_exam(attempt.examCode)">
+                        {[ i18n('STOP') ]}
+                    </button>
+                </div>
                 <div ng-if="attempt.status == 'submitted'" class="text-center">
                     <button class="btn btn-xs btn-success fc-margin-item"
                             ng-click="send_review(attempt.examCode, 'Clean')">

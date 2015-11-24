@@ -15,6 +15,7 @@
             function ($scope, $interval, $location, WS, Api, i18n, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
+                var status_timer = null;
 
                 $scope.ws_data = [];
 
@@ -61,8 +62,12 @@
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
-                                    $interval(function () {
-                                        Api.get_exam_status(exam.examCode);
+                                    status_timer = $interval(function () {
+                                        Api.get_exam_status(exam.examCode).then(function(data){
+                                            if (data.data['status'] == 'submitted'){
+                                                $interval.cancel(status_timer);
+                                            }
+                                        });
                                     }, 1500);
                                 }
                             });
