@@ -22,6 +22,7 @@
                 // get student exams from session
                 if (students !== undefined){
                     angular.forEach(students.data, function(val, key){
+                        val.status = val.attempt_status;
                         $scope.ws_data.push(val);
                     });
                 }
@@ -117,7 +118,9 @@
                 $scope.check_all_student_sessions = function() {
                     var list = [];
                     angular.forEach($scope.ws_data, function(val, key){
-                        list.push(val.examCode);
+                        if (val.status == undefined || !val.status){
+                            list.push(val.examCode);
+                        }
                     });
                     $scope.exams.checked = angular.copy(list);
                 };
