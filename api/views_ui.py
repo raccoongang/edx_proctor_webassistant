@@ -267,12 +267,16 @@ def bulk_start_exams(request):
     """
 
     exam_codes = request.data.get('list', [])
-    print(type(exam_codes))
     exam_list = Exam.objects.filter(exam_code__in=exam_codes)
-    print(exam_list)
-    data = bulk_start_exams_request(exam_list)
-    send_ws_msg(data)
-    return Response(data=data, status=200)
+    items = bulk_start_exams_request(exam_list)
+    for exam in items:
+        data = {
+            'hash': exam.generate_key(),
+            'proctor': exam.proctor.username,
+            'status': "OK"
+        }
+        send_ws_msg(data)
+    return Response(status=status.HTTP_200_OK)
 
 
 def _review_payload(exam, exam_code, review_status, video_link,

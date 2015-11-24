@@ -31,12 +31,12 @@ def get_proctored_exams():
 
 
 def bulk_start_exams_request(exam_list):
-    result = {}
+    result = []
     for exam in exam_list:
         response = requests.get(
             settings.EDX_URL + "api/edx_proctoring/proctoring_launch_callback/start_exam/" + exam.exam_code
         )
-        result[exam.exam_code] = json.loads(response.content)
+        result.append(exam) if response.status_code == 200 else None
     return result
 
 
