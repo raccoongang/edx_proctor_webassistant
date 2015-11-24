@@ -76,7 +76,8 @@
             <td>
                 <div ng-if="!attempt.status">
                     <button class="btn btn-xs btn-success fc-margin-item"
-                            ng-click="accept_student(attempt)">
+                            ng-click="accept_student(attempt)"
+                            ng-if="!(attempt.accepted === true)">
                         {[ i18n('ACCEPT') ]}
                     </button>
                     <br>
