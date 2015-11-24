@@ -138,9 +138,9 @@ class EventSession(models.Model):
             instance.save()
 
     def __unicode__(self):
-        return u" | ".join((self.testing_center.encode('utf-8'),
-                            self.course_id.encode('utf-8'),
-                            self.course_event_id.encode('utf-8')))
+        return u" | ".join((unicode(self.testing_center).encode('utf-8'),
+                            unicode(self.course_id).encode('utf-8'),
+                            unicode(self.course_event_id).encode('utf-8')))
 
 
 post_save.connect(EventSession.post_save, EventSession,
