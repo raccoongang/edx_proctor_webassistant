@@ -36,7 +36,7 @@ def start_exam(request, attempt_code):
             'proctor': exam.proctor.username,
             'status': "OK"
         }
-        send_ws_msg(data, channel=exam.event)
+        send_ws_msg(data, channel=exam.event.hash_key)
     else:
         data = {'error': 'Edx response error. See logs'}
     return Response(data=data, status=response.status_code)
@@ -53,7 +53,7 @@ def poll_status(request, attempt_code):
         'hash': exam.generate_key(),
         'status': status.get('status')
     }
-    send_ws_msg(data, channel=exam.event)
+    send_ws_msg(data, channel=exam.event.hash_key)
     return Response(data=data, status=response.status_code)
 
 
@@ -278,7 +278,7 @@ def bulk_start_exams(request):
             'proctor': exam.proctor.username,
             'status': "OK"
         }
-        send_ws_msg(data, channel=exam.event)
+        send_ws_msg(data, channel=exam.event.hash_key)
     return Response(status=status.HTTP_200_OK)
 
 
