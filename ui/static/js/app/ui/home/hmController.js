@@ -33,9 +33,15 @@
                 };
 
                 $scope.websocket_callback = function (msg) {
-                    if (msg && msg['examCode']) {
-                        $scope.ws_data.push(angular.copy(msg));
-                        $scope.$apply();
+                    if (msg){
+                        if (msg['examCode']) {
+                            $scope.ws_data.push(angular.copy(msg));
+                            $scope.$apply();
+                            return;
+                        }
+                        if (msg['hash'] && msg['status']){
+                            update_status(msg['hash'], msg['status']);
+                        }
                     }
                 };
 
@@ -54,18 +60,11 @@
                     if (exam.accepted){
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
-                                update_status(data['hash'], data['status']);
                                 if (data['status'] == 'OK') {
                                     $interval(function () {
-                                        Api.get_exam_status(code)
-                                            .success(function (data) {
-                                                update_status(data['hash'], data['status']);
-                                            })
+                                        Api.get_exam_status(exam.examCode);
                                     }, 1500);
                                 }
-                            })
-                            .error(function (data) {
-
                             });
                     }
                 };
