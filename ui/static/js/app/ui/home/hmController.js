@@ -49,22 +49,24 @@
                     }
                 };
 
-                $scope.accept_exam_attempt = function (code) {
-                    Api.accept_exam_attempt(code)
-                        .success(function (data) {
-                            update_status(data['hash'], data['status']);
-                            if (data['status'] == 'OK') {
-                                $interval(function () {
-                                    Api.get_exam_status(code)
-                                        .success(function (data) {
-                                            update_status(data['hash'], data['status']);
-                                        })
-                                }, 1500);
-                            }
-                        })
-                        .error(function (data) {
+                $scope.accept_exam_attempt = function (exam) {
+                    if (exam.accepted){
+                        Api.accept_exam_attempt(exam.examCode)
+                            .success(function (data) {
+                                update_status(data['hash'], data['status']);
+                                if (data['status'] == 'OK') {
+                                    $interval(function () {
+                                        Api.get_exam_status(code)
+                                            .success(function (data) {
+                                                update_status(data['hash'], data['status']);
+                                            })
+                                    }, 1500);
+                                }
+                            })
+                            .error(function (data) {
 
-                        });
+                            });
+                    }
                 };
 
                 $scope.send_review = function (code, status) {
@@ -128,6 +130,10 @@
 
                 $scope.start_all_exams = function(){
                     Api.start_all_exams($scope.exams.checked);
+                };
+
+                $scope.accept_student = function(exam){
+                    exam.accepted = true;
                 };
             }]);
 

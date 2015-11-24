@@ -65,8 +65,14 @@
                 {[ attempt.status ]}
             </td>
             <td>
-                <button class="btn btn-xs btn-success"
-                        ng-click="accept_exam_attempt(attempt.examCode)"
+                <button class="btn btn-xs btn-success fc-margin-item"
+                        ng-click="accept_student(attempt)"
+                        ng-if="!attempt.status">
+                    {[ i18n('ACCEPT') ]}
+                </button>
+                <br ng-if="!attempt.status">
+                <button class="btn btn-xs btn-success fc-margin-item"
+                        ng-click="accept_exam_attempt(attempt)"
                         ng-if="!attempt.status">
                     {[ i18n('ACTIVATE') ]}
                 </button>
