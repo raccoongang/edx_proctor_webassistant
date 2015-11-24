@@ -68,7 +68,7 @@ class ExamSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
                   'reviewerNotes', 'examPassword', 'examSponsor',
-                  'examName', 'ssiProduct', 'orgExtra', 'attempt_status')
+                  'examName', 'ssiProduct', 'orgExtra', 'attempt_status', 'hash')
 
     examCode = serializers.CharField(source='exam_code', max_length=60)
     reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
