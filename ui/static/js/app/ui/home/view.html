@@ -32,8 +32,9 @@
             </button>
         </div>
         <div class="col-xs-6">
-            {[ i18n('STUDENT_SESSIONS') ]}
+            <span class="pull-right">{[ i18n('STUDENT_SESSIONS') ]}</span>
         </div>
+        <div class="clearfix"></div>
     </div>
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">

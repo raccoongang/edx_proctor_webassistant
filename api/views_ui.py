@@ -111,7 +111,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         except (TypeError, KeyError):
             return {}
 
-    def update(self, request, *args, **kwargs):
+    def partial_update(self, request, *args, **kwargs):
 
         instance = self.get_object()
         fields_for_update = ['status', 'notify']

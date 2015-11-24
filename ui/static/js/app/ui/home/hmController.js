@@ -115,6 +115,7 @@
 
                 $scope.uncheck_all_student_sessions = function() {
                     $scope.checked_exams = [];
+                    $scope.$apply();
                 };
 
                 $scope.end_session = function(){
