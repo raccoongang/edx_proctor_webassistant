@@ -85,6 +85,7 @@
                         if (window.sessionStorage['proctoring'] !== undefined){
                             TestSession.setSession(window.sessionStorage['proctoring']);
                         }
+                        console.log('resolve', TestSession.getSession());
                         if (!TestSession.getSession()){
                             $location.path('/session');
                         }

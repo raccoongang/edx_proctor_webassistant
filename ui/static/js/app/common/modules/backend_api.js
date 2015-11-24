@@ -55,6 +55,7 @@
         this.restore_session = function(){
             if (window.sessionStorage['proctoring'] !== undefined){
                 var session = TestSession.getSession();
+                console.log('restore', session);
                 if (session) {
                     return generic_api_call({
                         'url':  get_url('exam_register'),
