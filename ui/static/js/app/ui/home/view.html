@@ -9,12 +9,14 @@
     </div>
     <div class="col-xs-12 col-sm-6">
         <div>
-            <h3></h3>
-            <h5>
+            <h3>
                 <button class="btn btn-xs btn-warning pull-right"
                         ng-click="end_session()">
                     {[ i18n('END_SESSION') ]}
                 </button>
+            </h3>
+            <h5>
+                {[ i18n('TIME_ELAPSED') ]}:
             </h5>
         </div>
     </div>
@@ -32,7 +34,7 @@
             </a>&nbsp;
             <button class="btn btn-xs btn-primary"
                     ng-click="start_all_exams()">
-                Активировать выбранные
+                {[ i18n('ACTIVATE_SELECTED') ]}
             </button>
         </div>
         <div class="col-xs-6">
@@ -65,17 +67,17 @@
                 {[ attempt.status ]}
             </td>
             <td>
-                <button class="btn btn-xs btn-success fc-margin-item"
-                        ng-click="accept_student(attempt)"
-                        ng-if="!attempt.status">
-                    {[ i18n('ACCEPT') ]}
-                </button>
-                <br ng-if="!attempt.status">
-                <button class="btn btn-xs btn-success fc-margin-item"
-                        ng-click="accept_exam_attempt(attempt)"
-                        ng-if="!attempt.status">
-                    {[ i18n('ACTIVATE') ]}
-                </button>
+                <div ng-if="!attempt.status">
+                    <button class="btn btn-xs btn-success fc-margin-item"
+                            ng-click="accept_student(attempt)">
+                        {[ i18n('ACCEPT') ]}
+                    </button>
+                    <br>
+                    <button class="btn btn-xs btn-success fc-margin-item"
+                            ng-click="accept_exam_attempt(attempt)">
+                        {[ i18n('ACTIVATE') ]}
+                    </button>
+                </div>
                 <button class="btn btn-xs btn-warning"
                         ng-click="stop_exam(attempt.examCode)"
                         ng-if="attempt.status == 'started'">
@@ -91,6 +93,9 @@
                             ng-click="send_review(attempt.examCode, 'Suspicious')">
                         {[ i18n('NOT_PASSED') ]}
                     </button>
+                </div>
+                <div ng-if="attempt.status == 'finished'">
+                    finished
                 </div>
             </td>
         </tr>

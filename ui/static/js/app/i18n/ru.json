@@ -25,8 +25,11 @@
   "START_SESSION": "Начать контрольную сессию",
   "SESSION_HISTORY": "Посмотреть историю сессий",
   "END_SESSION": "Завершить",
+  "TIME_ELAPSED": "Прошло времени",
+
   "SELECT_ALL": "Выбрать все",
   "DESELECT_ALL": "Убрать все",
+  "ACTIVATE_SELECTED": "Активировать отмеченные",
 
   "PASSED": "Тест пройден",
   "NOT_PASSED": "Тест не пройден",

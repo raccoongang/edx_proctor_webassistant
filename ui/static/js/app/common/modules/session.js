@@ -29,12 +29,10 @@
                 if (Session){
                     return $http({
                         url: $rootScope.apiConf.apiServer + '/event_session/',
-                        method: 'POST',
+                        method: 'PATCH',
                         headers: {Authorization: "Token " + Auth.get_token()},
                         data: JSON.stringify({
-                            status: 'finished',
-                            notify: null,
-                            testing_center: Session.testing_center
+                            status: 'finished'
                         })
                     }).then(function(){
                         Session = null;

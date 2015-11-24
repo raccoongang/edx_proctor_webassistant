@@ -75,7 +75,7 @@
                         while ($scope.ws_data[idx].examCode !== code) {
                             idx++;
                         }
-                        $scope.ws_data.splice(idx, 1);
+                        $scope.ws_data[idx].status = 'finished';
                     });
                 };
 
