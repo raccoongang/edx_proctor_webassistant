@@ -90,9 +90,6 @@ class EventSessionViewSet(mixins.ListModelMixin,
                 return Response(serializer.data,
                                 status=status.HTTP_200_OK,
                                 headers=self.get_success_headers(serializer.data))
-            else:
-                return Response(status=status.HTTP_403_FORBIDDEN)
-
         except EventSession.DoesNotExist:
             pass
         data['proctor'] = request.user.pk
