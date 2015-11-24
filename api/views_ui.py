@@ -84,7 +84,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         # Return existing session if match test_center, ourse_id and exam_id
         # so the proctor is able to connect ot existing session
         try:
-            data[status] = EventSession.IN_PROGRESS
+            data['status'] = EventSession.IN_PROGRESS
             sessions = EventSession.objects.filter(**data)
             if sessions:
                 session = sessions[0] if len(sessions) == 1 \
