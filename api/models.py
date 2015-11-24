@@ -138,8 +138,9 @@ class EventSession(models.Model):
             instance.save()
 
     def __unicode__(self):
-        return " | ".join((self.testing_center, self.course_id,
-                         self.course_event_id))
+        return u" | ".join((self.testing_center.encode('utf-8'),
+                            self.course_id.encode('utf-8'),
+                            self.course_event_id.encode('utf-8')))
 
 
 post_save.connect(EventSession.post_save, EventSession,
