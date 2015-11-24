@@ -83,7 +83,9 @@
                     students: function($location, Auth, TestSession, Api){
                         Auth.authenticate();
                         if (window.sessionStorage['proctoring'] !== undefined){
-                            TestSession.setSession(window.sessionStorage['proctoring']);
+                            TestSession.setSession(
+                                JSON.parse(window.sessionStorage['proctoring'])
+                            );
                         }
                         console.log('resolve', TestSession.getSession());
                         if (!TestSession.getSession()){

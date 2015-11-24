@@ -19,7 +19,7 @@
                         Session.course_name = course_name;
                         Session.exam_name = exam_name;
                     }
-                    window.sessionStorage['proctoring'] = Session;
+                    window.sessionStorage['proctoring'] = JSON.stringify(Session);
                 }, function(data){
                     alert(i18n.translate('SESSION_ERROR_1'));
                 });
