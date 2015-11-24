@@ -28,9 +28,11 @@
         </div>
     </div>
     <div class="clearfix"></div>
+
     <br>
-    <div class="row">
-        <div class="col-xs-6" ng-if="ws_data.length">
+
+    <div class="row" ng-if="ws_data.length">
+        <div class="col-xs-6">
             <a href=""
                ng-click="check_all_student_sessions()">
                 {[ i18n('SELECT_ALL') ]}
@@ -49,6 +51,12 @@
         </div>
         <div class="clearfix"></div>
     </div>
+    <div class="row" ng-if="ws_data.length">
+        <div class="col-xs-12">
+            {[ i18n('STUDENT_SESSIONS') ]}
+        </div>
+    </div>
+
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
             <td>
