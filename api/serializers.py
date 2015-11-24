@@ -11,6 +11,14 @@ from django.utils.translation import ugettext as _
 from models import Exam, EventSession
 
 
+class HashField(serializers.Field):
+    def to_representation(self, instance):
+        """
+        Field value -> String.
+        """
+        return instance.generate_key()
+
+
 class JSONSerializerField(serializers.Field):
     """ Serializer for orgExtraField"""
     FIELD_LIST = [
@@ -71,6 +79,7 @@ class ExamSerializer(serializers.ModelSerializer):
     examName = serializers.CharField(source='exam_name', max_length=60)
     ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
     attempt_status = serializers.CharField(read_only=True)
+    hash = HashField()
 
     orgExtra = JSONSerializerField(
         style={'base_template': 'textarea.html'},
