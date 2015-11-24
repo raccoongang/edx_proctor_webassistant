@@ -267,8 +267,9 @@ def bulk_start_exams(request):
     """
 
     exam_codes = request.data.get('list', [])
-    print(exam_codes)
+    print(type(exam_codes))
     exam_list = Exam.objects.filter(exam_code__in=exam_codes)
+    print(exam_list)
     data = bulk_start_exams_request(exam_list)
     send_ws_msg(data)
     return Response(data=data, status=200)
