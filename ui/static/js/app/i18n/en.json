@@ -34,6 +34,7 @@
   "PASSED": "Test passed",
   "NOT_PASSED": "Test not passed",
 
+  "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "SESSION_ERROR_1": "Failed to create/join session",
   "SESSION_ERROR_2": "Failed to end current session"
 }

@@ -4,7 +4,9 @@
             {[ test_center ]}
         </h3>
         <h5>
-            {[ course_name ]} &emsp; {[ exam_name ]}
+            {[ course_name ]}
+            <br>
+            {[ exam_name ]}
         </h5>
     </div>
     <div class="col-xs-12 col-sm-6">
@@ -79,7 +81,8 @@
                     </button>
                     <br>
                     <button class="btn btn-xs btn-success fc-margin-item"
-                            ng-click="accept_exam_attempt(attempt)">
+                            ng-click="accept_exam_attempt(attempt)"
+                            ng-disabled="!(attempt.accepted === true)">
                         {[ i18n('ACTIVATE') ]}
                     </button>
                 </div>

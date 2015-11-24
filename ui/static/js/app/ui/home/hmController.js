@@ -7,11 +7,12 @@
                      '$location',
                      'WS',
                      'Api',
+                     'i18n',
                      'NgTableParams',
                      '$uibModal',
                      'TestSession',
                      'students',
-            function ($scope, $interval, $location, WS, Api, NgTableParams, $uibModal, TestSession, students) {
+            function ($scope, $interval, $location, WS, Api, i18n, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
 
@@ -129,7 +130,9 @@
                 };
 
                 $scope.start_all_exams = function(){
-                    Api.start_all_exams($scope.exams.checked);
+                    if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
+                        Api.start_all_exams($scope.exams.checked);
+                    }
                 };
 
                 $scope.accept_student = function(exam){
