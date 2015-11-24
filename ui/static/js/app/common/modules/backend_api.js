@@ -67,7 +67,7 @@
             return generic_api_call({
                 'url':  get_url('bulk_start_exam'),
                 'method': 'POST',
-                'data': JSON.stringify(list)
+                'data': JSON.stringify({list: list})
             });
         };
     }]);

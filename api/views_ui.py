@@ -266,7 +266,7 @@ def bulk_start_exams(request):
     :return:
     """
 
-    exam_codes = request.data
+    exam_codes = request.data.get('list', [])
     exam_list = Exam.objects.filter(exam_code__in=exam_codes)
     data = bulk_start_exams_request(exam_list)
     send_ws_msg(data)
