@@ -22,13 +22,17 @@
     <br>
     <div class="row">
         <div class="col-xs-6">
-            <button class="btn btn-xs btn-primary"
-                    ng-click="check_all_student_sessions()">
+            <a href=""
+               ng-click="check_all_student_sessions()">
                 {[ i18n('SELECT_ALL') ]}
-            </button>&nbsp;
-            <button class="btn btn-xs btn-primary"
-                    ng-click="uncheck_all_student_sessions()">
+            </a>&nbsp;
+            <a href=""
+               ng-click="uncheck_all_student_sessions()">
                 {[ i18n('DESELECT_ALL') ]}
+            </a>&nbsp;
+            <button class="btn btn-xs btn-primary"
+                    ng-click="start_all_exams()">
+                Активировать выбранные
             </button>
         </div>
         <div class="col-xs-6">

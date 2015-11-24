@@ -254,10 +254,10 @@ def get_exams_proctored(request):
     )
 
 
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
+@api_view(['POST'])
+@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
-def bulk_start_exams(request, exam_codes):
+def bulk_start_exams(request):
     """
     Start list of exams by exam codes.
 
@@ -266,6 +266,7 @@ def bulk_start_exams(request, exam_codes):
     :return:
     """
 
+    exam_codes = request.data
     exam_list = Exam.objects.filter(exam_code__in=exam_codes)
     data = bulk_start_exams_request(exam_list)
     send_ws_msg(data)

@@ -16,7 +16,7 @@ urlpatterns = patterns(
 
     url(r'start_exam/(?P<attempt_code>[-\w]+)$', start_exam,
         name='start_exam'),
-    url(r'bulk_start_exam/(?P<attempt_codes>[-\w]+)$', bulk_start_exams,
+    url(r'bulk_start_exam/$', bulk_start_exams,
         name='bulk_start_exams'),
     url(r'poll_status/(?P<attempt_code>[-\w]+)$', poll_status,
         name='poll_status'),

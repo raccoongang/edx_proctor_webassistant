@@ -125,6 +125,10 @@
                         $location.path('/session');
                     });
                 };
+
+                $scope.start_all_exams = function(){
+                    Api.start_all_exams($scope.exams.checked);
+                };
             }]);
 
     angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance) {

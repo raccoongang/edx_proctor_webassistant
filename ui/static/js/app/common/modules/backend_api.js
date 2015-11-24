@@ -62,5 +62,13 @@
                 });
             }
         };
+
+        this.start_all_exams = function(list){
+            return generic_api_call({
+                'url':  get_url('bulk_start_exam'),
+                'method': 'POST',
+                'data': JSON.stringify(list)
+            });
+        };
     }]);
 })();
