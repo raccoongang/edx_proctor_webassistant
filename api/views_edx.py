@@ -18,7 +18,7 @@ class APIRoot(APIView):
             "exam_register": reverse('exam-register-list', request=request),
             "bulk_start_exams": reverse(
                 'bulk_start_exams',
-                request=request, args=('attempt_codes',)
+                request=request
             ),
             "start_exam": reverse(
                 'start_exam',
@@ -66,7 +66,10 @@ class ExamViewSet(mixins.ListModelMixin,
             "examID": "id",
             "courseID": "edx_org/edx_course/edx_courserun",
             "firstName": "first_name",
-            "lastName": "last_name"
+            "lastName": "last_name",
+            "userID": "1",
+            "email": "test@test.com",
+            "username": "test"
         }
 
     """
@@ -109,6 +112,8 @@ class ExamViewSet(mixins.ListModelMixin,
             data['hash'] = serializer.instance.generate_key()
             send_ws_msg(data, channel=event.hash_key)
             headers = self.get_success_headers(serializer.data)
+            serializer.instance.event = event
+            serializer.instance.save()
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,
                             headers=headers)

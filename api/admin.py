@@ -25,7 +25,7 @@ class ExamAdmin(admin.ModelAdmin):
         }),
         ('Additional', {
             'fields': (
-                'course_organization', 'course_identify', 'course_run',
+                'event', 'course_organization', 'course_identify', 'course_run',
                 'exam_status')
         }),
     )

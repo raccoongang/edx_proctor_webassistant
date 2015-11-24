@@ -77,7 +77,7 @@ class Exam(models.Model):
         null=True,
         db_index=True
     )
-    proctor = models.ForeignKey(User,        blank=True,  null=True)
+    proctor = models.ForeignKey(User, blank=True, null=True)
     exam_status = models.CharField(
         max_length=8,
         choices=EXAM_STATUS_CHOICES,
@@ -91,7 +91,8 @@ class Exam(models.Model):
         generate key for edx
         :return: string
         '''
-        str_to_hash = str(self.exam_code) + str(self.user_id) + str(self.exam_id) + str(self.email)
+        str_to_hash = str(self.exam_code) + str(self.user_id) + str(
+            self.exam_id) + str(self.email)
         return hashlib.md5(str_to_hash).hexdigest()
 
     @classmethod
@@ -119,7 +120,8 @@ class EventSession(models.Model):
         choices=SESSION_STATUS_CHOICES,
         default=IN_PROGRESS
     )
-    hash_key = models.CharField(max_length=128, db_index=True, blank=True, null=True)
+    hash_key = models.CharField(max_length=128, db_index=True, blank=True,
+                                null=True)
     notify = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
@@ -128,13 +130,19 @@ class EventSession(models.Model):
     def post_save(sender, instance, created, **kwargs):
         if created and not instance.hash_key:
             instance.hash_key = hashlib.md5(
-                unicode(instance.testing_center).encode('utf-8') + str(instance.course_id) + str(
+                unicode(instance.testing_center).encode('utf-8') + str(
+                    instance.course_id) + str(
                     instance.course_event_id) + str(instance.proctor.pk) + str(
                     instance.start_date)).hexdigest()
             instance.save()
 
+    def __unicode__(self):
+        return " | ".join((self.testing_center, self.course_id,
+                         self.course_event_id))
 
-post_save.connect(EventSession.post_save, EventSession, dispatch_uid='add_hash')
+
+post_save.connect(EventSession.post_save, EventSession,
+                  dispatch_uid='add_hash')
 
 
 class Permission(models.Model):
