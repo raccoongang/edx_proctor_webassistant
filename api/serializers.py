@@ -79,7 +79,7 @@ class ExamSerializer(serializers.ModelSerializer):
     examName = serializers.CharField(source='exam_name', max_length=60)
     ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
     attempt_status = serializers.CharField(read_only=True)
-    hash = HashField()
+    hash = HashField(read_only=True)
 
     orgExtra = JSONSerializerField(
         style={'base_template': 'textarea.html'},
