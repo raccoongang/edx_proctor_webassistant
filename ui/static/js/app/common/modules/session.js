@@ -28,7 +28,7 @@
             this.endSession = function(){
                 if (Session){
                     return $http({
-                        url: $rootScope.apiConf.apiServer + '/event_session/',
+                        url: $rootScope.apiConf.apiServer + '/event_session/' + Session.id + '/',
                         method: 'PATCH',
                         headers: {Authorization: "Token " + Auth.get_token()},
                         data: JSON.stringify({
