@@ -40,8 +40,8 @@
                 $scope.session.testing_centre,
                 $scope.session.course,
                 $scope.session.exam,
-                $.grep($scope.courses, function(e){return e.id == $scope.session.course})[0],
-                $.grep($scope.exams, function(e){return e.id == $scope.session.exam})[0]
+                $.grep($scope.courses, function(e){return e.id == $scope.session.course})[0].name,
+                $.grep($scope.exams, function(e){return e.id == $scope.session.exam})[0].exam_name
             )
                 .then(function(){
                     $location.path('/');
