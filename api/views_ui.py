@@ -84,8 +84,11 @@ class EventSessionViewSet(mixins.ListModelMixin,
         # Return existing session if match test_center, ourse_id and exam_id
         # so the proctor is able to connect ot existing session
         try:
-            session = EventSession.objects.get(**data)
-            if session.status == EventSession.IN_PROGRESS:
+            data[status] = EventSession.IN_PROGRESS
+            sessions = EventSession.objects.filter(**data)
+            if sessions:
+                session = sessions[0] if len(sessions) == 1 \
+                    else sessions.reverse()[0]
                 serializer = EventSessionSerializer(session)
                 return Response(serializer.data,
                                 status=status.HTTP_200_OK,
