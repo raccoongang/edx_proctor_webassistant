@@ -123,10 +123,10 @@
                 };
 
                 $scope.end_session = function(){
-                    TestSession.endSession().success(function(){
+                    TestSession.endSession().then(function(){
                         delete window.sessionStorage['proctoring'];
                         $location.path('/session');
-                    });
+                    }, function(){});
                 };
 
                 $scope.start_all_exams = function(){
