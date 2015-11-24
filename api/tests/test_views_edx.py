@@ -22,6 +22,7 @@ class APIRootTestCase(TestCase):
 
 class ExamViewSetTestCase(TestCase):
     def setUp(self):
+
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -34,6 +35,9 @@ class ExamViewSetTestCase(TestCase):
         exam.ssi_product = 'ssiProduct'
         exam.first_name = 'firstName'
         exam.last_name = 'lastName'
+        exam.username = 'username'
+        exam.user_id = '1'
+        exam.email = 'test@test.com'
         exam.exam_id = '1'
         exam.course_id = 'org1/course1/run1'
         exam.save()
@@ -50,21 +54,10 @@ class ExamViewSetTestCase(TestCase):
         )
         self.event.save()
 
-    def test_get_list_exams(self):
-        factory = APIRequestFactory()
-        request = factory.get('/api/exam_register/')
-        view = ExamViewSet.as_view({'get': 'list'})
-        response = view(request)
-        response.render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        data = json.loads(response.content)
-        self.assertEqual(type(data), list)
-        self.assertEqual(len(data), Exam.objects.count())
-
-    def test_get_exam(self):
+    def test_get_exam_by_session(self):
         factory = APIRequestFactory()
         request = factory.get(
-            '/api/exam_register/%s' % self.exam.pk)
+            '/api/exam_register/?session=%s' % self.event.hash_key)
         view = ExamViewSet.as_view({'get': 'retrieve'})
         response = view(request, pk=self.exam.pk)
         response.render()
@@ -99,10 +92,13 @@ class ExamViewSetTestCase(TestCase):
                 "examStartDate": "2015-10-10 11:00",
                 "examEndDate": "2015-10-10 15:00",
                 "noOfStudents": 1,
-                "examID": "wrong_exam",
+                "examID": "wrong",
                 "courseID": "wrong/course/id",
                 "firstName": "first_name",
-                "lastName": "last_name"
+                "lastName": "last_name",
+                "email": "test@test.com",
+                "username": "test",
+                "userID": "1"
             }'''
         }
         with patch('api.views_edx.send_ws_msg') as send_ws:
@@ -122,7 +118,10 @@ class ExamViewSetTestCase(TestCase):
                 "examID": "1",
                 "courseID": "org1/course1/run1",
                 "firstName": "first_name",
-                "lastName": "last_name"
+                "lastName": "last_name",
+                "email": "test@test.com",
+                "username": "test",
+                "userID": "1"
             }'''
             request = factory.post(
                 '/api/exam_register/',
@@ -152,5 +151,5 @@ class ExamViewSetTestCase(TestCase):
                 [exam.course_organization, exam.course_identify,
                  exam.course_run]
             )
-            self.assertEqual(data['ID'], self.event.hash_key)
+            self.assertEqual(data['ID'], exam.generate_key())
             self.assertEqual(Exam.objects.count(), 2)

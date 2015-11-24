@@ -30,6 +30,9 @@ class ViewsUITestCase(TestCase):
         exam.ssi_product = 'ssiProduct'
         exam.first_name = 'firstName'
         exam.last_name = 'lastName'
+        exam.username = 'test'
+        exam.user_id = 1
+        exam.email = 'test@test.com'
         exam.exam_id = '1'
         exam.save()
         self.exam = exam
@@ -155,10 +158,10 @@ class EventSessionViewSetTestCase(TestCase):
             'status': EventSession.FINISHED,
             'notify': 'new notify',
         }
-        request = factory.post(
+        request = factory.patch(
             '/api/event_session/%s' % event.pk, data=event_data)
         force_authenticate(request, user=self.user)
-        view = EventSessionViewSet.as_view({'post': 'update'})
+        view = EventSessionViewSet.as_view({'patch': 'partial_update'})
         response = view(request, pk = event.pk)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
