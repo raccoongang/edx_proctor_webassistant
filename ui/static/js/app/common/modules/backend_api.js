@@ -54,10 +54,11 @@
 
         this.restore_session = function(){
             if (window.sessionStorage['proctoring'] !== undefined){
+                var session = TestSession.getSession();
                 return generic_api_call({
                     'url':  get_url('exam_register'),
                     'method': 'GET',
-                    params: {session: TestSession.getSession().hash_key}
+                    params: {session: session?session.hash_key:''}
                 });
             }
         };

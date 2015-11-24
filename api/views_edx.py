@@ -80,7 +80,7 @@ class ExamViewSet(mixins.ListModelMixin,
         the user as determined by the username portion of the URL.
         """
         hash_key = self.request.query_params.get('session')
-        if hash_key is not None:
+        if hash_key is not None and hash_key:
             try:
                 event = EventSession.objects.get(
                     hash_key=hash_key,
@@ -93,7 +93,7 @@ class ExamViewSet(mixins.ListModelMixin,
             except EventSession.DoesNotExist:
                 return Exam.objects.filter(pk__lt=0)
         else:
-            return Exam.objects.all()
+            return []
 
     def create(self, request, *args, **kwargs):
         data = request.data

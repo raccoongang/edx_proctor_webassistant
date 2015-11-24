@@ -39,7 +39,7 @@
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
         <tr ng-repeat="attempt in $data">
             <td>
-                <input type="checkbox" checklist-model="checked_exams" checklist-value="attempt.examCode">
+                <input type="checkbox" checklist-model="exams.checked" checklist-value="attempt.examCode">
             </td>
             <td title="i18n('FULL_NAME')"
                 sortable="'orgExtra.firstName'">

@@ -27,7 +27,9 @@
                 $scope.test_center = session.testing_center;
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;
-                $scope.checked_exams = [];
+                $scope.exams = {
+                    checked: []
+                };
 
                 $scope.websocket_callback = function (msg) {
                     if (msg && msg['examCode']) {
@@ -110,12 +112,11 @@
                     angular.forEach($scope.ws_data, function(val, key){
                         list.push(val.examCode);
                     });
-                    $scope.checked_exams = list;
+                    $scope.exams.checked = angular.copy(list);
                 };
 
                 $scope.uncheck_all_student_sessions = function() {
-                    $scope.checked_exams = [];
-                    $scope.$apply();
+                    $scope.exams.checked = [];
                 };
 
                 $scope.end_session = function(){
