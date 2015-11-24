@@ -15,7 +15,7 @@
             function ($scope, $interval, $location, WS, Api, i18n, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
-                var status_timer = null;
+                var status_timers = {};
 
                 $scope.ws_data = [];
 
@@ -24,6 +24,9 @@
                     angular.forEach(students.data, function(val, key){
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
+                        status_timers[val['hash']] = $interval(function(){
+                            poll_status(val.examCode);
+                        }, 1500);
                     });
                 }
 
@@ -58,17 +61,21 @@
                     }
                 };
 
+                var poll_status = function(code){
+                    Api.get_exam_status(code).then(function(data){
+                        if (data.data['status'] == 'submitted'){
+                            $interval.cancel(status_timers[data['hash']]);
+                        }
+                    });
+                };
+
                 $scope.accept_exam_attempt = function (exam) {
                     if (exam.accepted){
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
-                                    status_timer = $interval(function () {
-                                        Api.get_exam_status(exam.examCode).then(function(data){
-                                            if (data.data['status'] == 'submitted'){
-                                                $interval.cancel(status_timer);
-                                            }
-                                        });
+                                    status_timers[data['hash']] = $interval(function () {
+                                        poll_status(exam.examCode);
                                     }, 1500);
                                 }
                             });
