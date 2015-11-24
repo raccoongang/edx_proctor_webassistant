@@ -83,6 +83,8 @@ class Exam(models.Model):
         choices=EXAM_STATUS_CHOICES,
         default=NEW)
 
+    attempt_status = models.CharField(max_length=20, blank=True, null=True)
+
     event = models.ForeignKey('EventSession', blank=True, null=True)
 
     objects = ExamsByUserPermsManager()

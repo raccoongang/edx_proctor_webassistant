@@ -30,6 +30,7 @@ def start_exam(request, attempt_code):
     if response.status_code == 200:
         exam.exam_status = exam.STARTED
         exam.proctor = request.user
+        exam.attempt_status = "OK"
         exam.save()
         data = {
             'hash': exam.generate_key(),
@@ -49,9 +50,11 @@ def poll_status(request, attempt_code):
     exam = get_object_or_404(Exam, exam_code=attempt_code)
     response = poll_status_request(exam.exam_code)
     status = json.loads(response.content)
+    exam.attempt_status = status.get('status')
+    exam.save()
     data = {
         'hash': exam.generate_key(),
-        'status': status.get('status')
+        'status': exam.attempt_status
     }
     send_ws_msg(data, channel=exam.event.hash_key)
     return Response(data=data, status=response.status_code)
@@ -178,6 +181,7 @@ class Review(APIView):
         }
         if response.status_code == 200:
             data['status'] = 'review_was_sent'
+            exam.attempt_status = 'finished'
         else:
             data['status'] = 'review_send_failed'
 

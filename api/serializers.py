@@ -60,7 +60,7 @@ class ExamSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
                   'reviewerNotes', 'examPassword', 'examSponsor',
-                  'examName', 'ssiProduct', 'orgExtra')
+                  'examName', 'ssiProduct', 'orgExtra', 'attempt_status')
 
     examCode = serializers.CharField(source='exam_code', max_length=60)
     reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
@@ -70,6 +70,7 @@ class ExamSerializer(serializers.ModelSerializer):
     examSponsor = serializers.CharField(source='exam_sponsor', max_length=60)
     examName = serializers.CharField(source='exam_name', max_length=60)
     ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
+    attempt_status = serializers.CharField(read_only=True)
 
     orgExtra = JSONSerializerField(
         style={'base_template': 'textarea.html'},
