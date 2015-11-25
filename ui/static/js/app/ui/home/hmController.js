@@ -185,7 +185,7 @@
         var session = TestSession.getSession();
         $scope.exam.course_name = session.course_name;
         $scope.exam.exam_name = session.exam_name;
-        $scope.available_statuses = [i18n('SUSPICIOUS')];
+        $scope.available_statuses = [i18n.translate('SUSPICIOUS')];
         $scope.comment = {
             status: $scope.available_statuses[0],
             message: ""
