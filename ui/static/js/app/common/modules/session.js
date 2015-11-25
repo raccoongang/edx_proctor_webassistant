@@ -51,5 +51,11 @@
                     Session = obj;
                 }
             };
+
+            this.getSessionDuration = function(){
+                if (Session){
+                    return Date.parse(Session.start_date);
+                }
+            };
         });
 })();

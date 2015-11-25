@@ -15,6 +15,12 @@
             function ($scope, $interval, $location, WS, Api, i18n, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
+                if (session){
+                    $interval(function(){
+                        $scope.session_duration = TestSession.getSessionDuration();
+                    }, 1000);
+                }
+
                 var status_timers = {};
 
                 $scope.ws_data = [];
