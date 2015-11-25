@@ -184,7 +184,7 @@ PIPELINE_JS = {
             'js/app/common/modules/backend_api.js',
             'js/app/common/modules/session.js',
             'js/app/common/modules/i18n.js',
-            'js/app/common/.js',
+            'js/app/common/modules/date.js',
         ),
         'output_filename': 'js/app.js',
     }
