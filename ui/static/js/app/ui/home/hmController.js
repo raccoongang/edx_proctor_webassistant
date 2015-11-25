@@ -37,6 +37,10 @@
                     checked: []
                 };
 
+                var stop_timer = function(idx){
+                    $interval.cancel(status_timers[idx]);
+                };
+
                 $scope.websocket_callback = function (msg) {
                     if (msg){
                         if (msg['examCode']) {
@@ -47,7 +51,7 @@
                         if (msg['hash'] && msg['status']){
                             update_status(msg['hash'], msg['status']);
                             if (['submitted', 'verified'].indexOf(msg['status']) >= 0){
-                                $interval.cancel(status_timers[msg['hash']]);
+                                stop_timer(msg['hash']);
                             }
                         }
                     }
@@ -65,7 +69,11 @@
                 };
 
                 var poll_status = function(code){
-                    Api.get_exam_status(code);
+                    Api.get_exam_status(code).then(function(data){
+                        if (['submitted', 'verified'].indexOf(data.data['status']) >= 0){
+                            stop_timer(data.data['hash']);
+                        }
+                    });
                 };
 
                 $scope.accept_exam_attempt = function (exam) {
