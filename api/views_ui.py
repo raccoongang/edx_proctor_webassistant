@@ -165,8 +165,8 @@ class Review(APIView):
         required_fields = ['examMetaData', 'reviewStatus',
                            'videoReviewLink', 'desktopComments']
         for field in required_fields:
-            return Response(status=status.HTTP_400_BAD_REQUEST) \
-                if field not in payload else None
+            if field not in payload:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
         exam = get_object_or_404(
             Exam,
@@ -184,7 +184,6 @@ class Review(APIView):
         response = send_review_request(payload)
 
         return Response(
-            data=response.json() if response.content else "",
             status=response.status_code
         )
 
