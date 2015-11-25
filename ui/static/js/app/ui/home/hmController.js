@@ -99,13 +99,13 @@
                                 "duration": 88,
                                 "eventFinish": 88,
                                 "eventStart": 12,
-                                "eventStatus": "Suspicious"
+                                "eventStatus": val.status
                             }
                         );
                     });
-                    Api.send_review(code, status).success(function(){
+                    Api.send_review(payload).success(function(){
                         var idx = 0;
-                        while ($scope.ws_data[idx].examCode !== code) {
+                        while ($scope.ws_data[idx].examCode !== exam.examCode) {
                             idx++;
                         }
                         $scope.ws_data[idx].status = 'finished';

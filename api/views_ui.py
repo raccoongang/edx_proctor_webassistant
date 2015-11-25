@@ -147,46 +147,46 @@ class Review(APIView):
         """
         Request example:
 
-        `{"attempt_code":"029288A9-9198-4C99-9D3F-E589695CF5D7"}`
+        ```
+        {
+                "examMetaData": {
+                    "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971"
+                },
+                 "reviewStatus": "Clean",
+                 "videoReviewLink": "http://video.url",
+                 "desktopComments": [ ]
+            }
+        ```
 
         """
         passing_review_status = ['Clean', 'Rules Violation']
         failing_review_status = ['Not Reviewed', 'Suspicious']
-        exam = get_object_or_404(Exam,
-                                 exam_code=request.data.get('attempt_code'))
+        payload = request.data
+        required_fields = ['examMetaData', 'reviewStatus',
+                           'videoReviewLink', 'desktopComments']
+        for field in required_fields:
+            return Response(status=status.HTTP_400_BAD_REQUEST) \
+                if field not in payload else None
 
-        status = request.GET.get('status', 'Clean')
-
-        desktop_comments = [
-            {
-                "comments": "Browsing other websites",
-                "duration": 88,
-                "eventFinish": 88,
-                "eventStart": 12,
-                "eventStatus": "Suspicious"
-            },
-        ]
-        review_payload = _review_payload(
-            exam,
-            request.data.get('attempt_code'),
-            status,
-            '',
-            desktop_comments
+        exam = get_object_or_404(
+            Exam,
+            exam_code=payload['examMetaData']['examCode']
         )
 
-        response = send_review_request(review_payload)
-        data = {
-            'hash': exam.generate_key(),
-            'status': ''
-        }
-        if response.status_code == 200:
-            data['status'] = 'review_was_sent'
-            exam.attempt_status = 'finished'
-        else:
-            data['status'] = 'review_send_failed'
+        payload.update(
+            {
+                "ssiRecordLocator": exam.generate_key(),
+                "reviewedExam": True,
+                "reviewerNotes": ""
+            }
+        )
 
-        return Response(data=data,
-                        status=response.status_code)
+        response = send_review_request(payload)
+
+        return Response(
+            data=response.json() if response.content else "",
+            status=response.status_code
+        )
 
 
 class BulkReview(APIView):
