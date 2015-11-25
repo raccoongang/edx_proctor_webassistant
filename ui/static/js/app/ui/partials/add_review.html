@@ -4,7 +4,7 @@
             <h3 class="modal-title">{[ i18n('PROCTOR_COMMENT') ]}</h3>
         </div>
         <div class="modal-body">
-            <div class="row">
+            <div>
                 <div class="col-xs-4">
                     {[ i18n('STUDENT') ]}
                 </div>
@@ -12,7 +12,7 @@
                     {[ exam.orgExtra.firstName ]} {[ exam.orgExtra.lastName ]}
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <div class="col-xs-4">
                     {[ i18n('COURSE') ]}
                 </div>
@@ -20,7 +20,7 @@
                     {[ exam.course_name ]}
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <div class="col-xs-4">
                     {[ i18n('EVENT') ]}
                 </div>
@@ -28,7 +28,7 @@
                     {[ exam.exam_name ]}
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <div class="col-xs-4">
                     {[ i18n('DATE') ]}
                 </div>
@@ -36,7 +36,7 @@
 
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <div class="col-xs-4">
                     {[ i18n('STATUS') ]}
                 </div>
@@ -47,17 +47,18 @@
                     </select>
                 </div>
             </div>
-            <div class="row">
+            <div>
                 <div class="col-xs-12">
                     {[ i18n('COMMENT') ]}
                 </div>
             </div>
-            <div class="row">
+            <div class="col-xs-12">
                 <textarea rows="5"
                           style="resize: none; width: 100%;"
                           ng-model="comment.message">
                 </textarea>
             </div>
+            <div class="clearfix"></div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-primary" type="button" ng-click="ok()">{[ i18n('SAVE') ]}</button>
