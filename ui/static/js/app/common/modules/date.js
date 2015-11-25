@@ -46,7 +46,11 @@
         };
 
         $rootScope.$watch(function(){
-            return app.language.current;
+            if (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined){
+                return window.localStorage['NG_TRANSLATE_LANG_KEY'];
+            }
+            else
+                return 'ru';
         }, function(){
             if (ticker) {
                 self.stop_timer();
