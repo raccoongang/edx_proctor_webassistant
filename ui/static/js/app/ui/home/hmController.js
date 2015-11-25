@@ -170,7 +170,13 @@
 
                 $scope.start_all_exams = function(){
                     if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
-                        Api.start_all_exams($scope.exams.checked);
+                        Api.start_all_exams($scope.exams.checked).then(function(){
+                            angular.forEach($scope.exams.checked, function(val, key){
+                                status_timers[val] = $interval(function () {
+                                    poll_status(val);
+                                }, 1500);
+                            });
+                        });
                     }
                 };
 
