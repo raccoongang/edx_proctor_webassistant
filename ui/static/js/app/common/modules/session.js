@@ -54,7 +54,7 @@
 
             this.getSessionDuration = function(){
                 if (Session){
-                    DateTimeService.get_now_diff_from_string(Session.start_date);
+                    return DateTimeService.get_now_diff_from_string(Session.start_date);
                 }
             };
         });
