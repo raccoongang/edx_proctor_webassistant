@@ -16,6 +16,7 @@
         'proctor.i18n',
         'proctor.api',
         'proctor.session',
+        'proctor.date',
         'websocket',
         'pascalprecht.translate',
         'tokenAuth'
@@ -107,8 +108,7 @@
                 resolve: {
                     deps: function(resolver){
                         return resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js',
-                            app.path + 'common/services/date.js'
+                            app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
                     data: function(Api){

@@ -1,6 +1,6 @@
 (function(){
     angular.module('proctor.session', [])
-        .service('TestSession', function($rootScope, $http, Auth, i18n){
+        .service('TestSession', function($rootScope, $http, Auth, i18n, DateTimeService){
             var Session = null;
 
             this.registerSession = function(testing_center, course_id, exam_id, course_name, exam_name){
@@ -52,23 +52,9 @@
                 }
             };
 
-            String.prototype.toHHMMSS = function () {
-                var sec_num = parseInt(this, 10); // don't forget the second param
-                var hours   = Math.floor(sec_num / 3600);
-                var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-                var seconds = sec_num - (hours * 3600) - (minutes * 60);
-
-                if (hours   < 10) {hours   = "0"+hours;}
-                if (minutes < 10) {minutes = "0"+minutes;}
-                if (seconds < 10) {seconds = "0"+seconds;}
-                var time    = hours+':'+minutes+':'+seconds;
-                return time;
-            }
-
             this.getSessionDuration = function(){
                 if (Session){
-                    var diff = parseInt((Date.now() - Date.parse(Session.start_date))/1000);
-                    return ("" + diff).toHHMMSS();
+                    DateTimeService.get_now_diff_from_string(Session.start_date);
                 }
             };
         });
