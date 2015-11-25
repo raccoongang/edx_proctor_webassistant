@@ -108,12 +108,12 @@
                 </div>
                 <div ng-if="attempt.status == 'submitted'" class="text-center">
                     <button class="btn btn-xs btn-success fc-margin-item"
-                            ng-click="send_review(attempt.examCode, 'Clean')">
+                            ng-click="send_review(attempt, 'Clean')">
                         {[ i18n('PASSED') ]}
                     </button>
                     <br>
                     <button class="btn btn-xs btn-warning fc-margin-item"
-                            ng-click="send_review(attempt.examCode, 'Suspicious')">
+                            ng-click="send_review(attempt, 'Suspicious')">
                         {[ i18n('NOT_PASSED') ]}
                     </button>
                 </div>
