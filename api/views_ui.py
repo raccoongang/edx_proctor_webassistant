@@ -173,7 +173,7 @@ class Review(APIView):
             exam_code=payload['examMetaData']['examCode']
         )
 
-        payload.update(
+        payload['examMetaData'].update(
             {
                 "ssiRecordLocator": exam.generate_key(),
                 "reviewedExam": True,
