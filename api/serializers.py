@@ -4,10 +4,8 @@ from dateutil import parser
 from collections import OrderedDict
 from rest_framework import serializers
 from rest_framework.fields import SkipField
-
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
-
 from models import Exam, EventSession
 
 
@@ -68,7 +66,8 @@ class ExamSerializer(serializers.ModelSerializer):
         model = Exam
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
                   'reviewerNotes', 'examPassword', 'examSponsor',
-                  'examName', 'ssiProduct', 'orgExtra', 'attempt_status', 'hash')
+                  'examName', 'ssiProduct', 'orgExtra', 'attempt_status',
+                  'hash')
 
     examCode = serializers.CharField(source='exam_code', max_length=60)
     reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
@@ -96,6 +95,8 @@ class ExamSerializer(serializers.ModelSerializer):
             try:
                 attribute = field.get_attribute(instance)
             except SkipField:
+                if isinstance(field, HashField):
+                    ret[field.field_name] = field.to_representation(instance)
                 continue
             except AttributeError:
                 if isinstance(field, JSONSerializerField):
