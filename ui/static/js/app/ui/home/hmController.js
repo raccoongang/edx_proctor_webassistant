@@ -204,5 +204,9 @@
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
         };
+
+        $scope.i18n = function(text){
+            return i18n.translate(text);
+        };
     });
 })();
