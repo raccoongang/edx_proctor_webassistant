@@ -17,7 +17,12 @@
   "STOP": "Stop",
   "ADD_COMMENT": "Add Comment",
 
-  "ADD_EXAM_REVIEW": "Add Exam Review",
+  "PROCTOR_COMMENT": "Proctor Comment",
+  "STUDENT": "Student",
+  "COURSE": "Course",
+  "EVENT": "Test Event",
+  "DATE": "Date",
+  "COMMENT": "Comment",
 
   "TODAY": "Today",
   "TESTING_CENTRE": "Testing Centre",
@@ -34,6 +39,9 @@
 
   "PASSED": "Test passed",
   "NOT_PASSED": "Test not passed",
+
+  "SAVE": "Save",
+  "CANCEL": "Cancel",
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "SESSION_ERROR_1": "Failed to create/join session",

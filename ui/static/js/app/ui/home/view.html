@@ -97,9 +97,10 @@
                 </div>
                 <div ng-if="attempt.status == 'started'">
                     <button class="btn btn-xs btn-success fc-margin-item"
-                            ng-click="add_review()">
+                            ng-click="add_review(attempt)">
                         {[ i18n('ADD_COMMENT') ]}
                     </button>
+                    <br>
                     <button class="btn btn-xs btn-warning fc-margin-item"
                             ng-click="stop_exam(attempt.examCode)">
                         {[ i18n('STOP') ]}

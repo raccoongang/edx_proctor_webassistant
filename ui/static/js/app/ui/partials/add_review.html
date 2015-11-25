@@ -1,14 +1,56 @@
 <div>
     <script type="text/ng-template" id="reviewContent.html">
         <div class="modal-header">
-            <h3 class="modal-title">{[ i18n('ADD_EXAM_REVIEW') ]}</h3>
+            <h3 class="modal-title">{[ i18n('PROCTOR_COMMENT') ]}</h3>
         </div>
         <div class="modal-body">
+            <div class="row">
+                <div class="col-xs-4">
+                    {[ i18n('STUDENT') ]}
+                </div>
+                <div class="col-xs-8">
+                    {[ exam.orgExtra.firstName ]} {[ exam.orgExtra.lastName ]}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    {[ i18n('COURSE') ]}
+                </div>
+                <div class="col-xs-8">
+                    {[ exam.course_name ]}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    {[ i18n('EVENT') ]}
+                </div>
+                <div class="col-xs-8">
+                    {[ exam.exam_name ]}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    {[ i18n('DATE') ]}
+                </div>
+                <div class="col-xs-8">
 
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    {[ i18n('COMMENT') ]}
+                </div>
+            </div>
+            <div class="row">
+                <textarea rows="5"
+                          style="resize: none; width: 100%;"
+                          ng-model="comment">
+                </textarea>
+            </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="ok()">{[ i18n('SAVE') ]}</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">{[ i18n('CANCEL') ]}</button>
         </div>
     </script>
 </div>

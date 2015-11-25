@@ -63,7 +63,7 @@
 
                 var poll_status = function(code){
                     Api.get_exam_status(code).then(function(data){
-                        if (data.data['status'] == 'submitted'){
+                        if (['submitted', 'verified'].indexOf(data.data['status']) >= 0){
                             $interval.cancel(status_timers[data['hash']]);
                         }
                     });
@@ -92,18 +92,24 @@
                     });
                 };
 
-                $scope.add_review = function () {
+                $scope.add_review = function (exam) {
+
+                    if (exam.comments == undefined) {
+                        exam.comments = [];
+                    }
 
                     var modalInstance = $uibModal.open({
                         animation: true,
                         templateUrl: 'reviewContent.html',
                         controller: 'ReviewCtrl',
                         size: 'lg',
-                        resolve: {}
+                        resolve: {
+                            exam: exam
+                        }
                     });
 
                     modalInstance.result.then(function (data) {
-                        console.log(data);
+                        exam.comments.push(data);
                     }, function () {
                         console.log('Modal dismissed at: ' + new Date());
                     });
@@ -154,9 +160,20 @@
                 };
             }]);
 
-    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance) {
+    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, exam) {
+        $scope.exam = exam;
+        var session = TestSession.getSession();
+        $scope.exam.course_name = session.course_name;
+        $scope.exam.exam_name = session.exam_name;
+        $scope.comment = "";
+
         $scope.ok = function () {
-            $uibModalInstance.close({});
+            var ret = {
+                timestamp: new Date(),
+                comment: $scope.comment
+            };
+            ret.timestamp = ret.timestamp.getTime();
+            $uibModalInstance.close(ret);
         };
 
         $scope.cancel = function () {
