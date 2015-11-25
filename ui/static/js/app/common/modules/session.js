@@ -54,7 +54,7 @@
 
             this.getSessionDuration = function(){
                 if (Session){
-                    return Date.parse(Session.start_date);
+                    var diff = (Date.now() - Date.parse(Session.start_date))/1000;
                 }
             };
         });
