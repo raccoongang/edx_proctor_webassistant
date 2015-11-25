@@ -37,6 +37,17 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col-xs-4">
+                    {[ i18n('STATUS') ]}
+                </div>
+                <div class="col-xs-8">
+                    <select class="form-control"
+                            ng-options="item for item in available_statuses"
+                            ng-model="comment.status">
+                    </select>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-xs-12">
                     {[ i18n('COMMENT') ]}
                 </div>
@@ -44,7 +55,7 @@
             <div class="row">
                 <textarea rows="5"
                           style="resize: none; width: 100%;"
-                          ng-model="comment">
+                          ng-model="comment.message">
                 </textarea>
             </div>
         </div>

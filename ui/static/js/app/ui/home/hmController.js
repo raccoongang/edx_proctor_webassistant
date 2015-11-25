@@ -82,7 +82,27 @@
                     }
                 };
 
-                $scope.send_review = function (code, status) {
+                $scope.send_review = function (exam, status) {
+                    var payload = {
+                        "examMetaData": {
+                            "examCode": exam.examCode,
+                            "reviewedExam": true
+                        },
+                        "reviewStatus": status,
+                        "videoReviewLink": "",
+                        "desktopComments": []
+                    };
+                    angular.forEach(exam.comments, function(val, key){
+                        payload.desktopComments.push(
+                            {
+                                "comments": val.comment,
+                                "duration": 88,
+                                "eventFinish": 88,
+                                "eventStart": 12,
+                                "eventStatus": "Suspicious"
+                            }
+                        );
+                    });
                     Api.send_review(code, status).success(function(){
                         var idx = 0;
                         while ($scope.ws_data[idx].examCode !== code) {
@@ -160,17 +180,22 @@
                 };
             }]);
 
-    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, exam) {
+    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, i18n, exam) {
         $scope.exam = exam;
         var session = TestSession.getSession();
         $scope.exam.course_name = session.course_name;
         $scope.exam.exam_name = session.exam_name;
-        $scope.comment = "";
+        $scope.available_statuses = [i18n('SUSPICIOUS')];
+        $scope.comment = {
+            status: $scope.available_statuses[0],
+            message: ""
+        };
 
         $scope.ok = function () {
             var ret = {
                 timestamp: new Date(),
-                comment: $scope.comment
+                comment: $scope.comment.message,
+                status: $scope.comment.status
             };
             ret.timestamp = ret.timestamp.getTime();
             $uibModalInstance.close(ret);

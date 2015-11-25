@@ -87,7 +87,6 @@
                                 JSON.parse(window.sessionStorage['proctoring'])
                             );
                         }
-                        console.log('resolve', TestSession.getSession());
                         if (!TestSession.getSession()){
                             $location.path('/session');
                         }
