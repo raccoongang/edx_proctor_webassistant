@@ -108,6 +108,8 @@
                             idx++;
                         }
                         $scope.ws_data[idx].status = 'finished';
+                    }).error(function(){
+
                     });
                 };
 
@@ -129,8 +131,9 @@
 
                     modalInstance.result.then(function (data) {
                         exam.comments.push(data);
+                        $scope.$apply();
                     }, function () {
-                        console.log('Modal dismissed at: ' + new Date());
+
                     });
                 };
 
