@@ -46,6 +46,9 @@
                         }
                         if (msg['hash'] && msg['status']){
                             update_status(msg['hash'], msg['status']);
+                            if (['submitted', 'verified'].indexOf(msg['status']) >= 0){
+                                $interval.cancel(status_timers[msg['hash']]);
+                            }
                         }
                     }
                 };
@@ -62,11 +65,7 @@
                 };
 
                 var poll_status = function(code){
-                    Api.get_exam_status(code).then(function(data){
-                        if (['submitted', 'verified'].indexOf(data.data['status']) >= 0){
-                            $interval.cancel(status_timers[data['hash']]);
-                        }
-                    });
+                    Api.get_exam_status(code);
                 };
 
                 $scope.accept_exam_attempt = function (exam) {
