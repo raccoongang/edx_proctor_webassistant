@@ -40,7 +40,8 @@
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;
                 $scope.exams = {
-                    checked: []
+                    checked: [],
+                    ended: []
                 };
 
                 var stop_timer = function(idx){
@@ -196,6 +197,8 @@
                         });
                     }
                 };
+
+                $scope.end_all_exams = function(){};
 
                 $scope.accept_student = function(exam){
                     exam.accepted = true;
