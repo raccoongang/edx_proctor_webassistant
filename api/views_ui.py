@@ -61,13 +61,15 @@ def poll_status(request):
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(Exam, exam_code=val['attempt_code'])
-            print(exam)
+            print(exam.course_id)
+            print(val)
             exam.attempt_status = val.get('status')
             exam.save()
             data = {
                 'hash': exam.generate_key(),
                 'status': exam.attempt_status
             }
+            print(exam.event)
             send_ws_msg(data, channel=exam.event.hash_key)
         return Response(status=status.HTTP_200_OK)
     else:
