@@ -32,9 +32,7 @@
                     angular.forEach(students.data, function(val, key){
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
-                        if (['ready_to_start', 'started', 'ready_to_submit', 'submitted'].in_array(val.status)) {
-                            Polling.add_item(val.hash); // first item starts cyclic update
-                        }
+                        Polling.add_item(val.hash); // first item starts cyclic update
                     });
                 }
 
