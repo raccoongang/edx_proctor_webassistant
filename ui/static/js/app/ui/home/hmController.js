@@ -32,7 +32,7 @@
                     angular.forEach(students.data, function(val, key){
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
-                        Polling.add_item(val.hash); // first item starts cyclic update
+                        Polling.add_item(val.examCode); // first item starts cyclic update
                     });
                 }
 
@@ -87,7 +87,7 @@
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
-                                    Polling.add_item(data['hash']);
+                                    Polling.add_item(exam.examCode);
                                 }
                             });
                     }
