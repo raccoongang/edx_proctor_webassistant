@@ -3,6 +3,7 @@
     app.service('DateTimeService', function($rootScope, $interval){
         var ticker = null;
         var self = this;
+        var default_lng = 'ru';
 
         String.prototype.toHHMMSS = function () {
             var sec_num = parseInt(this, 10); // don't forget the second param
@@ -31,7 +32,8 @@
 
         this.start_timer = function(){
             ticker = $interval(function(){
-                self.value = localDate(app.language.current);
+                var l = window.localStorage['NG_TRANSLATE_LANG_KEY'];
+                self.value = localDate(l !== undefined?l:default_lng);
             }, 1000);
         };
 
@@ -67,7 +69,7 @@
                 return window.localStorage['NG_TRANSLATE_LANG_KEY'];
             }
             else
-                return 'ru';
+                return default_lng;
         }, function(){
             if (ticker) {
                 self.stop_timer();
