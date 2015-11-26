@@ -56,10 +56,12 @@ def stop_exam(request, pk):
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
     data = request.data
-    if 'list' in data:
+    print(data)
+    if u'list' in data:
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(Exam, exam_code=val['attempt_code'])
+            print(exam)
             exam.attempt_status = val.get('status')
             exam.save()
             data = {
@@ -69,6 +71,7 @@ def poll_status(request):
             send_ws_msg(data, channel=exam.event.hash_key)
         return Response(status=status.HTTP_200_OK)
     else:
+        print("'list' not in data")
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
