@@ -10,6 +10,12 @@ def start_exam_request(attempt_code):
     )
 
 
+def stop_exam_request(_id):
+    return requests.put(
+        settings.EDX_URL + "api/edx_proctoring/v1/proctored_exam/attempt/" + _id
+    )
+
+
 def poll_status_request(attempt_code):
     return requests.get(
         settings.EDX_URL + "api/edx_proctoring/proctoring_poll_status/" + attempt_code

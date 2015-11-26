@@ -5,6 +5,7 @@
   "LOGOUT": "Logout",
   "AUTHORIZE": "Authorize",
 
+  "STUDENT_SESSIONS": "Student Sessions",
   "END_STUDENT_SESSIONS": "End Student Sessions",
   "FULL_NAME": "Full Name",
   "EXAM_START_TIME": "Start time",

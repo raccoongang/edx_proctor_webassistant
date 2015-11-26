@@ -13,7 +13,7 @@ from rest_framework.authentication import BasicAuthentication, \
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession
 from serializers import EventSessionSerializer
-from edx_api import (start_exam_request, poll_status_request,
+from edx_api import (start_exam_request, stop_exam_request, poll_status_request,
                      send_review_request, get_proctored_exams,
                      bulk_start_exams_request,
                      bulk_send_review_request)
@@ -43,14 +43,22 @@ def start_exam(request, attempt_code):
     return Response(data=data, status=response.status_code)
 
 
+@api_view(['PUT'])
+@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@permission_classes((IsAuthenticated,))
+def stop_exam(request, pk):
+    response = stop_exam_request(pk)
+    return Response(status=response.status_code)
+
+
 @api_view(['GET'])
 @authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def poll_status(request, attempt_code):
     exam = get_object_or_404(Exam, exam_code=attempt_code)
     response = poll_status_request(exam.exam_code)
-    status = json.loads(response.content)
-    exam.attempt_status = status.get('status')
+    state = json.loads(response.content)
+    exam.attempt_status = state.get('status')
     exam.save()
     data = {
         'hash': exam.generate_key(),

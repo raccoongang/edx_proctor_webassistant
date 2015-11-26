@@ -45,8 +45,18 @@
                     ended: []
                 };
 
-                var stop_timer = function(idx){
-                    $interval.cancel(status_timers[idx]);
+                var stop_timer = function(obj){
+                    if (obj.hasOwnProperty('hash') && obj.hasOwnProperty('status')){
+                        if (['submitted', 'verified'].indexOf(obj['status']) >= 0){
+                            $interval.cancel(status_timers[obj['hash']]);
+                        }
+                    }
+                };
+
+                var stop_all_timers = function(){
+                    angular.forEach(status_timers, function(val, key){
+                        $interval.cancel(status_timers[val]);
+                    });
                 };
 
                 $scope.websocket_callback = function (msg) {
@@ -58,9 +68,7 @@
                         }
                         if (msg['hash'] && msg['status']){
                             update_status(msg['hash'], msg['status']);
-                            if (['submitted', 'verified'].indexOf(msg['status']) >= 0){
-                                stop_timer(msg['hash']);
-                            }
+                            stop_timer(msg);
                         }
                     }
                 };
@@ -78,10 +86,8 @@
 
                 var poll_status = function(code){
                     Api.get_exam_status(code).then(function(data){
-                        if (['submitted', 'verified'].indexOf(data.data['status']) >= 0){
-                            stop_timer(data.data['hash']);
-                        }
-                    });
+                        stop_timer(data.data);
+                    }, function(){});
                 };
 
                 $scope.accept_exam_attempt = function (exam) {
@@ -184,6 +190,7 @@
                 $scope.end_session = function(){
                     TestSession.endSession().then(function(){
                         delete window.sessionStorage['proctoring'];
+                        stop_all_timers();
                         $location.path('/session');
                     }, function(){});
                 };

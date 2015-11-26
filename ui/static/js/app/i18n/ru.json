@@ -5,6 +5,7 @@
   "LOGOUT": "Выйти",
   "AUTHORIZE": "Авторизоваться",
 
+  "STUDENT_SESSIONS": "Сессии студентов",
   "END_STUDENT_SESSIONS": "Завершить сессии",
   "FULL_NAME": "ФИО",
   "EXAM_START_TIME": "Время начала",
