@@ -3,7 +3,7 @@
 
     app.service('Polling', polling);
 
-    function polling($rootScope, $interval, Api){
+    function polling($interval, Api){
         var self = this;
         var attempts = [];
         var timer = null;
@@ -38,5 +38,5 @@
         };
     }
 
-    polling.$inject = ['$rootScope', '$interval', 'Api'];
+    polling.$inject = ['$interval', 'Api'];
 })();

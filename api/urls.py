@@ -20,7 +20,7 @@ urlpatterns = patterns(
         name='stop_exam'),
     url(r'bulk_start_exam/$', bulk_start_exams,
         name='bulk_start_exams'),
-    url(r'poll_status/(?P<attempt_code>[-\w]+)$', poll_status,
+    url(r'poll_status/$', poll_status,
         name='poll_status'),
     url(r'review/$', Review.as_view(),
         name='review'),
