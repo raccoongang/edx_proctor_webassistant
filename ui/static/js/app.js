@@ -78,7 +78,8 @@
                     deps: function(resolver){
                         return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
-                            app.path + 'ui/home/hmDirectives.js'
+                            app.path + 'ui/home/hmDirectives.js',
+                            app.path + 'common/services/exam_polling.js'
                         ]);
                     },
                     students: function($location, Auth, TestSession, Api){

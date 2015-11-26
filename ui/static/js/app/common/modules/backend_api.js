@@ -28,10 +28,11 @@
             });
         };
 
-        this.get_exam_status = function(code){
+        this.get_exams_status = function(list){
             return generic_api_call({
-                'url':  get_url('poll_status') + code,
-                'method': 'GET'
+                'url':  get_url('poll_status'),
+                'method': 'POST',
+                'data': JSON.stringify(list)
             });
         };
 

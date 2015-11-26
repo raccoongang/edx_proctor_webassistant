@@ -12,17 +12,18 @@
                      'NgTableParams',
                      '$uibModal',
                      'TestSession',
+                     'Polling',
                      'students',
-            function ($scope, $interval, $location, WS, Api, Auth, i18n, NgTableParams, $uibModal, TestSession, students) {
+            function ($scope, $interval, $location, WS, Api, Auth, i18n,
+                      NgTableParams, $uibModal, TestSession, Polling, students) {
 
                 var session = TestSession.getSession();
+
                 if (session){
                     $interval(function(){
                         $scope.session_duration = TestSession.getSessionDuration();
                     }, 1000);
                 }
-
-                var status_timers = {};
 
                 $scope.ws_data = [];
 
@@ -31,9 +32,9 @@
                     angular.forEach(students.data, function(val, key){
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
-                        status_timers[val['hash']] = $interval(function(){
-                            poll_status(val.examCode);
-                        }, 1500);
+                        if (['ready_to_start', 'started', 'ready_to_submit', 'submitted'].in_array(val.status)) {
+                            Polling.add_item(val.hash); // first item starts cyclic update
+                        }
                     });
                 }
 
@@ -45,18 +46,24 @@
                     ended: []
                 };
 
-                var stop_timer = function(obj){
-                    if (obj.hasOwnProperty('hash') && obj.hasOwnProperty('status')){
-                        if (['submitted', 'verified'].indexOf(obj['status']) >= 0){
-                            $interval.cancel(status_timers[obj['hash']]);
-                        }
-                    }
+                $scope.tableParams = new NgTableParams({
+                    page: 1,
+                    count: 10
+                }, {
+                    data: $scope.ws_data
+                });
+
+                var attempt_end = function(hash){
+                    Polling.stop(hash);
                 };
 
-                var stop_all_timers = function(){
-                    angular.forEach(status_timers, function(val, key){
-                        $interval.cancel(status_timers[val]);
+                var update_status = function (idx, status) {
+                    var obj = $.grep($scope.ws_data, function(e){
+                        return e.hash == idx;
                     });
+                    if (obj.length > 0) {
+                        obj[0]['status'] = status;
+                    }
                 };
 
                 $scope.websocket_callback = function (msg) {
@@ -68,39 +75,45 @@
                         }
                         if (msg['hash'] && msg['status']){
                             update_status(msg['hash'], msg['status']);
-                            stop_timer(msg);
+                            if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
+                                attempt_end();
+                            }
                         }
                     }
                 };
 
                 WS.init(session.hash_key, $scope.websocket_callback, true);
 
-                var update_status = function (idx, status) {
-                    var obj = $.grep($scope.ws_data, function(e){
-                        return e.hash == idx;
-                    });
-                    if (obj.length > 0) {
-                        obj[0]['status'] = status;
-                    }
-                };
-
-                var poll_status = function(code){
-                    Api.get_exam_status(code).then(function(data){
-                        stop_timer(data.data);
-                    }, function(){});
-                };
-
                 $scope.accept_exam_attempt = function (exam) {
                     if (exam.accepted){
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
-                                    status_timers[data['hash']] = $interval(function () {
-                                        poll_status(exam.examCode);
-                                    }, 1500);
+                                    Polling.add_item(data['hash']);
                                 }
                             });
                     }
+                };
+
+                $scope.add_review = function (exam) {
+
+                    if (exam.comments == undefined) {
+                        exam.comments = [];
+                    }
+
+                    var modalInstance = $uibModal.open({
+                        animation: true,
+                        templateUrl: 'reviewContent.html',
+                        controller: 'ReviewCtrl',
+                        size: 'lg',
+                        resolve: {
+                            exam: exam
+                        }
+                    });
+
+                    modalInstance.result.then(function (data) {
+                        exam.comments.push(data);
+                    }, function () { });
                 };
 
                 $scope.send_review = function (exam, status) {
@@ -132,40 +145,9 @@
                         }
                         $scope.ws_data[idx].status = 'finished';
                     }).error(function(){
-
+                        alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
                     });
                 };
-
-                $scope.add_review = function (exam) {
-
-                    if (exam.comments == undefined) {
-                        exam.comments = [];
-                    }
-
-                    var modalInstance = $uibModal.open({
-                        animation: true,
-                        templateUrl: 'reviewContent.html',
-                        controller: 'ReviewCtrl',
-                        size: 'lg',
-                        resolve: {
-                            exam: exam
-                        }
-                    });
-
-                    modalInstance.result.then(function (data) {
-                        exam.comments.push(data);
-                        $scope.$apply();
-                    }, function () {
-
-                    });
-                };
-
-                $scope.tableParams = new NgTableParams({
-                    page: 1,
-                    count: 10
-                }, {
-                    data: $scope.ws_data
-                });
 
                 $scope.$watch('ws_data', function(newValue, oldValue) {
                     if (newValue!=oldValue){
@@ -190,7 +172,7 @@
                 $scope.end_session = function(){
                     TestSession.endSession().then(function(){
                         delete window.sessionStorage['proctoring'];
-                        stop_all_timers();
+                        Polling.stop_all();
                         $location.path('/session');
                     }, function(){});
                 };
@@ -199,9 +181,7 @@
                     if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
                         Api.start_all_exams($scope.exams.checked).then(function(){
                             angular.forEach($scope.exams.checked, function(val, key){
-                                status_timers[val] = $interval(function () {
-                                    poll_status(val);
-                                }, 1500);
+                                Polling.add_item(val);
                             });
                         });
                     }
