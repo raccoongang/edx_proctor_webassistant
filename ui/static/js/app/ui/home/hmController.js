@@ -202,7 +202,7 @@
                 };
             }]);
 
-    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, i18n, exam) {
+    angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, DateTimeService, i18n, exam) {
         $scope.exam = exam;
         var session = TestSession.getSession();
         $scope.exam.course_name = session.course_name;
@@ -229,6 +229,10 @@
 
         $scope.i18n = function(text){
             return i18n.translate(text);
+        };
+
+        $scope.get_date = function(){
+            return DateTimeService.get_now_date();
         };
     });
 })();
