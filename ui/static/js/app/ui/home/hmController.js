@@ -7,12 +7,13 @@
                      '$location',
                      'WS',
                      'Api',
+                     'Auth',
                      'i18n',
                      'NgTableParams',
                      '$uibModal',
                      'TestSession',
                      'students',
-            function ($scope, $interval, $location, WS, Api, i18n, NgTableParams, $uibModal, TestSession, students) {
+            function ($scope, $interval, $location, WS, Api, Auth, i18n, NgTableParams, $uibModal, TestSession, students) {
 
                 var session = TestSession.getSession();
                 if (session){
@@ -100,7 +101,8 @@
                     var payload = {
                         "examMetaData": {
                             "examCode": exam.examCode,
-                            "reviewedExam": true
+                            "reviewedExam": true,
+                            "proctor_username": Auth.get_proctor()
                         },
                         "reviewStatus": status,
                         "videoReviewLink": "",

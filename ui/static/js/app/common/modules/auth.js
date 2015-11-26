@@ -4,6 +4,7 @@
     var module = angular.module('tokenAuth', []);
     module.service('Auth', ['$cookies', function($cookies){
         var token = '';
+        var username = $cookies.get('authenticated_user');
 
         this.authenticate = function(){
             var c = $cookies.get('authenticated_token');
@@ -22,6 +23,10 @@
 
         this.get_token = function(){
             return token;
+        };
+
+        this.get_proctor = function(){
+            return username;
         };
     }]);
 })();
