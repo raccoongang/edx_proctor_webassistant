@@ -16,10 +16,22 @@ def stop_exam_request(_id):
     )
 
 
-def poll_status_request(attempt_code):
-    return requests.get(
-        settings.EDX_URL + "api/edx_proctoring/proctoring_poll_status/" + attempt_code
-    )
+def poll_status_request(codes):
+    if isinstance(codes, list):
+        res = []
+        for code in codes:
+            ret = requests.get(
+                settings.EDX_URL +
+                "api/edx_proctoring/proctoring_poll_status/" +
+                code
+            )
+            if ret.status_code == 200:
+                payload = ret.json()
+                payload['attempt_code'] = code
+                res.append(payload)
+        return res
+    else:
+        return []
 
 
 def send_review_request(payload):

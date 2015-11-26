@@ -155,7 +155,7 @@
                     }
                 }, true);
 
-                $scope.check_all_student_sessions = function() {
+                $scope.check_all_attempts = function() {
                     var list = [];
                     angular.forEach($scope.ws_data, function(val, key){
                         if (val.status == undefined || !val.status){
@@ -165,7 +165,7 @@
                     $scope.exams.checked = angular.copy(list);
                 };
 
-                $scope.uncheck_all_student_sessions = function() {
+                $scope.uncheck_all_attempts = function() {
                     $scope.exams.checked = [];
                 };
 
@@ -177,7 +177,7 @@
                     }, function(){});
                 };
 
-                $scope.start_all_exams = function(){
+                $scope.start_all_attempts = function(){
                     if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
                         Api.start_all_exams($scope.exams.checked).then(function(){
                             angular.forEach($scope.exams.checked, function(val, key){
@@ -187,7 +187,7 @@
                     }
                 };
 
-                $scope.end_all_exams = function(){};
+                $scope.end_all_attempts = function(){};
 
                 $scope.accept_student = function(exam){
                     exam.accepted = true;

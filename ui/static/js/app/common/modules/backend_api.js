@@ -32,7 +32,7 @@
             return generic_api_call({
                 'url':  get_url('poll_status'),
                 'method': 'POST',
-                'data': JSON.stringify(list)
+                'data': JSON.stringify({list: list})
             });
         };
 

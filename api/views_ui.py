@@ -51,21 +51,25 @@ def stop_exam(request, pk):
     return Response(status=response.status_code)
 
 
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
+@api_view(['POST'])
+@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
-def poll_status(request, attempt_code):
-    exam = get_object_or_404(Exam, exam_code=attempt_code)
-    response = poll_status_request(exam.exam_code)
-    state = json.loads(response.content)
-    exam.attempt_status = state.get('status')
-    exam.save()
-    data = {
-        'hash': exam.generate_key(),
-        'status': exam.attempt_status
-    }
-    send_ws_msg(data, channel=exam.event.hash_key)
-    return Response(data=data, status=response.status_code)
+def poll_status(request):
+    data = request.data
+    if 'list' in data:
+        response = poll_status_request(data['list'])
+        for val in response:
+            exam = get_object_or_404(Exam, exam_code=val['attempt_code'])
+            exam.attempt_status = val.get('status')
+            exam.save()
+            data = {
+                'hash': exam.generate_key(),
+                'status': exam.attempt_status
+            }
+            send_ws_msg(data, channel=exam.event.hash_key)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventSessionViewSet(mixins.ListModelMixin,
