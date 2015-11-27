@@ -115,36 +115,38 @@
                 };
 
                 $scope.send_review = function (exam, status) {
-                    var payload = {
-                        "examMetaData": {
-                            "examCode": exam.examCode,
-                            "reviewedExam": true,
-                            "proctor_username": Auth.get_proctor()
-                        },
-                        "reviewStatus": status,
-                        "videoReviewLink": "",
-                        "desktopComments": []
-                    };
-                    angular.forEach(exam.comments, function(val, key){
-                        payload.desktopComments.push(
-                            {
-                                "comments": val.comment,
-                                "duration": 88,
-                                "eventFinish": 88,
-                                "eventStart": 12,
-                                "eventStatus": val.status
+                    if (exam.status == 'submitted'){
+                        var payload = {
+                            "examMetaData": {
+                                "examCode": exam.examCode,
+                                "reviewedExam": true,
+                                "proctor_username": Auth.get_proctor()
+                            },
+                            "reviewStatus": status,
+                            "videoReviewLink": "",
+                            "desktopComments": []
+                        };
+                        angular.forEach(exam.comments, function(val, key){
+                            payload.desktopComments.push(
+                                {
+                                    "comments": val.comment,
+                                    "duration": 88,
+                                    "eventFinish": 88,
+                                    "eventStart": 12,
+                                    "eventStatus": val.status
+                                }
+                            );
+                        });
+                        Api.send_review(payload).success(function(){
+                            var idx = 0;
+                            while ($scope.ws_data[idx].examCode !== exam.examCode) {
+                                idx++;
                             }
-                        );
-                    });
-                    Api.send_review(payload).success(function(){
-                        var idx = 0;
-                        while ($scope.ws_data[idx].examCode !== exam.examCode) {
-                            idx++;
-                        }
-                        $scope.ws_data[idx].status = 'finished';
-                    }).error(function(){
-                        alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
-                    });
+                            $scope.ws_data[idx].status = 'finished';
+                        }).error(function(){
+                            alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
+                        });
+                    }
                 };
 
                 $scope.$watch('ws_data', function(newValue, oldValue) {
