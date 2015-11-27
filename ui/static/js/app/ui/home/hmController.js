@@ -185,7 +185,9 @@
                     }
                 };
 
-                $scope.end_all_attempts = function(){};
+                $scope.end_all_attempts = function(){
+
+                };
 
                 $scope.accept_student = function(exam){
                     exam.accepted = true;
