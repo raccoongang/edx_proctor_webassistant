@@ -31,7 +31,7 @@
         };
 
         this.add_item = function(key){
-            if (attempts.length == 0){
+            if (!timer){
                 self.start();
             }
             attempts.push(key);
