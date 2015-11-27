@@ -25,12 +25,14 @@
         };
 
         this.start = function(){
+            console.log("Polling: start timer");
             timer = $interval(function(){
                 get_status();
             }, 2000);
         };
 
         this.add_item = function(key){
+            console.log("Polling: adding item " + key);
             if (!timer){
                 self.start();
             }
