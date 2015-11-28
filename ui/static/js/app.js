@@ -114,6 +114,9 @@
                     },
                     data: function(Api){
                         return Api.get_session_data();
+                    },
+                    auth: function(Auth){
+                        Auth.authenticate();
                     }
                 }
             })
