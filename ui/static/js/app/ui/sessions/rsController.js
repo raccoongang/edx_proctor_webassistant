@@ -20,7 +20,8 @@
                 }
             });
             $scope.courses = c_list;
-            $scope.session.course = c_list[0].id;
+            if ($scope.courses.length)
+                $scope.session.course = c_list[0].id;
         }
 
         $scope.$watch('session.course', function(val, old){
