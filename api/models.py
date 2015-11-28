@@ -100,10 +100,11 @@ class Exam(models.Model):
 
     @classmethod
     def get_course_data(cls, course_id):
-        if settings.COURSE_ID_SLASH_SEPARATED:
-            return course_id.split('/')
+        sp = course_id.split(':')
+        if len(sp) == 2:
+            return sp[-1].split('+')
         else:
-            return course_id.split(':')[-1].split('+')
+            return course_id.split('/')
 
 
 class EventSession(models.Model):
