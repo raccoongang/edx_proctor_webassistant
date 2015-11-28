@@ -134,10 +134,15 @@
         if (match !== null)
             domain = match[1];
         var api_port = '', socket_port = '';
+        var protocol = 'http://';
+        if("https:" == document.location.protocol){
+            protocol = 'https://';
+        }
         $rootScope.apiConf = {
             domain: domain,
+            protocol: protocol,
             ioServer: domain + (socket_port?':' + socket_port:''),
-            apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
+            apiServer: protocol + domain + (api_port?':' + api_port:'') + '/api'
         };
 
         // Preload language files
