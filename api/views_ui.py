@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
@@ -348,3 +349,8 @@ def _review_payload(exam, exam_code, review_status, video_link,
             }
         ]
     }
+
+
+# Angular redirect
+def redirect_session(request):
+    return redirect('/#/session')

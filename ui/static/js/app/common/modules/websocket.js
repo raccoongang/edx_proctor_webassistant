@@ -3,14 +3,19 @@
         var ws, ws_msg = null;
 
         var init = function (subcribe, callback, reconnect) {
-            if (["function", "object"].indexOf(typeof window.WebSocket) >= 0)
+            if (["function", "object"].indexOf(typeof window.WebSocket) >= 0){
+                var protocol = 'ws://';
+                if("https:" == document.location.protocol){
+                    protocol = 'wss://';
+                }
                 ws = new WebSocket(
-                    'ws://' +
+                    protocol +
                     $rootScope.apiConf.ioServer +
                     '/ws/' +
                     subcribe +
                     '?subscribe-broadcast&echo'
                 );
+            }
             else {
                 ws = {};
             }
