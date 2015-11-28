@@ -13,9 +13,10 @@
                      '$uibModal',
                      'TestSession',
                      'Polling',
+                     'DateTimeService',
                      'students',
             function ($scope, $interval, $location, WS, Api, Auth, i18n,
-                      NgTableParams, $uibModal, TestSession, Polling, students) {
+                      NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
 
@@ -56,9 +57,7 @@
                 };
 
                 var update_status = function (idx, status) {
-                    var obj = $.grep($scope.ws_data, function(e){
-                        return e.hash == idx;
-                    });
+                    var obj = $scope.ws_data.filter({hash: idx});
                     if (obj.length > 0) {
                         obj[0]['status'] = status;
                     }
@@ -72,6 +71,11 @@
                             return;
                         }
                         if (msg['hash'] && msg['status']){
+                            var item = $scope.ws_data.filter({hash: msg.hash});
+                            item = item.length?item[0]:null;
+                            if (msg.status == 'started' && item && item.status == 'ready_to_start'){
+                                item.started_at = DateTimeService.get_now_time();
+                            }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
                                 attempt_end();
@@ -115,7 +119,7 @@
                 };
 
                 $scope.send_review = function (exam, status) {
-                    if (exam.status == 'submitted'){
+                    if (exam.status == 'submitted' && exam.review_sent !== true){
                         var payload = {
                             "examMetaData": {
                                 "examCode": exam.examCode,
@@ -143,6 +147,7 @@
                                 idx++;
                             }
                             $scope.ws_data[idx].status = 'finished';
+                            exam.review_sent = true;
                         }).error(function(){
                             alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
                         });

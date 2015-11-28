@@ -71,7 +71,7 @@
                 {[attempt.orgExtra.firstName]} {[attempt.orgExtra.lastName]}
             </td>
             <td title="i18n('EXAM_START_TIME')">
-                12:35
+                {[ attempt.started_at ]}
             </td>
             <td title="i18n('EXAM_CODE')"
                 sortable="'examCode'">
@@ -86,7 +86,7 @@
                 {[ attempt.status ]}
             </td>
             <td class="text-center">
-                <div ng-if="!attempt.status">
+                <div ng-if="!attempt.status || attempt.status == 'created'">
                     <button class="btn btn-xs btn-success fc-margin-item"
                             ng-click="accept_student(attempt)"
                             ng-if="!(attempt.accepted === true)">
