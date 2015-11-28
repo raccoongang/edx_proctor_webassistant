@@ -112,11 +112,14 @@
                             app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
-                    data: function(Api){
-                        return Api.get_session_data();
-                    },
-                    auth: function(Auth){
+                    data: function($location, Api){
                         Auth.authenticate();
+                        if (Auth.get_token()) {
+                            return Api.get_session_data();
+                        }
+                        else {
+                            $location.path('/');
+                        }
                     }
                 }
             })
