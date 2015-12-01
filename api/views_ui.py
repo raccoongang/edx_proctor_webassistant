@@ -47,9 +47,14 @@ def start_exam(request, attempt_code):
 @api_view(['PUT'])
 @authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
-def stop_exam(request, pk):
-    response = stop_exam_request(pk)
-    return Response(status=response.status_code)
+def stop_exam(request, attempt_code):
+    data = request.data
+    action = data.get('action')
+    if action:
+        response = stop_exam_request(attempt_code, action)
+        return Response(status=response.status_code)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -57,7 +62,6 @@ def stop_exam(request, pk):
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
     data = request.data
-    print(data)
     if u'list' in data:
         response = poll_status_request(data['list'])
         for val in response:

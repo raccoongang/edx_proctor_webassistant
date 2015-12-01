@@ -129,6 +129,7 @@ class EventSession(models.Model):
     notify = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
 
     @staticmethod
     def post_save(sender, instance, created, **kwargs):

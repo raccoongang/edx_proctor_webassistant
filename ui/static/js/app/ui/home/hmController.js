@@ -5,6 +5,7 @@
         'MainCtrl', ['$scope',
                      '$interval',
                      '$location',
+                     '$q',
                      'WS',
                      'Api',
                      'Auth',
@@ -15,7 +16,7 @@
                      'Polling',
                      'DateTimeService',
                      'students',
-            function ($scope, $interval, $location, WS, Api, Auth, i18n,
+            function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
@@ -97,7 +98,20 @@
                     }
                 };
 
+                $scope.stop_exam_attempt = function(exam){
+                    $scope.add_review(exam).then(function(){
+                        Api.stop_exam_attempt(exam.examCode).then(function(data){
+                            console.log(data);
+                        }, function(){
+
+                        });
+                    }, function(){
+
+                    });
+                };
+
                 $scope.add_review = function (exam) {
+                    var deferred = $q.defer();
 
                     if (exam.comments == undefined) {
                         exam.comments = [];
@@ -115,7 +129,12 @@
 
                     modalInstance.result.then(function (data) {
                         exam.comments.push(data);
-                    }, function () { });
+                        deferred.resolve();
+                    }, function () {
+                        deferred.reject();
+                    });
+
+                    return deferred.promise;
                 };
 
                 $scope.send_review = function (exam, status) {
