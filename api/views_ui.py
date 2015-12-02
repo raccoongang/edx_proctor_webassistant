@@ -196,6 +196,10 @@ class Review(APIView):
 
         response = send_review_request(payload)
 
+        if response.status_code in [200, 201]:
+            exam.attempt_status = 'finished'
+            exam.save()
+
         return Response(
             status=response.status_code
         )
