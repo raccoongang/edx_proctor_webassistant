@@ -13,7 +13,8 @@ def start_exam_request(attempt_code):
 def stop_exam_request(_id, action):
     return requests.put(
         settings.EDX_URL + "api/edx_proctoring/v1/proctored_exam/attempt/" + _id,
-        data=json.dumps({'action': action})
+        data=json.dumps({'action': action}),
+        headers={'Content-Type': 'application/json'}
     )
 
 
