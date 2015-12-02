@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from social.apps.django_app.default.models import UserSocialAuth
+from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 
@@ -32,7 +32,7 @@ class Journaling(models.Model):
     event = models.ForeignKey("api.EventSession", blank=True, null=True,
                               db_index=True)
     exam = models.ForeignKey("api.Exam", blank=True, null=True, db_index=True)
-    proctor = models.ForeignKey(UserSocialAuth, blank=True, null=True, db_index=True)
+    proctor = models.ForeignKey(User, blank=True, null=True, db_index=True)
     note = models.TextField(blank=True, null=True)
     proctor_ip = models.GenericIPAddressField(blank=True, null=True)
     datetime = models.DateTimeField(auto_now=True)

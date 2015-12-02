@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, status, mixins
 from rest_framework.generics import get_object_or_404
@@ -108,7 +109,6 @@ class ExamViewSet(mixins.ListModelMixin,
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        print(dir(request.user))
         try:
             event = EventSession.objects.filter(
                 course_id=serializer.validated_data.get('course_id'),
@@ -126,7 +126,9 @@ class ExamViewSet(mixins.ListModelMixin,
                 type=Journaling.EXAM_ATTEMPT,
                 event=event,
                 exam=serializer.instance,
-                proctor=request.user
+                proctor=User.objects.get(
+                    username=request.COOKIES.get('authenticated_user')
+                )
             )
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,
