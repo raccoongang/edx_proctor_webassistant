@@ -90,8 +90,7 @@ class ExamViewSet(mixins.ListModelMixin,
                     status=EventSession.IN_PROGRESS
                 )
                 return Exam.objects.filter(
-                    course_id=event.course_id,
-                    exam_id=event.course_event_id,
+                    event=event
                 )
             except EventSession.DoesNotExist:
                 return Exam.objects.filter(pk__lt=0)

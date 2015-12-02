@@ -106,13 +106,27 @@ class Exam(models.Model):
             return course_id.split(':')[-1].split('+')
 
 
+class EventSessionManager(models.Manager):
+    def get_queryset(self):
+        return super(EventSessionManager, self).get_queryset().exclude(
+            status=EventSession.ARCHIVED)
+
+
+class ArchivedEventSessionManager(models.Manager):
+    def get_queryset(self):
+        return super(ArchivedEventSessionManager, self).get_queryset().filter(
+            status=EventSession.ARCHIVED)
+
+
 class EventSession(models.Model):
     IN_PROGRESS = 'in_progress'
     FINISHED = 'finished'
+    ARCHIVED = 'archived'
 
     SESSION_STATUS_CHOICES = {
         (IN_PROGRESS, _("In progress")),
         (FINISHED, _("Finished")),
+        (ARCHIVED, _("Archived")),
     }
     testing_center = models.CharField(max_length=64)
     course_id = models.CharField(max_length=128, blank=True, null=True)
@@ -128,6 +142,8 @@ class EventSession(models.Model):
     notify = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+
+    objects = EventSessionManager()
 
     @staticmethod
     def post_save(sender, instance, created, **kwargs):
@@ -147,6 +163,13 @@ class EventSession(models.Model):
 
 post_save.connect(EventSession.post_save, EventSession,
                   dispatch_uid='add_hash')
+
+
+class ArchivedEventSession(EventSession):
+    class Meta:
+        proxy = True
+
+    objects = ArchivedEventSessionManager()
 
 
 class Permission(models.Model):
