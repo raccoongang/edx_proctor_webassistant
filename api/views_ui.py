@@ -12,9 +12,12 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam, EventSession
-from serializers import EventSessionSerializer
-from edx_api import (start_exam_request, stop_exam_request, poll_status_request,
+from models import Exam, EventSession, ArchivedEventSession
+from serializers import (EventSessionSerializer,
+                         ArchivedEventSessionSerializer, JournalingSerializer)
+from journaling.models import Journaling
+from edx_api import (start_exam_request, stop_exam_request,
+                     poll_status_request,
                      send_review_request, get_proctored_exams,
                      bulk_start_exams_request,
                      bulk_send_review_request)
@@ -33,6 +36,13 @@ def start_exam(request, attempt_code):
         exam.proctor = request.user
         exam.attempt_status = "OK"
         exam.save()
+        Journaling.objects.create(
+            type=Journaling.EXAM_STATUS_CHANGE,
+            event=exam.event,
+            exam=exam,
+            proctor=request.user,
+            note="%s -> %s" % (exam.NEW, exam.STARTED)
+        )
         data = {
             'hash': exam.generate_key(),
             'proctor': exam.proctor.username,
@@ -45,7 +55,8 @@ def start_exam(request, attempt_code):
 
 
 @api_view(['PUT'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def stop_exam(request, attempt_code):
     action = request.data.get('action')
@@ -58,7 +69,8 @@ def stop_exam(request, attempt_code):
 
 
 @api_view(['POST'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
     data = request.data
@@ -117,6 +129,11 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        Journaling.objects.create(
+            type=Journaling.EVENT_SESSION_START,
+            event=serializer.instance,
+            proctor=request.user,
+        )
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
@@ -138,7 +155,13 @@ class EventSessionViewSet(mixins.ListModelMixin,
             data[field] = request.data.get(field)
         change_end_date = instance.status == EventSession.IN_PROGRESS and \
                           data.get('status') == EventSession.FINISHED
-
+        if instance.status != data.get('status'):
+            Journaling.objects.create(
+                type=Journaling.EVENT_SESSION_STATUS_CHANGE,
+                event=instance,
+                proctor=request.user,
+                note=instance.status + " -> " + data.get('status')
+            )
         serializer = self.get_serializer(instance, data=data,
                                          partial=True)
         serializer.is_valid(raise_exception=True)
@@ -149,6 +172,15 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session.save()
             serializer = self.get_serializer(event_session)
         return Response(serializer.data)
+
+
+class ArchivedEventSessionViewSet(mixins.ListModelMixin,
+                                  viewsets.GenericViewSet):
+    serializer_class = ArchivedEventSessionSerializer
+    queryset = ArchivedEventSession.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
 
 
 class Review(APIView):
@@ -275,7 +307,8 @@ def get_exams_proctored(request):
 
 
 @api_view(['POST'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def bulk_start_exams(request):
     """
@@ -299,6 +332,11 @@ def bulk_start_exams(request):
             'status': "OK"
         }
         send_ws_msg(data, channel=exam.event.hash_key)
+    Journaling.objects.create(
+        type=Journaling.BULK_EXAM_STATUS_CHANGE,
+        note="%s. %s -> %s" % (exam_codes, exam.NEW, exam.STARTED),
+        proctor=request.user,
+    )
     return Response(status=status.HTTP_200_OK)
 
 
@@ -362,3 +400,12 @@ def _review_payload(exam, exam_code, review_status, video_link,
 # Angular redirect
 def redirect_session(request):
     return redirect('/#/session')
+
+
+class JournalingViewSet(mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    serializer_class = JournalingSerializer
+    queryset = Journaling.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)

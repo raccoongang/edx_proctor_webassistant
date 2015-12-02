@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.utils.translation import ugettext_lazy as _
 from api.web_soket_methods import send_ws_msg
+from journaling.models import Journaling
 from serializers import ExamSerializer
 from models import Exam, EventSession
 
@@ -26,13 +27,19 @@ class APIRoot(APIView):
             ),
             "poll_status": reverse(
                 'poll_status',
-                request=request, args=('attempt_code',)
+                request=request
             ),
             "review": reverse(
                 'review',
                 request=request
             ),
+            "journaling": reverse(
+                'journaling-list',
+                request=request
+            ),
             "event_session": reverse('event-session-list', request=request),
+            "archived_event_session": reverse('archived-event-session-list',
+                                              request=request),
         }
         return Response(result)
 
@@ -114,6 +121,12 @@ class ExamViewSet(mixins.ListModelMixin,
             headers = self.get_success_headers(serializer.data)
             serializer.instance.event = event
             serializer.instance.save()
+            Journaling.objects.create(
+                type=Journaling.EXAM_ATTEMPT,
+                event=event,
+                exam=serializer.instance,
+                proctor=request.user
+            )
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,
                             headers=headers)

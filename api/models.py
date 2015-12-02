@@ -106,6 +106,9 @@ class Exam(models.Model):
         else:
             return course_id.split('/')
 
+    def __unicode__(self):
+       return self.exam_id
+
 
 class EventSessionManager(models.Manager):
     def get_queryset(self):
