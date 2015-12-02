@@ -60,7 +60,8 @@
                 var update_status = function (idx, status) {
                     var obj = $scope.ws_data.filter({hash: idx});
                     if (obj.length > 0) {
-                        obj[0]['status'] = status;
+                        if (obj[0].review_sent !== true)
+                            obj[0]['status'] = status;
                     }
                 };
 
@@ -167,6 +168,7 @@
                             }
                             $scope.ws_data[idx].status = 'finished';
                             exam.review_sent = true;
+                            attempt_end(exam.hash);
                         }).error(function(){
                             alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
                         });
