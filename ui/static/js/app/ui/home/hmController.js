@@ -101,7 +101,7 @@
 
                 $scope.stop_exam_attempt = function(exam){
                     $scope.add_review(exam).then(function(){
-                        Api.stop_exam_attempt(exam.examCode, exam.orgExatra.userID).then(function(data){
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
                             console.log(data);
                         }, function(){
 
