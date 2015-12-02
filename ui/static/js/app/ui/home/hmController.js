@@ -84,7 +84,7 @@
                             }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
-                                attempt_end();
+                                attempt_end(msg.hash);
                             }
                         }
                     }
