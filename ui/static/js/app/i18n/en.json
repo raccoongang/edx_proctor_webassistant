@@ -45,9 +45,11 @@
   "CANCEL": "Cancel",
 
   "SUSPICIOUS": "Suspicious",
+  "COMMENT": "Comment",
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "SESSION_ERROR_1": "Failed to create/join session",
   "SESSION_ERROR_2": "Failed to end current session",
-  "REVIEW_SEND_FAILED": "Failed to send review for exam attempt"
+  "REVIEW_SEND_FAILED": "Failed to send review for exam attempt",
+  "STOP_EXAM_FAILED": "Failed to stop exam attempt"
 }

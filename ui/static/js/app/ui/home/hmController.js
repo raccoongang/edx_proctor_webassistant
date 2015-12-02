@@ -101,10 +101,10 @@
 
                 $scope.stop_exam_attempt = function(exam){
                     $scope.add_review(exam).then(function(){
-                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
-                            console.log(data);
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(){
+                            $scope.send_review(exam, "Suspicious");
                         }, function(){
-
+                            alert(i18n.translate('STOP_EXAM_FAILED'));
                         });
                     }, function(){
 
