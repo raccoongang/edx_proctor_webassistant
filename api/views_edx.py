@@ -108,6 +108,7 @@ class ExamViewSet(mixins.ListModelMixin,
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
+        print(dir(request.user))
         try:
             event = EventSession.objects.filter(
                 course_id=serializer.validated_data.get('course_id'),
