@@ -68,6 +68,7 @@
                 $scope.websocket_callback = function (msg) {
                     if (msg){
                         if (msg['examCode']) {
+                            msg.finished = false;
                             $scope.ws_data.push(angular.copy(msg));
                             $scope.$apply();
                             return;
@@ -78,9 +79,12 @@
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
                             }
+                            if (item.finished){
+                                $scope.send_review(item, "Suspicious");
+                            }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
-                                attempt_end();
+                                attempt_end(msg.hash);
                             }
                         }
                     }
@@ -101,10 +105,11 @@
 
                 $scope.stop_exam_attempt = function(exam){
                     $scope.add_review(exam).then(function(){
-                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
-                            console.log(data);
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(){
+                            exam.status = 'submitted';
+                            exam.finished = true;
                         }, function(){
-
+                            alert(i18n.translate('STOP_EXAM_FAILED'));
                         });
                     }, function(){
 
@@ -227,7 +232,10 @@
         var session = TestSession.getSession();
         $scope.exam.course_name = session.course_name;
         $scope.exam.exam_name = session.exam_name;
-        $scope.available_statuses = [i18n.translate('SUSPICIOUS')];
+        $scope.available_statuses = [
+            i18n.translate('COMMENT'),
+            i18n.translate('SUSPICIOUS')
+        ];
         $scope.comment = {
             status: $scope.available_statuses[0],
             message: ""
