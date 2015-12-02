@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 
 class Journaling(models.Model):
@@ -36,3 +37,20 @@ class Journaling(models.Model):
     proctor_ip = models.GenericIPAddressField(blank=True, null=True)
     datetime = models.DateTimeField(auto_now=True)
 
+
+def login_journaling(sender, user, request, **kwargs):
+    Journaling.objects.create(
+        type=Journaling.PROCTOR_ENTER,
+        proctor=user
+    )
+
+
+def logout_journaling(sender, user, request, **kwargs):
+    Journaling.objects.create(
+        type=Journaling.PROCTOR_EXIT,
+        proctor=user
+    )
+
+
+user_logged_in.connect(login_journaling)
+user_logged_out.connect(logout_journaling)

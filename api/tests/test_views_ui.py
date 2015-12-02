@@ -18,6 +18,12 @@ class ViewsUITestCase(TestCase):
             object_id='*',
             object_type='*'
         )
+        event = EventSession()
+        event.testing_center = "new center"
+        event.course_id = "new course"
+        event.course_event_id = "new event"
+        event.proctor = self.user
+        event.save()
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -33,7 +39,9 @@ class ViewsUITestCase(TestCase):
         exam.username = 'test'
         exam.user_id = 1
         exam.email = 'test@test.com'
-        exam.exam_id = '1'
+        exam.exam_id = event.course_event_id
+        exam.course_id = event.course_id
+        exam.event = event
         exam.save()
         self.exam = exam
 
@@ -70,20 +78,18 @@ class ViewsUITestCase(TestCase):
 
     def test_poll_status(self):
         factory = APIRequestFactory()
+        data = {'list': [self.exam.exam_code]}
         with patch('api.views_ui.poll_status_request') as edx_request, \
                 patch('api.views_ui.send_ws_msg') as send_ws:
-            edx_request.return_value = MockResponse(
-                content='{"status": "started"}')
+            edx_request.return_value = [
+                {"attempt_code": self.exam.exam_code, "status": "started"}]
             send_ws.return_value = None
-            request = factory.get(
-                '/api/poll_status/%s' % self.exam.exam_code)
+            request = factory.post(
+                '/api/poll_status', data)
             force_authenticate(request, user=self.user)
-            response = poll_status(request, attempt_code=self.exam.exam_code)
+            response = poll_status(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            data = json.loads(response.content)
-            self.assertIn('hash', data)
-            self.assertEqual('started', data['status'])
 
     def test_send_review(self):
         factory = APIRequestFactory()
@@ -110,8 +116,6 @@ class ViewsUITestCase(TestCase):
             response = view(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-            data = json.loads(response.content)
-            self.assertEqual('review_send_failed', data['status'])
 
 
 class EventSessionViewSetTestCase(TestCase):
@@ -162,7 +166,7 @@ class EventSessionViewSetTestCase(TestCase):
             '/api/event_session/%s' % event.pk, data=event_data)
         force_authenticate(request, user=self.user)
         view = EventSessionViewSet.as_view({'patch': 'partial_update'})
-        response = view(request, pk = event.pk)
+        response = view(request, pk=event.pk)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
@@ -175,7 +179,6 @@ class EventSessionViewSetTestCase(TestCase):
             event_data
         )
         self.assertNotEqual(event.end_date, None)
-
 
 
 class MockResponse(object):
