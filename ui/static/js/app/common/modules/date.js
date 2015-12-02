@@ -1,5 +1,5 @@
 (function(){
-    var app = angular.module('proctor.date', []);
+    var app = angular.module('proctor.date', ['pascalprecht.translate']);
     app.service('DateTimeService', function($rootScope, $interval){
         var ticker = null;
         var self = this;
@@ -14,20 +14,23 @@
             if (hours   < 10) {hours   = "0"+hours;}
             if (minutes < 10) {minutes = "0"+minutes;}
             if (seconds < 10) {seconds = "0"+seconds;}
-            var time    = hours+':'+minutes+':'+seconds;
-            return time;
-        }
+            return hours+':'+minutes+':'+seconds;
+        };
 
         this.value = null;
 
-        var date_options = {
+        var datetime_options = {
             year: 'numeric', month: 'long',  day: 'numeric',
             weekday: 'long', hour: 'numeric', minute: 'numeric', second: 'numeric'
         };
 
-        var localDate = function(loc){
+        var time_options = {
+            hour: 'numeric', minute: 'numeric', second: 'numeric'
+        };
+
+        var localDate = function(loc, options){
             var d = new Date();
-            return d.toLocaleString(loc, date_options);
+            return d.toLocaleString(loc, (options !== undefined?options:datetime_options));
         };
 
         this.start_timer = function(){
@@ -62,6 +65,10 @@
             }
 
             return dd+'.'+mm+'.'+yyyy;
+        };
+
+        this.get_now_time = function(){
+            return localDate(window.localStorage['NG_TRANSLATE_LANG_KEY'], time_options);
         };
 
         $rootScope.$watch(function(){

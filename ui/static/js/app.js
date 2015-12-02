@@ -112,8 +112,14 @@
                             app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
-                    data: function(Api){
-                        return Api.get_session_data();
+                    data: function($location, Api, Auth){
+                        Auth.authenticate();
+                        if (Auth.get_token()) {
+                            return Api.get_session_data();
+                        }
+                        else {
+                            $location.path('/');
+                        }
                     }
                 }
             })
@@ -128,10 +134,15 @@
         if (match !== null)
             domain = match[1];
         var api_port = '', socket_port = '';
+        var protocol = 'http://';
+        if("https:" == document.location.protocol){
+            protocol = 'https://';
+        }
         $rootScope.apiConf = {
             domain: domain,
+            protocol: protocol,
             ioServer: domain + (socket_port?':' + socket_port:''),
-            apiServer: 'http://' + domain + (api_port?':' + api_port:'') + '/api'
+            apiServer: protocol + domain + (api_port?':' + api_port:'') + '/api'
         };
 
         // Preload language files

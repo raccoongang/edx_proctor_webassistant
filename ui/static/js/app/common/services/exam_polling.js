@@ -31,10 +31,9 @@
         };
 
         this.add_item = function(key){
-            if (attempts.length == 0){
-                self.start();
-            }
             attempts.push(key);
+            self.stop_all();
+            self.start();
         };
     }
 

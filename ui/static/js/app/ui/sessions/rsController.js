@@ -15,10 +15,13 @@
         if (data.data.results !== undefined && data.data.results.length) {
             var c_list = [];
             angular.forEach(data.data.results, function (val, key) {
-                c_list.push({name: val.name, id: val.id});
+                if (val.proctored_exams.length){
+                    c_list.push({name: val.name, id: val.id});
+                }
             });
             $scope.courses = c_list;
-            $scope.session.course = c_list[0].id;
+            if ($scope.courses.length)
+                $scope.session.course = c_list[0].id;
         }
 
         $scope.$watch('session.course', function(val, old){

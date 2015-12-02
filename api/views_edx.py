@@ -102,11 +102,12 @@ class ExamViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         try:
-            event = EventSession.objects.get(
+            event = EventSession.objects.filter(
                 course_id=serializer.validated_data.get('course_id'),
                 course_event_id=serializer.validated_data.get('exam_id'),
                 status=EventSession.IN_PROGRESS
-            )
+            ).order_by('start_date')
+            event = event[0] if len(event) == 1 else event.reverse()[0]
             self.perform_create(serializer)
             data['hash'] = serializer.instance.generate_key()
             send_ws_msg(data, channel=event.hash_key)

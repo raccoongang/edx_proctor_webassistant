@@ -5,6 +5,7 @@
         'MainCtrl', ['$scope',
                      '$interval',
                      '$location',
+                     '$q',
                      'WS',
                      'Api',
                      'Auth',
@@ -13,9 +14,10 @@
                      '$uibModal',
                      'TestSession',
                      'Polling',
+                     'DateTimeService',
                      'students',
-            function ($scope, $interval, $location, WS, Api, Auth, i18n,
-                      NgTableParams, $uibModal, TestSession, Polling, students) {
+            function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
+                      NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
 
@@ -32,7 +34,7 @@
                     angular.forEach(students.data, function(val, key){
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
-                        Polling.add_item(val.hash); // first item starts cyclic update
+                        Polling.add_item(val.examCode); // first item starts cyclic update
                     });
                 }
 
@@ -56,11 +58,10 @@
                 };
 
                 var update_status = function (idx, status) {
-                    var obj = $.grep($scope.ws_data, function(e){
-                        return e.hash == idx;
-                    });
+                    var obj = $scope.ws_data.filter({hash: idx});
                     if (obj.length > 0) {
-                        obj[0]['status'] = status;
+                        if (obj[0].review_sent !== true)
+                            obj[0]['status'] = status;
                     }
                 };
 
@@ -72,6 +73,11 @@
                             return;
                         }
                         if (msg['hash'] && msg['status']){
+                            var item = $scope.ws_data.filter({hash: msg.hash});
+                            item = item.length?item[0]:null;
+                            if (msg.status == 'started' && item && item.status == 'ready_to_start'){
+                                item.started_at = DateTimeService.get_now_time();
+                            }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
                                 attempt_end();
@@ -87,13 +93,26 @@
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
-                                    Polling.add_item(data['hash']);
+                                    Polling.add_item(exam.examCode);
                                 }
                             });
                     }
                 };
 
+                $scope.stop_exam_attempt = function(exam){
+                    $scope.add_review(exam).then(function(){
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
+                            console.log(data);
+                        }, function(){
+
+                        });
+                    }, function(){
+
+                    });
+                };
+
                 $scope.add_review = function (exam) {
+                    var deferred = $q.defer();
 
                     if (exam.comments == undefined) {
                         exam.comments = [];
@@ -111,40 +130,49 @@
 
                     modalInstance.result.then(function (data) {
                         exam.comments.push(data);
-                    }, function () { });
+                        deferred.resolve();
+                    }, function () {
+                        deferred.reject();
+                    });
+
+                    return deferred.promise;
                 };
 
                 $scope.send_review = function (exam, status) {
-                    var payload = {
-                        "examMetaData": {
-                            "examCode": exam.examCode,
-                            "reviewedExam": true,
-                            "proctor_username": Auth.get_proctor()
-                        },
-                        "reviewStatus": status,
-                        "videoReviewLink": "",
-                        "desktopComments": []
-                    };
-                    angular.forEach(exam.comments, function(val, key){
-                        payload.desktopComments.push(
-                            {
-                                "comments": val.comment,
-                                "duration": 88,
-                                "eventFinish": 88,
-                                "eventStart": 12,
-                                "eventStatus": val.status
+                    if (exam.status == 'submitted' && exam.review_sent !== true){
+                        var payload = {
+                            "examMetaData": {
+                                "examCode": exam.examCode,
+                                "reviewedExam": true,
+                                "proctor_username": Auth.get_proctor()
+                            },
+                            "reviewStatus": status,
+                            "videoReviewLink": "",
+                            "desktopComments": []
+                        };
+                        angular.forEach(exam.comments, function(val, key){
+                            payload.desktopComments.push(
+                                {
+                                    "comments": val.comment,
+                                    "duration": 88,
+                                    "eventFinish": 88,
+                                    "eventStart": 12,
+                                    "eventStatus": val.status
+                                }
+                            );
+                        });
+                        Api.send_review(payload).success(function(){
+                            var idx = 0;
+                            while ($scope.ws_data[idx].examCode !== exam.examCode) {
+                                idx++;
                             }
-                        );
-                    });
-                    Api.send_review(payload).success(function(){
-                        var idx = 0;
-                        while ($scope.ws_data[idx].examCode !== exam.examCode) {
-                            idx++;
-                        }
-                        $scope.ws_data[idx].status = 'finished';
-                    }).error(function(){
-                        alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
-                    });
+                            $scope.ws_data[idx].status = 'finished';
+                            exam.review_sent = true;
+                            attempt_end(exam.hash);
+                        }).error(function(){
+                            alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
+                        });
+                    }
                 };
 
                 $scope.$watch('ws_data', function(newValue, oldValue) {
@@ -185,7 +213,9 @@
                     }
                 };
 
-                $scope.end_all_attempts = function(){};
+                $scope.end_all_attempts = function(){
+
+                };
 
                 $scope.accept_student = function(exam){
                     exam.accepted = true;

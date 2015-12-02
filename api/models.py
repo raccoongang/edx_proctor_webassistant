@@ -100,10 +100,11 @@ class Exam(models.Model):
 
     @classmethod
     def get_course_data(cls, course_id):
-        if settings.COURSE_ID_SLASH_SEPARATED:
-            return course_id.split('/')
+        sp = course_id.split(':')
+        if len(sp) == 2:
+            return sp[-1].split('+')
         else:
-            return course_id.split(':')[-1].split('+')
+            return course_id.split('/')
 
 
 class EventSessionManager(models.Manager):
@@ -142,6 +143,7 @@ class EventSession(models.Model):
     notify = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
 
     objects = EventSessionManager()
 

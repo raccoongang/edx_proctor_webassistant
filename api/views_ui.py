@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
@@ -46,9 +47,14 @@ def start_exam(request, attempt_code):
 @api_view(['PUT'])
 @authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
-def stop_exam(request, pk):
-    response = stop_exam_request(pk)
-    return Response(status=response.status_code)
+def stop_exam(request, attempt_code):
+    action = request.data.get('action')
+    user_id = request.data.get('user_id')
+    if action and user_id:
+        response = stop_exam_request(attempt_code, action, user_id)
+        return Response(status=response.status_code)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -56,7 +62,7 @@ def stop_exam(request, pk):
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
     data = request.data
-    if 'list' in data:
+    if u'list' in data:
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(Exam, exam_code=val['attempt_code'])
@@ -347,3 +353,8 @@ def _review_payload(exam, exam_code, review_status, video_link,
             }
         ]
     }
+
+
+# Angular redirect
+def redirect_session(request):
+    return redirect('/#/session')
