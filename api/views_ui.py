@@ -48,7 +48,7 @@ def start_exam(request, attempt_code):
 @authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def stop_exam(request, attempt_code):
-    action = request.DATA.get('action')
+    action = request.data.get('action')
     if action:
         response = stop_exam_request(attempt_code, action)
         return Response(status=response.status_code)
