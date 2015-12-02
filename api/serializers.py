@@ -7,7 +7,7 @@ from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
-from models import Exam, EventSession
+from models import Exam, EventSession, ArchivedEventSession
 from journaling.models import Journaling
 
 
@@ -147,6 +147,16 @@ class EventSessionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventSession
+
+
+class ArchivedEventSessionSerializer(serializers.ModelSerializer):
+    proctor = serializers.ReadOnlyField(source='proctor.username')
+    class Meta:
+        read_only_fields = (
+            'testing_center', 'course_id', 'course_event_id', 'proctor',
+            'status', 'hash_key', 'notify', 'start_date', 'end_date', 'comment'
+        )
+        model = ArchivedEventSession
 
 
 class JournalingSerializer(serializers.ModelSerializer):

@@ -12,8 +12,9 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam, EventSession
-from serializers import EventSessionSerializer, JournalingSerializer
+from models import Exam, EventSession, ArchivedEventSession
+from serializers import (EventSessionSerializer,
+                         ArchivedEventSessionSerializer, JournalingSerializer)
 from journaling.models import Journaling
 from edx_api import (start_exam_request, stop_exam_request,
                      poll_status_request,
@@ -47,7 +48,7 @@ def start_exam(request, attempt_code):
             'proctor': exam.proctor.username,
             'status': "OK"
         }
-        # send_ws_msg(data, channel=exam.event.hash_key)
+        send_ws_msg(data, channel=exam.event.hash_key)
     else:
         data = {'error': 'Edx response error. See logs'}
     return Response(data=data, status=response.status_code)
@@ -171,6 +172,15 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session.save()
             serializer = self.get_serializer(event_session)
         return Response(serializer.data)
+
+
+class ArchivedEventSessionViewSet(mixins.ListModelMixin,
+                                  viewsets.GenericViewSet):
+    serializer_class = ArchivedEventSessionSerializer
+    queryset = ArchivedEventSession.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
 
 
 class Review(APIView):

@@ -3,13 +3,16 @@ from rest_framework.routers import DefaultRouter
 from views_edx import ExamViewSet, APIRoot
 from views_ui import (start_exam, stop_exam, bulk_start_exams, poll_status,
                       get_exams_proctored, Review, BulkReview,
-                      EventSessionViewSet, JournalingViewSet)
+                      EventSessionViewSet, ArchivedEventSessionViewSet,
+                      JournalingViewSet)
 
 router = DefaultRouter()
 router.register(r'exam_register', ExamViewSet,
                 base_name="exam-register")
 router.register(r'event_session', EventSessionViewSet,
                 base_name="event-session")
+router.register(r'archived_event_session', ArchivedEventSessionViewSet,
+                base_name="archived-event-session")
 router.register(r'journaling', JournalingViewSet,
                 base_name="journaling")
 

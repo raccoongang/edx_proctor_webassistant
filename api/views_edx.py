@@ -38,6 +38,8 @@ class APIRoot(APIView):
                 request=request
             ),
             "event_session": reverse('event-session-list', request=request),
+            "archived_event_session": reverse('archived-event-session-list',
+                                              request=request),
         }
         return Response(result)
 
