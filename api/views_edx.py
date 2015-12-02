@@ -122,15 +122,11 @@ class ExamViewSet(mixins.ListModelMixin,
             headers = self.get_success_headers(serializer.data)
             serializer.instance.event = event
             serializer.instance.save()
-            print(request.COOKIES)
-            print(request.COOKIES.get('authenticated_user'))
             Journaling.objects.create(
                 type=Journaling.EXAM_ATTEMPT,
                 event=event,
                 exam=serializer.instance,
-                proctor=User.objects.get(
-                    username=request.COOKIES.get('authenticated_user')
-                )
+                proctor=User()
             )
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,

@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
@@ -40,7 +41,7 @@ def start_exam(request, attempt_code):
             type=Journaling.EXAM_STATUS_CHANGE,
             event=exam.event,
             exam=exam,
-            proctor=request.user,
+            proctor=User(),
             note="%s -> %s" % (exam.NEW, exam.STARTED)
         )
         data = {
@@ -132,7 +133,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         Journaling.objects.create(
             type=Journaling.EVENT_SESSION_START,
             event=serializer.instance,
-            proctor=request.user,
+            proctor=User(),
         )
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
@@ -159,7 +160,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
             Journaling.objects.create(
                 type=Journaling.EVENT_SESSION_STATUS_CHANGE,
                 event=instance,
-                proctor=request.user,
+                proctor=User(),
                 note=instance.status + " -> " + data.get('status')
             )
         serializer = self.get_serializer(instance, data=data,
@@ -335,7 +336,7 @@ def bulk_start_exams(request):
     Journaling.objects.create(
         type=Journaling.BULK_EXAM_STATUS_CHANGE,
         note="%s. %s -> %s" % (exam_codes, exam.NEW, exam.STARTED),
-        proctor=request.user,
+        proctor=User(),
     )
     return Response(status=status.HTTP_200_OK)
 
