@@ -49,8 +49,9 @@ def start_exam(request, attempt_code):
 @permission_classes((IsAuthenticated,))
 def stop_exam(request, attempt_code):
     action = request.data.get('action')
-    if action:
-        response = stop_exam_request(attempt_code, action)
+    user_id = request.data.get('user_id')
+    if action and user_id:
+        response = stop_exam_request(attempt_code, action, user_id)
         return Response(status=response.status_code)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)

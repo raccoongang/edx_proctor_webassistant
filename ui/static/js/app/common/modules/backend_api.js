@@ -21,11 +21,11 @@
             });
         };
 
-        this.stop_exam_attempt = function(attempt){
+        this.stop_exam_attempt = function(attempt, user_id){
             return generic_api_call({
                 'url':  get_url('stop_exam') + attempt,
                 'method': 'PUT',
-                'data': JSON.stringify({action: 'submit'})
+                'data': JSON.stringify({action: 'submit', user_id: user_id})
             });
         };
 
