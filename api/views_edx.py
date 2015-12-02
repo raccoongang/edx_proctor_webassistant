@@ -26,10 +26,14 @@ class APIRoot(APIView):
             ),
             "poll_status": reverse(
                 'poll_status',
-                request=request, args=('attempt_code',)
+                request=request
             ),
             "review": reverse(
                 'review',
+                request=request
+            ),
+            "journaling": reverse(
+                'journaling-list',
                 request=request
             ),
             "event_session": reverse('event-session-list', request=request),

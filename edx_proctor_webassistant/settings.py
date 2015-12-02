@@ -48,6 +48,7 @@ INSTALLED_APPS = (
 
     'api',
     'ui',
+    'journaling',
 )
 
 MIDDLEWARE_CLASSES = (

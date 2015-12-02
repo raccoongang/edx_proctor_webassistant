@@ -13,8 +13,10 @@ from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession
-from serializers import EventSessionSerializer
-from edx_api import (start_exam_request, stop_exam_request, poll_status_request,
+from serializers import EventSessionSerializer, JournalingSerializer
+from journaling.models import Journaling
+from edx_api import (start_exam_request, stop_exam_request,
+                     poll_status_request,
                      send_review_request, get_proctored_exams,
                      bulk_start_exams_request,
                      bulk_send_review_request)
@@ -45,7 +47,8 @@ def start_exam(request, attempt_code):
 
 
 @api_view(['PUT'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def stop_exam(request, attempt_code):
     action = request.data.get('action')
@@ -58,7 +61,8 @@ def stop_exam(request, attempt_code):
 
 
 @api_view(['POST'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
     data = request.data
@@ -271,7 +275,8 @@ def get_exams_proctored(request):
 
 
 @api_view(['POST'])
-@authentication_classes((SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def bulk_start_exams(request):
     """
@@ -358,3 +363,12 @@ def _review_payload(exam, exam_code, review_status, video_link,
 # Angular redirect
 def redirect_session(request):
     return redirect('/#/session')
+
+
+class JournalingViewSet(mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    serializer_class = JournalingSerializer
+    queryset = Journaling.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
