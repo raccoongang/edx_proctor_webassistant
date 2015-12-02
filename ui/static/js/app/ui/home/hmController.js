@@ -68,6 +68,7 @@
                 $scope.websocket_callback = function (msg) {
                     if (msg){
                         if (msg['examCode']) {
+                            msg.finished = false;
                             $scope.ws_data.push(angular.copy(msg));
                             $scope.$apply();
                             return;
@@ -77,6 +78,9 @@
                             item = item.length?item[0]:null;
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
+                            }
+                            if (item.finished){
+                                $scope.send_review(item, "Suspicious");
                             }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
@@ -102,7 +106,8 @@
                 $scope.stop_exam_attempt = function(exam){
                     $scope.add_review(exam).then(function(){
                         Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(){
-                            $scope.send_review(exam, "Suspicious");
+                            exam.status = 'submitted';
+                            exam.finished = true;
                         }, function(){
                             alert(i18n.translate('STOP_EXAM_FAILED'));
                         });
