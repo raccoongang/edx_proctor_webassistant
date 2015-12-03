@@ -281,8 +281,11 @@
                             $scope.add_common_review({}).then(function(data){
                                 angular.forEach(list, function(val, key){
                                     var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
-                                    exam.comments.push(data.comments);
+                                    res.comments.push(data.comments);
                                 });
+                                try{
+                                    $scope.$apply();
+                                }catch(e){}
                             });
                         }, function(){
                             alert(i18n.translate('STOP_EXAMS_FAILED'));
