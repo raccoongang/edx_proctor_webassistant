@@ -79,7 +79,6 @@
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
                             }
-                            console.log(item);
                             if (item.finished){
                                 $scope.send_review(item, "Suspicious");
                             }
@@ -117,6 +116,10 @@
                     }, function(){
 
                     });
+                };
+
+                $scope.stop_all_attempts = function(){
+
                 };
 
                 $scope.add_review = function (exam) {
@@ -192,7 +195,7 @@
                 $scope.check_all_attempts = function() {
                     var list = [];
                     angular.forEach($scope.ws_data, function(val, key){
-                        if (val.status == undefined || !val.status){
+                        if (!list.in_array(val.examCode)){
                             list.push(val.examCode);
                         }
                     });
@@ -211,9 +214,19 @@
                     }, function(){});
                 };
 
+                var get_not_started_attempts = function(){
+                    var list = [];
+                    angular.forEach($scope.ws_data, function(val, key){
+                        if (val.status == undefined || !val.status){
+                            list.push(val.examCode);
+                        }
+                    });
+                    return list;
+                };
+
                 $scope.start_all_attempts = function(){
                     if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
-                        Api.start_all_exams($scope.exams.checked).then(function(){
+                        Api.start_all_exams(get_not_started_attempts()).then(function(){
                             angular.forEach($scope.exams.checked, function(val, key){
                                 Polling.add_item(val);
                             });
@@ -221,8 +234,21 @@
                     }
                 };
 
-                $scope.end_all_attempts = function(){
+                var get_items_to_stop = function(){
+                    var list = [];
+                    angular.forEach($scope.exams.checked, function(val, key){
+                        var item = $scope.ws_data.filter({examCode: val});
+                        if (item.length){
+                            list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
+                        }
+                    });
+                    return list;
+                };
 
+                $scope.end_all_attempts = function(){
+                    if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true){
+                        Api.stop_all_exam_attempts(get_items_to_stop());
+                    }
                 };
 
                 $scope.accept_student = function(exam){

@@ -76,6 +76,37 @@ def stop_exam(request, attempt_code):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['PUT'])
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@permission_classes((IsAuthenticated,))
+def stop_exams(request):
+    attempts = request.data.get('attempts')
+    if attempts:
+        status_list = []
+        for attempt in attempts:
+            exam = get_object_or_404(Exam, exam_code=attempt['attempt_code'])
+            user_id = attempt.get('user_id')
+            action = attempt.get('action')
+            if action and user_id:
+                response = stop_exam_request(attempt['attempt_code'], action, user_id)
+                if response.status_code != 200:
+                    status_list.append(response.status_code)
+                else:
+                    data = {
+                        'hash': exam.generate_key(),
+                        'status': "submitted"
+                    }
+                    send_ws_msg(data, channel=exam.event.hash_key)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        if status_list:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
