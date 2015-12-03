@@ -151,6 +151,7 @@ class EventSessionSerializer(serializers.ModelSerializer):
 
 class ArchivedEventSessionSerializer(serializers.ModelSerializer):
     proctor = serializers.ReadOnlyField(source='proctor.username')
+
     class Meta:
         read_only_fields = (
             'testing_center', 'course_id', 'course_event_id', 'proctor',
@@ -164,6 +165,13 @@ class JournalingSerializer(serializers.ModelSerializer):
     event = serializers.ReadOnlyField(source='event.hash_key')
     exam = serializers.ReadOnlyField(source='exam.exam_id')
     type = serializers.SerializerMethodField()
+    student = serializers.SerializerMethodField()
+
+    def get_student(self, obj):
+        return obj.get_student()
+            # return " ".join(
+            #     (obj.exam.first_name, obj.exam.last_name, obj.exam.email)
+            # )
 
     def get_type(self, obj):
         return obj.get_type_display()

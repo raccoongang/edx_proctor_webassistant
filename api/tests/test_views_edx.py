@@ -22,7 +22,17 @@ class APIRootTestCase(TestCase):
 
 class ExamViewSetTestCase(TestCase):
     def setUp(self):
-
+        self.event = EventSession()
+        self.event.testing_center = 'testing center'
+        self.event.course_id = 'org1/course1/run1'
+        self.event.course_event_id = '1'
+        self.event.status = EventSession.IN_PROGRESS
+        self.event.proctor = User.objects.create_user(
+            'test',
+            'test@test.com',
+            'password'
+        )
+        self.event.save()
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -38,43 +48,23 @@ class ExamViewSetTestCase(TestCase):
         exam.username = 'username'
         exam.user_id = '1'
         exam.email = 'test@test.com'
-        exam.exam_id = '1'
-        exam.course_id = 'org1/course1/run1'
+        exam.exam_id = self.event.course_event_id
+        exam.course_id = self.event.course_id
+        exam.event = self.event
         exam.save()
         self.exam = exam
-        self.event = EventSession()
-        self.event.testing_center = 'testing center'
-        self.event.course_id = exam.course_id
-        self.event.course_event_id = exam.exam_id
-        self.event.status = EventSession.IN_PROGRESS
-        self.event.proctor = User.objects.create_user(
-            'test',
-            'test@test.com',
-            'password'
-        )
-        self.event.save()
 
     def test_get_exam_by_session(self):
         factory = APIRequestFactory()
         request = factory.get(
             '/api/exam_register/?session=%s' % self.event.hash_key)
-        view = ExamViewSet.as_view({'get': 'retrieve'})
-        response = view(request, pk=self.exam.pk)
+        view = ExamViewSet.as_view({'get': 'list'})
+        response = view(request)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(type(data), dict)
-        self.assertDictContainsSubset({
-            'examCode': self.exam.exam_code,
-            'duration': self.exam.duration,
-            'reviewedExam': self.exam.reviewed_exam,
-            'reviewerNotes': self.exam.reviewer_notes,
-            'examPassword': self.exam.exam_password,
-            'examSponsor': self.exam.exam_sponsor,
-            'examName': self.exam.exam_name,
-            'ssiProduct': self.exam.ssi_product,
-        },
-            data)
+        self.assertEqual(type(data), list)
+        self.assertTrue(len(data) > 0)
 
     def test_register_exam(self):
         factory = APIRequestFactory()
