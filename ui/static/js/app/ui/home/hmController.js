@@ -278,6 +278,7 @@
                         var list = get_items_to_stop();
                         Api.stop_all_exam_attempts(list).then(function(){
                             $scope.add_common_review({}).then(function(data){
+                                console.log(data);
                                 angular.forEach(list, function(val, key){
                                     var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
                                     var payload = (
@@ -289,6 +290,7 @@
                                             "eventStatus": "Comment"
                                         }
                                     );
+                                    console.log(payload);
                                     res.comments.push(payload);
                                 });
                             });
