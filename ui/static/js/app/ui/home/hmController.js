@@ -149,6 +149,33 @@
                     return deferred.promise;
                 };
 
+                $scope.add_common_review = function (exam) {
+                    var deferred = $q.defer();
+
+                    if (exam.comments == undefined) {
+                        exam.comments = [];
+                    }
+
+                    var modalInstance = $uibModal.open({
+                        animation: true,
+                        templateUrl: 'reviewContent.html',
+                        controller: 'ReviewCtrl',
+                        size: 'lg',
+                        resolve: {
+                            exam: exam
+                        }
+                    });
+
+                    modalInstance.result.then(function (data) {
+                        exam.comments.push(data);
+                        deferred.resolve(exam);
+                    }, function () {
+                        deferred.reject();
+                    });
+
+                    return deferred.promise;
+                };
+
                 $scope.send_review = function (exam, status) {
                     if (exam.status == 'submitted' && exam.review_sent !== true){
                         var payload = {
@@ -247,7 +274,14 @@
 
                 $scope.end_all_attempts = function(){
                     if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true){
-                        Api.stop_all_exam_attempts(get_items_to_stop());
+                        var list = get_items_to_stop();
+                        Api.stop_all_exam_attempts(list).then(function(){
+                            $scope.add_common_review({}).then(function(data){
+                                console.log(data);
+                            });
+                        }, function(){
+
+                        });
                     }
                 };
 
