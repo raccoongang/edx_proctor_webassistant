@@ -123,8 +123,9 @@ class ExamViewSet(mixins.ListModelMixin,
                 {'error': _("No event was found. Forbidden")},
                 status=status.HTTP_403_FORBIDDEN)
         elif len(event) > 1:
-            event.reverse()
-        event = event[0]
+            event = event.reverse()[0]
+        else:
+            event = event[0]
         self.perform_create(serializer)
         data['hash'] = serializer.instance.generate_key()
         send_ws_msg(data, channel=event.hash_key)
