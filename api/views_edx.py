@@ -24,7 +24,7 @@ class APIRoot(APIView):
             ),
             "start_exam": reverse(
                 'start_exam',
-                request=request, args=('attempt_code',)
+                request=request, args=('-attempt_code-',)
             ),
             "poll_status": reverse(
                 'poll_status',
@@ -122,12 +122,10 @@ class ExamViewSet(mixins.ListModelMixin,
             headers = self.get_success_headers(serializer.data)
             serializer.instance.event = event
             serializer.instance.save()
-            #TODO add proctor
             Journaling.objects.create(
                 type=Journaling.EXAM_ATTEMPT,
                 event=event,
                 exam=serializer.instance,
-                # proctor=request.user
             )
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,

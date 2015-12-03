@@ -29,6 +29,7 @@ from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
 @authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def start_exam(request, attempt_code):
+
     exam = get_object_or_404(Exam, exam_code=attempt_code)
 
     response = start_exam_request(exam.exam_code)
@@ -37,12 +38,11 @@ def start_exam(request, attempt_code):
         exam.proctor = request.user
         exam.attempt_status = "OK"
         exam.save()
-        #TODO add proctor
         Journaling.objects.create(
             type=Journaling.EXAM_STATUS_CHANGE,
             event=exam.event,
             exam=exam,
-            # proctor=request.user,
+            proctor=request.user,
             note="%s -> %s" % (exam.NEW, exam.STARTED)
         )
         data = {
@@ -75,6 +75,15 @@ def stop_exam(request, attempt_code):
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def poll_status(request):
+    """
+    Get statuses for list of exams
+
+    Request example:
+
+    ```
+    {"list":["code1","code2"]}
+    ```
+    """
     data = request.data
     if u'list' in data:
         response = poll_status_request(data['list'])
@@ -131,11 +140,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        #TODO add proctor
         Journaling.objects.create(
             type=Journaling.EVENT_SESSION_START,
             event=serializer.instance,
-            # proctor=request.user,
+            proctor=request.user,
         )
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
@@ -159,11 +167,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
         change_end_date = instance.status == EventSession.IN_PROGRESS and \
                           data.get('status') == EventSession.FINISHED
         if instance.status != data.get('status'):
-            #TODO add proctor
             Journaling.objects.create(
                 type=Journaling.EVENT_SESSION_STATUS_CHANGE,
                 event=instance,
-                # proctor=request.user,
+                proctor=request.user,
                 note=instance.status + " -> " + data.get('status')
             )
         serializer = self.get_serializer(instance, data=data,
@@ -336,11 +343,10 @@ def bulk_start_exams(request):
             'status': "OK"
         }
         send_ws_msg(data, channel=exam.event.hash_key)
-    #TODO add proctor
     Journaling.objects.create(
         type=Journaling.BULK_EXAM_STATUS_CHANGE,
         note="%s. %s -> %s" % (exam_codes, exam.NEW, exam.STARTED),
-        # proctor=request.user,
+        proctor=request.user,
     )
     return Response(status=status.HTTP_200_OK)
 
@@ -410,7 +416,8 @@ def redirect_session(request):
 class JournalingViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
     serializer_class = JournalingSerializer
-    queryset = Journaling.objects.all()
+    queryset = Journaling.objects.order_by('-pk').all()
+    paginate_by = 25
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)

@@ -18,11 +18,11 @@ class SsoTokenAuthentication(TokenAuthentication):
     def authenticate_credentials(self, key):
         try:
             token = self.model.objects.select_related('user').get(extra_data={"access_token": key})
-            # token = self.model.objects.select_related('user').get(key=key)
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed(_('Invalid token.'))
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed(_('User inactive or deleted.'))
+
 
         return (token.user, token)
