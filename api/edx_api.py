@@ -88,7 +88,8 @@ def _journaling_request(request_type, url, data=None, headers=None):
         )
     elif request_type == "get":
         response = requests.get(
-            settings.EDX_URL + url
+            settings.EDX_URL + url,
+            headers=headers
         )
     elif request_type == "put":
         response = requests.put(
