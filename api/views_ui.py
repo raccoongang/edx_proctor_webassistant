@@ -19,7 +19,7 @@ from serializers import (EventSessionSerializer,
 from journaling.models import Journaling
 from edx_api import (start_exam_request, stop_exam_request,
                      poll_status_request,
-                     send_review_request, get_proctored_exams,
+                     send_review_request, get_proctored_exams_request,
                      bulk_start_exams_request,
                      bulk_send_review_request)
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
@@ -232,27 +232,27 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
 
 
 class Review(APIView):
+    """
+    POST Request example:
+
+    ```
+    {
+        "examMetaData": {
+            "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971"
+        },
+         "reviewStatus": "Clean",
+         "videoReviewLink": "http://video.url",
+         "desktopComments": [ ]
+    }
+    ```
+
+    """
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        """
-        Request example:
-
-        ```
-        {
-                "examMetaData": {
-                    "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971"
-                },
-                 "reviewStatus": "Clean",
-                 "videoReviewLink": "http://video.url",
-                 "desktopComments": [ ]
-            }
-        ```
-
-        """
         passing_review_status = ['Clean', 'Rules Violation']
         failing_review_status = ['Not Reviewed', 'Suspicious']
         payload = request.data
@@ -295,7 +295,7 @@ class BulkReview(APIView):
         """
         Request example:
 
-        ````
+        ```
         [
             {
                 "examMetaData": {
@@ -347,7 +347,7 @@ class BulkReview(APIView):
 @authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated,))
 def get_exams_proctored(request):
-    response = get_proctored_exams()
+    response = get_proctored_exams_request()
     return Response(
         status=response.status_code,
         data=response.json()

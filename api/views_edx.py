@@ -34,6 +34,10 @@ class APIRoot(APIView):
                 'review',
                 request=request
             ),
+            "proctored_exams": reverse(
+                'proctor_exams',
+                request=request
+            ),
             "journaling": reverse(
                 'journaling-list',
                 request=request
@@ -109,30 +113,32 @@ class ExamViewSet(mixins.ListModelMixin,
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        try:
-            event = EventSession.objects.filter(
-                course_id=serializer.validated_data.get('course_id'),
-                course_event_id=serializer.validated_data.get('exam_id'),
-                status=EventSession.IN_PROGRESS
-            ).order_by('start_date')
-            event = event[0] if len(event) == 1 else event.reverse()[0]
-            self.perform_create(serializer)
-            data['hash'] = serializer.instance.generate_key()
-            send_ws_msg(data, channel=event.hash_key)
-            headers = self.get_success_headers(serializer.data)
-            serializer.instance.event = event
-            serializer.instance.save()
-            Journaling.objects.create(
-                type=Journaling.EXAM_ATTEMPT,
-                event=event,
-                exam=serializer.instance,
-            )
-            return Response({'ID': data['hash']},
-                            status=status.HTTP_201_CREATED,
-                            headers=headers)
-        except EventSession.DoesNotExist:
-            return Response({'error': _("No event was found. Forbidden")},
-                            status=status.HTTP_403_FORBIDDEN)
+        event = EventSession.objects.filter(
+            course_id=serializer.validated_data.get('course_id'),
+            course_event_id=serializer.validated_data.get('exam_id'),
+            status=EventSession.IN_PROGRESS
+        ).order_by('start_date')
+        if len(event) == 0:
+            return Response(
+                {'error': _("No event was found. Forbidden")},
+                status=status.HTTP_403_FORBIDDEN)
+        elif len(event) > 1:
+            event.reverse()
+        event = event[0]
+        self.perform_create(serializer)
+        data['hash'] = serializer.instance.generate_key()
+        send_ws_msg(data, channel=event.hash_key)
+        headers = self.get_success_headers(serializer.data)
+        serializer.instance.event = event
+        serializer.instance.save()
+        Journaling.objects.create(
+            type=Journaling.EXAM_ATTEMPT,
+            event=event,
+            exam=serializer.instance,
+        )
+        return Response({'ID': data['hash']},
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
 
     def perform_create(self, serializer):
         serializer.save()

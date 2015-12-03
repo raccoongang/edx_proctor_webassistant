@@ -37,6 +37,12 @@ class Journaling(models.Model):
     proctor_ip = models.GenericIPAddressField(blank=True, null=True)
     datetime = models.DateTimeField(auto_now=True)
 
+    def get_student(self):
+        if self.exam:
+            return " ".join(
+                (self.exam.first_name, self.exam.last_name, self.exam.email)
+            )
+
 
 def login_journaling(sender, user, request, **kwargs):
     Journaling.objects.create(

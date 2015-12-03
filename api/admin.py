@@ -34,7 +34,7 @@ class ExamAdmin(admin.ModelAdmin):
 class EventSessionAdmin(admin.ModelAdmin):
     list_display = (
         'testing_center', 'course_id', 'course_event_id', 'proctor', 'status',
-        'start_date', 'end_date')
+        'start_date','hash_key', 'end_date')
     list_filter = ('proctor', 'status')
     search_fields = (
         'testing_center', 'course_id', 'course_event_id', 'start_date',
