@@ -169,8 +169,7 @@
                     });
 
                     modalInstance.result.then(function (data) {
-                        exam.comments.push(data);
-                        deferred.resolve(exam);
+                        deferred.resolve(data);
                     }, function () {
                         deferred.reject();
                     });
@@ -281,9 +280,16 @@
                             $scope.add_common_review({}).then(function(data){
                                 angular.forEach(list, function(val, key){
                                     var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
-                                    data.comments.eventStatus = "Comment";
-                                    data.comments.comments = data.comments.comment;
-                                    res.comments.push(data.comments);
+                                    var payload = (
+                                        {
+                                            "comments": data.comment,
+                                            "duration": 88,
+                                            "eventFinish": 88,
+                                            "eventStart": 12,
+                                            "eventStatus": "Comment"
+                                        }
+                                    );
+                                    res.comments.push(payload);
                                 });
                             });
                         }, function(){
