@@ -1,7 +1,7 @@
 from django.conf.urls import include, url, patterns
 from rest_framework.routers import DefaultRouter
 from views_edx import ExamViewSet, APIRoot
-from views_ui import (start_exam, stop_exam, bulk_start_exams, poll_status,
+from views_ui import (start_exam, stop_exam, stop_exams, bulk_start_exams, poll_status,
                       get_exams_proctored, Review, BulkReview,
                       EventSessionViewSet, ArchivedEventSessionViewSet,
                       JournalingViewSet)
@@ -24,6 +24,8 @@ urlpatterns = patterns(
         name='start_exam'),
     url(r'stop_exam/(?P<attempt_code>[\dA-Z\-]+)$', stop_exam,
         name='stop_exam'),
+    url(r'stop_exams/$', stop_exams,
+        name='stop_exams'),
     url(r'bulk_start_exam/$', bulk_start_exams,
         name='bulk_start_exams'),
     url(r'poll_status/$', poll_status,
