@@ -29,6 +29,17 @@
             });
         };
 
+        this.stop_all_exam_attempts = function(attempts){
+            angular.forEach(attempts, function(val, key){
+                val.action = 'submit';
+            });
+            return generic_api_call({
+                'url':  get_url('stop_exams'),
+                'method': 'PUT',
+                'data': JSON.stringify({attempts: attempts})
+            });
+        };
+
         this.get_exams_status = function(list){
             return generic_api_call({
                 'url':  get_url('poll_status'),
