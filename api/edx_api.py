@@ -121,6 +121,6 @@ def _journaling_request(request_type, url, data=None, headers=None):
         Response status: %s
         Response content: %s
         """ % (
-            url, str(data), str(response.status_code), str(result))
+            url, unicode(data).encode('utf-8'), str(response.status_code), str(result))
     )
     return response
