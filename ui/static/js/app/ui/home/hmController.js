@@ -156,6 +156,8 @@
                         exam.comments = [];
                     }
 
+                    exam['common_review'] = true;
+
                     var modalInstance = $uibModal.open({
                         animation: true,
                         templateUrl: 'reviewContent.html',
@@ -277,10 +279,13 @@
                         var list = get_items_to_stop();
                         Api.stop_all_exam_attempts(list).then(function(){
                             $scope.add_common_review({}).then(function(data){
-                                console.log(data);
+                                angular.forEach(list, function(val, key){
+                                    var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
+                                    exam.comments.push(data.comments);
+                                });
                             });
                         }, function(){
-
+                            alert(i18n.translate('STOP_EXAMS_FAILED'));
                         });
                     }
                 };
@@ -295,10 +300,17 @@
         var session = TestSession.getSession();
         $scope.exam.course_name = session.course_name;
         $scope.exam.exam_name = session.exam_name;
-        $scope.available_statuses = [
-            i18n.translate('COMMENT'),
-            i18n.translate('SUSPICIOUS')
-        ];
+        if (exam.common_review){
+            $scope.available_statuses = [
+                i18n.translate('COMMENT')
+            ];
+        }
+        else{
+            $scope.available_statuses = [
+                i18n.translate('COMMENT'),
+                i18n.translate('SUSPICIOUS')
+            ];
+        }
         $scope.comment = {
             status: $scope.available_statuses[0],
             message: ""
