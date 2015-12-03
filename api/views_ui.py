@@ -23,6 +23,7 @@ from edx_api import (start_exam_request, stop_exam_request,
                      bulk_start_exams_request,
                      bulk_send_review_request)
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
+from api.utils import catch_exception
 
 
 @api_view(['GET'])
@@ -252,6 +253,7 @@ class Review(APIView):
         BasicAuthentication)
     permission_classes = (IsAuthenticated,)
 
+    @catch_exception
     def post(self, request):
         passing_review_status = ['Clean', 'Rules Violation']
         failing_review_status = ['Not Reviewed', 'Suspicious']
