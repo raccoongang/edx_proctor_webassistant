@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404

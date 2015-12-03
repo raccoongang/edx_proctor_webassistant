@@ -79,6 +79,7 @@
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
                             }
+                            console.log(item);
                             if (item.finished){
                                 $scope.send_review(item, "Suspicious");
                             }
@@ -108,6 +109,7 @@
                         Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(){
                             exam.status = 'submitted';
                             exam.finished = true;
+                            $scope.$apply();
                         }, function(){
                             alert(i18n.translate('STOP_EXAM_FAILED'));
                         });

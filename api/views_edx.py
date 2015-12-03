@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, status, mixins
 from rest_framework.generics import get_object_or_404
