@@ -61,11 +61,17 @@ def start_exam(request, attempt_code):
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated,))
 def stop_exam(request, attempt_code):
+    exam = get_object_or_404(Exam, exam_code=attempt_code)
     action = request.data.get('action')
     user_id = request.data.get('user_id')
     if action and user_id:
         response = stop_exam_request(attempt_code, action, user_id)
-        return Response(status=response.status_code)
+        data = {
+            'hash': exam.generate_key(),
+            'status': "submitted"
+        }
+        send_ws_msg(data, channel=exam.event.hash_key)
+        return Response(status=response.status_code, data=data)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

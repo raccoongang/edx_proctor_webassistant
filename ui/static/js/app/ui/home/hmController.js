@@ -106,10 +106,11 @@
 
                 $scope.stop_exam_attempt = function(exam){
                     $scope.add_review(exam).then(function(){
-                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(){
-                            exam.status = 'submitted';
-                            exam.finished = true;
-                            $scope.$apply();
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
+                            if (data.data.status = 'submitted'){
+                                exam.finished = true;
+                                $scope.$apply();
+                            }
                         }, function(){
                             alert(i18n.translate('STOP_EXAM_FAILED'));
                         });
