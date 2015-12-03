@@ -121,11 +121,12 @@ class ExamViewSet(mixins.ListModelMixin,
             headers = self.get_success_headers(serializer.data)
             serializer.instance.event = event
             serializer.instance.save()
+            #TODO add proctor
             Journaling.objects.create(
                 type=Journaling.EXAM_ATTEMPT,
                 event=event,
                 exam=serializer.instance,
-                proctor=request.user
+                # proctor=request.user
             )
             return Response({'ID': data['hash']},
                             status=status.HTTP_201_CREATED,
