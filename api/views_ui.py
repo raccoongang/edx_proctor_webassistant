@@ -450,6 +450,58 @@ def redirect_session(request):
     return redirect('/#/session')
 
 
+@api_view(['POST'])
+@authentication_classes(
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+@permission_classes((IsAuthenticated,))
+def comments_journaling(request):
+    """
+    Add proctor comments to journal
+    Request example:
+
+    ```
+    {
+        "examCode" : "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
+        "comment" : {
+                        "comments": "Browsing other websites",
+                        "duration": 88,
+                        "eventFinish": 88,
+                        "eventStart": 12,
+                        "eventStatus": "Suspicious"
+                    }
+    }
+    ```
+    """
+    data = request.data
+    if u'examCode' in data and u'comment' in data:
+        exam = get_object_or_404(Exam, exam_code=data['examCode'])
+        comment = data['comment']
+        Journaling.objects.create(
+            type=Journaling.EXAM_COMMENT,
+            event=exam.event,
+            exam=exam,
+            proctor=request.user,
+            note="""
+
+                        Duration: %s
+                        Event start: %s
+                        Event finish: %s
+                        eventStatus": %s
+                        Comment:
+                        %s
+            """ % (comment.get('duration'),
+                   comment.get('eventStart'),
+                   comment.get('eventFinish'),
+                   comment.get('eventStatus'),
+                   comment.get('comments'),
+                   ),
+        )
+        send_ws_msg(data, channel=exam.event.hash_key)
+        return Response(status=status.HTTP_201_CREATED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class JournalingViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
     serializer_class = JournalingSerializer
@@ -458,3 +510,5 @@ class JournalingViewSet(mixins.ListModelMixin,
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
+
+

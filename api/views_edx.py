@@ -119,9 +119,12 @@ class ExamViewSet(mixins.ListModelMixin,
             status=EventSession.IN_PROGRESS
         ).order_by('-start_date')
         if not event:
-            return Response(
-                {'error': _("No event was found. Forbidden")},
-                status=status.HTTP_403_FORBIDDEN)
+            return _send_journaling_response(
+                request=request,
+                data=data,
+                result={'error': _("No event was found. Forbidden")},
+                status_code=status.HTTP_403_FORBIDDEN
+            )
         event = event[0]
         self.perform_create(serializer)
         data['hash'] = serializer.instance.generate_key()
@@ -134,9 +137,13 @@ class ExamViewSet(mixins.ListModelMixin,
             event=event,
             exam=serializer.instance,
         )
-        return Response({'ID': data['hash']},
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return _send_journaling_response(
+            request=request,
+            data=data,
+            result={'ID': data['hash']},
+            status_code=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
     def perform_create(self, serializer):
         serializer.save()
@@ -146,3 +153,21 @@ class ExamViewSet(mixins.ListModelMixin,
             return {'Location': data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
+
+
+def _send_journaling_response(request, data, result, status_code,
+                              headers=None):
+    Journaling.objects.create(
+        type=Journaling.API_REQUESTS,
+        note="""
+            Requested url:%s
+            Sent data: %s
+            Response status: %s
+            Response content: %s
+            """ % (
+            reverse('exam-register-list', request=request),
+            str(data), status_code, str(result))
+    )
+    return Response(result,
+                    status=status_code,
+                    headers=headers)

@@ -4,7 +4,7 @@ from views_edx import ExamViewSet, APIRoot
 from views_ui import (start_exam, stop_exam, stop_exams, bulk_start_exams, poll_status,
                       get_exams_proctored, Review, BulkReview,
                       EventSessionViewSet, ArchivedEventSessionViewSet,
-                      JournalingViewSet)
+                      JournalingViewSet, comments_journaling)
 
 router = DefaultRouter()
 router.register(r'exam_register', ExamViewSet,
@@ -34,6 +34,8 @@ urlpatterns = patterns(
         name='review'),
     url(r'proctored_exams/$', get_exams_proctored,
         name='proctor_exams'),
+    url(r'comments_journaling/$', comments_journaling,
+        name='comments_journaling'),
     url(r'bulk_review/$', BulkReview.as_view(),
         name='bulk_review'),
     (r'^', include(router.urls)),

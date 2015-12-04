@@ -102,7 +102,6 @@ def _journaling_request(request_type, url, data=None, headers=None):
     except ValueError:
         soup = BeautifulSoup(response.content)
         h1 = soup.find('h1')
-        result = ""
         res_list = []
         if h1:
             res_list.append(h1.get_text())
