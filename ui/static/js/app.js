@@ -145,14 +145,14 @@
             apiServer: protocol + domain + (api_port?':' + api_port:'') + '/api'
         };
 
-        // Preload language files
-        angular.forEach(app.language.supported, function(val){
-            if (val !== app.language.current) {
-                $translate.use(val);
-            }
-        });
-        $translate.use(app.language.current);
-        console.log("Set language to ", app.language.current);
+        //// Preload language files
+        //angular.forEach(app.language.supported, function(val){
+        //    if (val !== app.language.current) {
+        //        $translate.use(val);
+        //    }
+        //});
+        //$translate.use(app.language.current);
+        //console.log("Set language to ", app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
