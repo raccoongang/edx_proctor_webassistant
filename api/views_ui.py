@@ -22,16 +22,19 @@ from edx_api import (start_exam_request, stop_exam_request,
                      send_review_request, get_proctored_exams_request,
                      bulk_start_exams_request,
                      bulk_send_review_request)
-from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication, IsProctor
+from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication, \
+    IsProctor
 from api.utils import catch_exception
 
 
 @api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication, ))
+@authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated, IsProctor))
 def start_exam(request, attempt_code):
-    exam = get_object_or_404(Exam, exam_code=attempt_code)
-
+    exam = get_object_or_404(
+        Exam.objects.by_user_perms(request.user),
+        exam_code=attempt_code
+    )
     response = start_exam_request(exam.exam_code)
     if response.status_code == 200:
         exam.exam_status = exam.STARTED
@@ -61,7 +64,10 @@ def start_exam(request, attempt_code):
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated, IsProctor))
 def stop_exam(request, attempt_code):
-    exam = get_object_or_404(Exam, exam_code=attempt_code)
+    exam = get_object_or_404(
+        Exam.objects.by_user_perms(request.user),
+        exam_code=attempt_code
+    )
     action = request.data.get('action')
     user_id = request.data.get('user_id')
     if action and user_id:
@@ -85,7 +91,10 @@ def stop_exams(request):
     if attempts:
         status_list = []
         for attempt in attempts:
-            exam = get_object_or_404(Exam, exam_code=attempt['attempt_code'])
+            exam = get_object_or_404(
+                Exam.objects.by_user_perms(request.user),
+                exam_code=attempts['attempt_code']
+            )
             user_id = attempt.get('user_id')
             action = attempt.get('action')
             if action and user_id:
@@ -126,7 +135,10 @@ def poll_status(request):
     if u'list' in data:
         response = poll_status_request(data['list'])
         for val in response:
-            exam = get_object_or_404(Exam, exam_code=val['attempt_code'])
+            exam = get_object_or_404(
+                Exam.objects.by_user_perms(request.user),
+                exam_code=val['attempt_code']
+            )
             exam.attempt_status = val.get('status')
             exam.save()
             data = {
@@ -257,19 +269,21 @@ class Review(APIView):
 
     @catch_exception
     def post(self, request):
+
         passing_review_status = ['Clean', 'Rules Violation']
         failing_review_status = ['Not Reviewed', 'Suspicious']
         payload = request.data
         required_fields = ['examMetaData', 'reviewStatus',
                            'videoReviewLink', 'desktopComments']
+
+        exam = get_object_or_404(
+            Exam.objects.by_user_perms(request.user),
+            exam_code=payload['examMetaData']['examCode']
+        )
+
         for field in required_fields:
             if field not in payload:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        exam = get_object_or_404(
-            Exam,
-            exam_code=payload['examMetaData']['examCode']
-        )
 
         payload['examMetaData'].update(
             {
@@ -327,7 +341,7 @@ class BulkReview(APIView):
         exams = request.data
         for exam in exams:
             try:
-                exam_obj = Exam.objects.get(
+                exam_obj = Exam.objects.by_user_perms(request.user).get(
                     exam_code=exam.get('examMetaData', {}).get('examCode')
                 )
             except Exam.DoesNotExist:
@@ -370,7 +384,8 @@ def bulk_start_exams(request):
     """
 
     exam_codes = request.data.get('list', [])
-    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
+    exam_list = Exam.objects.by_user_perms(request.user).filter(
+        exam_code__in=exam_codes)
     items = bulk_start_exams_request(exam_list)
     for exam in items:
         exam.exam_status = exam.STARTED
@@ -474,7 +489,10 @@ def comments_journaling(request):
     """
     data = request.data
     if u'examCode' in data and u'comment' in data:
-        exam = get_object_or_404(Exam, exam_code=data['examCode'])
+        exam = get_object_or_404(
+            Exam.objects.by_user_perms(request.user),
+            exam_code=data['examCode']
+        )
         comment = data['comment']
         Journaling.objects.create(
             type=Journaling.EXAM_COMMENT,
@@ -482,13 +500,12 @@ def comments_journaling(request):
             exam=exam,
             proctor=request.user,
             note="""
-
-                        Duration: %s
-                        Event start: %s
-                        Event finish: %s
-                        eventStatus": %s
-                        Comment:
-                        %s
+                Duration: %s
+                Event start: %s
+                Event finish: %s
+                eventStatus": %s
+                Comment:
+                %s
             """ % (comment.get('duration'),
                    comment.get('eventStart'),
                    comment.get('eventFinish'),
@@ -537,5 +554,6 @@ class JournalingViewSet(mixins.ListModelMixin,
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
                     datetime__gte=query_date,
-                    datetime__lt=query_date+timedelta(days=1))
+                    datetime__lt=query_date + timedelta(days=1)
+                )
         return queryset
