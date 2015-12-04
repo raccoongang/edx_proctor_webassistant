@@ -41,7 +41,7 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: 'ru',
+            current: (window.localStorage['NG_TRANSLATE_LANG_KEY']!==undefined && window.localStorage['NG_TRANSLATE_LANG_KEY'])?window.localStorage['NG_TRANSLATE_LANG_KEY']:'ru',
             supported: ['en', 'ru']
         };
 
@@ -151,6 +151,7 @@
                 $translate.use(val);
             }
         });
+        $translate.use(app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
