@@ -151,7 +151,6 @@
                 $translate.use(val);
             }
         });
-        $translate.use(app.language.current !== undefined?app.language.current:'ru');
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -203,6 +202,8 @@
         $scope.i18n = function(text) {
             return i18n.translate(text);
         };
+
+        $scope.changeLanguage(app.language.current);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
