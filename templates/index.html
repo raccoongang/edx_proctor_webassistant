@@ -21,10 +21,16 @@
     </script>
 </head>
 <body ng-app="proctor" ng-controller="MainController">
-{% if user.is_authenticated %}
+{% if user_is_proctor %}
     <div translate-cloak>
         <header></header>
         <div class="container-fluid" ng-view></div>
+    </div>
+{% elif user.is_authenticated %}
+    <div class="container text-center">
+        <h1>
+                {[ i18n('Only user with proctor access can use this service') ]}
+        </h1>
     </div>
 {% else %}
     <div class="container text-center">

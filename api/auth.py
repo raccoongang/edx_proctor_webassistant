@@ -3,6 +3,7 @@ from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
 from social.apps.django_app.default.models import UserSocialAuth
 from rest_framework import exceptions
+from rest_framework.permissions import BasePermission
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -26,3 +27,12 @@ class SsoTokenAuthentication(TokenAuthentication):
 
 
         return (token.user, token)
+
+
+class IsProctor(BasePermission):
+    """
+    Allows access only to proctor users.
+    """
+
+    def has_permission(self, request, view):
+        return request.user.permission_set.exists()

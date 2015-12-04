@@ -22,13 +22,13 @@ from edx_api import (start_exam_request, stop_exam_request,
                      send_review_request, get_proctored_exams_request,
                      bulk_start_exams_request,
                      bulk_send_review_request)
-from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication
+from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication, IsProctor
 from api.utils import catch_exception
 
 
 @api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+@authentication_classes((SsoTokenAuthentication, ))
+@permission_classes((IsAuthenticated, IsProctor))
 def start_exam(request, attempt_code):
 
     exam = get_object_or_404(Exam, exam_code=attempt_code)
@@ -60,7 +60,7 @@ def start_exam(request, attempt_code):
 @api_view(['PUT'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def stop_exam(request, attempt_code):
     exam = get_object_or_404(Exam, exam_code=attempt_code)
     action = request.data.get('action')
@@ -80,7 +80,7 @@ def stop_exam(request, attempt_code):
 @api_view(['PUT'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def stop_exams(request):
     attempts = request.data.get('attempts')
     if attempts:
@@ -111,7 +111,7 @@ def stop_exams(request):
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def poll_status(request):
     """
     Get statuses for list of exams
@@ -157,6 +157,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     def create(self, request, *args, **kwargs):
         fields_for_create = ['testing_center', 'course_id', 'course_event_id']
@@ -230,6 +231,7 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
 
 class Review(APIView):
@@ -251,7 +253,7 @@ class Review(APIView):
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     @catch_exception
     def post(self, request):
@@ -291,7 +293,7 @@ class BulkReview(APIView):
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     def post(self, request):
         """
@@ -347,7 +349,7 @@ class BulkReview(APIView):
 
 @api_view(['GET'])
 @authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def get_exams_proctored(request):
     response = get_proctored_exams_request()
     return Response(
@@ -359,7 +361,7 @@ def get_exams_proctored(request):
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def bulk_start_exams(request):
     """
     Start list of exams by exam codes.
@@ -455,7 +457,7 @@ def redirect_session(request):
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated, IsProctor))
 def comments_journaling(request):
     """
     Add proctor comments to journal
@@ -512,5 +514,4 @@ class JournalingViewSet(mixins.ListModelMixin,
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-
-
+    permission_classes = (IsAuthenticated, IsProctor)
