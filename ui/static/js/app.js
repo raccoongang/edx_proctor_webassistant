@@ -41,7 +41,7 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: 'ru',
+            current: (window.localStorage['NG_TRANSLATE_LANG_KEY']!==undefined && window.localStorage['NG_TRANSLATE_LANG_KEY'])?window.localStorage['NG_TRANSLATE_LANG_KEY']:'ru',
             supported: ['en', 'ru']
         };
 
@@ -151,7 +151,7 @@
                 $translate.use(val);
             }
         });
-        $translate.use(app.language.current !== undefined?app.language.current:'ru');
+        $translate.use(app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -203,6 +203,8 @@
         $scope.i18n = function(text) {
             return i18n.translate(text);
         };
+
+        $scope.changeLanguage(app.language.current);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){

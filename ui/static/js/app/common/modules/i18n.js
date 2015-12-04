@@ -11,7 +11,7 @@
             }
             var translated = translateFilter(text);
             div.innerHTML = translated;
-            var ret = $sce.trustAsHtml(div.textContent);
+            var ret = $sce.trustAsHtml(div.textContent).toString();
             language_cache[text] = ret;
             return ret == translated?translated:ret;
         };

@@ -20,9 +20,9 @@
         }
     </script>
 </head>
-<body ng-app="proctor" ng-controller="MainController">
+<body ng-app="proctor" ng-cloak translate-cloak ng-controller="MainController">
 {% if user_is_proctor %}
-    <div translate-cloak>
+    <div>
         <header></header>
         <div class="container-fluid" ng-view></div>
     </div>
