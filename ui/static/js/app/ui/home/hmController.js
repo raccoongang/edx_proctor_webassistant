@@ -196,7 +196,7 @@
                                     "duration": 88,
                                     "eventFinish": 88,
                                     "eventStart": 12,
-                                    "eventStatus": val.status
+                                    "eventStatus": val.status.toString()
                                 }
                             );
                         });
