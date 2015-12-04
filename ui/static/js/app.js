@@ -186,6 +186,7 @@
         };
 
         $scope.changeLanguage = function (langKey) {
+            if (langKey == undefined) langKey = app.language.current;
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
                 i18n.clear_cache();
