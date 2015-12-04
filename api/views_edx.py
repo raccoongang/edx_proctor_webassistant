@@ -42,6 +42,10 @@ class APIRoot(APIView):
                 'journaling-list',
                 request=request
             ),
+            "comments_journaling": reverse(
+                'comments_journaling',
+                request=request
+            ),
             "event_session": reverse('event-session-list', request=request),
             "archived_event_session": reverse('archived-event-session-list',
                                               request=request),

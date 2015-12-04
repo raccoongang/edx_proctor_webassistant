@@ -16,7 +16,7 @@ class Journaling(models.Model):
     EDX_API_CALL = 9
     API_REQUESTS = 10
 
-    TYPE_CHOICES = {
+    TYPE_CHOICES = [
         (PROCTOR_ENTER, _("Proctor's login")),
         (PROCTOR_EXIT, _("Proctor's logout")),
         (EVENT_SESSION_START, _("Start event session")),
@@ -27,7 +27,7 @@ class Journaling(models.Model):
         (BULK_EXAM_STATUS_CHANGE, _("Bulk exam status change")),
         (EDX_API_CALL, _("Call to edX API")),
         (API_REQUESTS, _("API Request from edX")),
-    }
+    ]
     type = models.IntegerField(choices=TYPE_CHOICES, db_index=True)
     event = models.ForeignKey("api.EventSession", blank=True, null=True,
                               db_index=True)
