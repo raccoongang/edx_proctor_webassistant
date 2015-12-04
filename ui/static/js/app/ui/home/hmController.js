@@ -281,6 +281,9 @@
                                 data.status = "Comment";
                                 angular.forEach(list, function(val, key){
                                     var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
+                                    if (res.comments == undefined){
+                                        res.comments = [];
+                                    }
                                     res.comments.push(data);
                                 });
                             });
