@@ -1,7 +1,5 @@
 import logging
-
 from django.db import transaction
-
 from api.models import Permission
 from social.pipeline import partial
 
@@ -13,10 +11,14 @@ def set_roles_for_edx_users(user, permissions):
     '''
     This function create roles for proctors from sso permissions.
     '''
-
+    global_perm = {
+        u'Read', u'Update', u'Delete', u'Publication', u'Enroll',
+        u'Manage(permissions)'
+    }
     permission_list = []
     for role in permissions:
-        if role['obj_perm'] in ([u'Proctoring'], [u'*']):
+        if role['obj_perm'] in ([u'Proctoring'], [u'*']) \
+                or global_perm.issubset(set(role['obj_perm'])):
             permission_list.append(Permission(
                 object_type=role['obj_type'],
                 object_id=role['obj_id'],
