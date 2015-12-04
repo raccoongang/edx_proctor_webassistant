@@ -152,6 +152,7 @@
             }
         });
         $translate.use(app.language.current);
+        console.log("Set language to ", app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -203,8 +204,6 @@
         $scope.i18n = function(text) {
             return i18n.translate(text);
         };
-
-        $scope.changeLanguage(app.language.current);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
