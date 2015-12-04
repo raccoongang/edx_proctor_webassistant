@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, authentication_classes, \
@@ -30,7 +30,6 @@ from api.utils import catch_exception
 @authentication_classes((SsoTokenAuthentication, ))
 @permission_classes((IsAuthenticated, IsProctor))
 def start_exam(request, attempt_code):
-
     exam = get_object_or_404(Exam, exam_code=attempt_code)
 
     response = start_exam_request(exam.exam_code)
@@ -90,7 +89,8 @@ def stop_exams(request):
             user_id = attempt.get('user_id')
             action = attempt.get('action')
             if action and user_id:
-                response = stop_exam_request(attempt['attempt_code'], action, user_id)
+                response = stop_exam_request(attempt['attempt_code'], action,
+                                             user_id)
                 if response.status_code != 200:
                     status_list.append(response.status_code)
                 else:
@@ -299,30 +299,28 @@ class BulkReview(APIView):
         """
         Request example:
 
-        ```
-        [
-            {
-                "examMetaData": {
-                    "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
-                    "ssiRecordLocator": "5649f201ab718b6610285f81",
-                    "reviewedExam": true,
-                    "reviewerNotes": "Everything is ok"
+            [
+                {
+                    "examMetaData": {
+                        "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
+                        "ssiRecordLocator": "5649f201ab718b6610285f81",
+                        "reviewedExam": true,
+                        "reviewerNotes": "Everything is ok"
+                    },
+                     "reviewStatus": "Clean",
+                     "videoReviewLink": "http://video.url",
+                     "desktopComments": [
+                        {
+                            "comments": "Browsing other websites",
+                            "duration": 88,
+                            "eventFinish": 88,
+                            "eventStart": 12,
+                            "eventStatus": "Suspicious"
+                        }
+                     ]
                 },
-                 "reviewStatus": "Clean",
-                 "videoReviewLink": "http://video.url",
-                 "desktopComments": [
-                    {
-                        "comments": "Browsing other websites",
-                        "duration": 88,
-                        "eventFinish": 88,
-                        "eventStart": 12,
-                        "eventStatus": "Suspicious"
-                    }
-                 ]
-            },
-            {...}
-        ]
-        ```
+                {...}
+            ]
 
         """
         review_payload_list = []
@@ -463,18 +461,16 @@ def comments_journaling(request):
     Add proctor comments to journal
     Request example:
 
-    ```
-    {
-        "examCode" : "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
-        "comment" : {
-                        "comments": "Browsing other websites",
-                        "duration": 88,
-                        "eventFinish": 88,
-                        "eventStart": 12,
-                        "eventStatus": "Suspicious"
-                    }
-    }
-    ```
+        {
+            "examCode" : "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
+            "comment" : {
+                            "comments": "Browsing other websites",
+                            "duration": 88,
+                            "eventFinish": 88,
+                            "eventStart": 12,
+                            "eventStatus": "Suspicious"
+                        }
+        }
     """
     data = request.data
     if u'examCode' in data and u'comment' in data:
@@ -508,6 +504,16 @@ def comments_journaling(request):
 
 class JournalingViewSet(mixins.ListModelMixin,
                         viewsets.GenericViewSet):
+    """
+    Return list of Journaling with pagiantion.
+
+    You can filter results by `proctor`,`exam`,and `type`,`date`
+
+    Add GET parameter in end of URL, for example:
+
+    `?date=2015-12-04&type=8`
+
+    """
     serializer_class = JournalingSerializer
     queryset = Journaling.objects.order_by('-pk').all()
     paginate_by = 25
@@ -515,3 +521,21 @@ class JournalingViewSet(mixins.ListModelMixin,
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
+
+    def get_queryset(self):
+        queryset = Journaling.objects.order_by('-pk').all()
+        for field, value in self.request.query_params.items():
+            if field == "proctor":
+                queryset = queryset.filter(proctor__username=value)
+            if field == "exam":
+                queryset = queryset.filter(exam__exam_code=value)
+            if field == "type":
+                queryset = queryset.filter(type=value)
+            if field == "event":
+                queryset = queryset.filter(event__hash_key=value)
+            if field == "date" and len(value.split("-")) == 3:
+                query_date = datetime.strptime(value, "%Y-%m-%d")
+                queryset = queryset.filter(
+                    datetime__gte=query_date,
+                    datetime__lt=query_date+timedelta(days=1))
+        return queryset
