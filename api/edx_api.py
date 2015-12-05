@@ -113,6 +113,10 @@ def _journaling_request(request_type, url, data=None, headers=None):
             result = "\n ".join(res_list)
         else:
             result = response.content
+    try:
+        payload = unicode(data).encode('utf-8')
+    except:
+        payload = data
     Journaling.objects.create(
         type=Journaling.EDX_API_CALL,
         note="""
@@ -121,6 +125,6 @@ def _journaling_request(request_type, url, data=None, headers=None):
         Response status: %s
         Response content: %s
         """ % (
-            url, unicode(data).encode('utf-8'), str(response.status_code), str(result))
+            url, payload, str(response.status_code), str(result))
     )
     return response
