@@ -28,7 +28,7 @@
     </div>
 {% elif user.is_authenticated %}
     <div class="container text-center" ng-init="changeLanguage()">
-        <h1 ng-bind="'ONLY_PROCTORS_ALLOWED' | _translate"></h1>
+        <h1 translate="ONLY_PROCTORS_ALLOWED"></h1>
         <h1>
             <button class="btn btn-default"
                     ng-click="logout()"
