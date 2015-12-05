@@ -82,8 +82,7 @@
                             app.path + 'common/services/exam_polling.js'
                         ]);
                     },
-                    students: function($location, Auth, TestSession, Api){
-                        Auth.authenticate();
+                    students: function($location, TestSession, Api){
                         if (window.sessionStorage['proctoring'] !== undefined){
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
@@ -112,14 +111,8 @@
                             app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
-                    data: function($location, Api, Auth){
-                        Auth.authenticate();
-                        if (Auth.get_token()) {
-                            return Api.get_session_data();
-                        }
-                        else {
-                            $location.path('/');
-                        }
+                    data: function(Api){
+                        return Api.get_session_data();
                     }
                 }
             })
@@ -132,14 +125,11 @@
                             app.path + 'ui/archive/archController.js'
                         ]);
                     },
-                    events: function($location, Api, Auth){
-                        Auth.authenticate();
-                        if (Auth.get_token()) {
-                            return Api.get_archived_events();
-                        }
-                        else {
-                            $location.path('/');
-                        }
+                    events: function(Api){
+                        return Api.get_archived_events();
+                    },
+                    courses_data: function(Api){
+                        return Api.get_session_data();
                     }
                 }
             })
@@ -173,20 +163,26 @@
         });
     }]);
 
-    app.factory('resolver', function ($rootScope, $q, $timeout) {
+    app.factory('resolver', function ($rootScope, $q, $timeout, $location, Auth) {
         return {
             load_deps: function (dependencies, callback) {
-                var deferred = $q.defer();
-                $script(dependencies, function () {
-                    $timeout(function () {
-                        $rootScope.$apply(function () {
-                            deferred.resolve();
-                            if (callback !== undefined)
-                                callback();
+                Auth.authenticate();
+                if (Auth.get_token()) {
+                    var deferred = $q.defer();
+                    $script(dependencies, function () {
+                        $timeout(function () {
+                            $rootScope.$apply(function () {
+                                deferred.resolve();
+                                if (callback !== undefined)
+                                    callback();
+                            });
                         });
                     });
-                });
-                return deferred.promise;
+                    return deferred.promise;
+                }
+                else {
+                    $location.path('/');
+                }
             }
         };
     });

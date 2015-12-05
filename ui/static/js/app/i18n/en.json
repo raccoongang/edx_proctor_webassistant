@@ -13,6 +13,12 @@
   "COURSE_NAME": "Course Name",
   "STATUS": "Status",
 
+  "COURSE_NAME": "Course Name",
+  "EXAM_NAME": "Exam Name",
+  "TESTING_CENTER": "Testing Center",
+  "EVENT_START_TIME": "Started at",
+  "EVENT_END_TIME": "Ended at",
+
   "ACTIVATE": "Activate",
   "ACCEPT": "Approve",
   "STOP": "Stop",

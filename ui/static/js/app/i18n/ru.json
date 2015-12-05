@@ -13,6 +13,12 @@
   "COURSE_NAME": "Название курса",
   "STATUS": "Статус",
 
+  "COURSE_NAME": "Курс",
+  "EXAM_NAME": "Экзамен",
+  "TESTING_CENTER": "Центр тестирования",
+  "EVENT_START_TIME": "Начало",
+  "EVENT_END_TIME": "Окончание",
+
   "ACTIVATE": "Активировать",
   "ACCEPT": "Подтвердить",
   "STOP": "Остановить",

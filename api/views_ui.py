@@ -589,7 +589,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     `?examStartDate=2015-12-04&email=test@test.com`
     """
     serializer_class = ExamSerializer
-    paginate_by = 25
+    paginate_by = 50
     queryset = Exam.objects.filter(event__status=EventSession.ARCHIVED).all()
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
