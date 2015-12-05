@@ -589,6 +589,10 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ExamSerializer
     paginate_by = 25
     queryset = Exam.objects.filter(event__status=EventSession.ARCHIVED).all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     def get_queryset(self):
         queryset = Exam.objects.order_by('-pk').all()
@@ -626,11 +630,14 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     `?event_start=1449325446&event_status=Suspicious`
     """
 
-
     ""
     serializer_class = CommentSerializer
     paginate_by = 25
     queryset = Comment.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     def get_queryset(self):
         queryset = Comment.objects.order_by('-pk').all()
@@ -647,6 +654,10 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = PermissionSerializer
     queryset = Permission.objects.all()
+    authentication_classes = (
+        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+        BasicAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
     def get_queryset(self):
         return Permission.objects.filter(user=self.request.user).all()
