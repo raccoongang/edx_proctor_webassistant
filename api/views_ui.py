@@ -416,7 +416,7 @@ def bulk_start_exams(request):
         send_ws_msg(data, channel=exam.event.hash_key)
     Journaling.objects.create(
         type=Journaling.BULK_EXAM_STATUS_CHANGE,
-        note="%s. %s -> %s" % (exam_codes, exam.NEW, exam.STARTED),
+        note="%s. %s -> %s" % (exam_codes, Exam.NEW, Exam.STARTED),
         proctor=request.user,
     )
     return Response(status=status.HTTP_200_OK)
