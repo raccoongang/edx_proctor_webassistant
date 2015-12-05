@@ -222,7 +222,6 @@
 
         $scope.i18n = function(text) {
             var res = i18n.translate(text);
-            console.log("translated ", text, " to ", res);
             return res;
         };
 
