@@ -206,7 +206,6 @@
 
                 $scope.end_session = function(){
                     $scope.add_review({}, 'session').then(function(data){
-                        console.log(data);
                         TestSession.endSession(data.comment).then(function(){
                             delete window.sessionStorage['proctoring'];
                             Polling.stop_all();
@@ -302,7 +301,6 @@
                 status: $scope.comment.status
             };
             ret.timestamp = ret.timestamp.getTime();
-            console.log("modal: ", ret);
             $uibModalInstance.close(ret);
         };
 
