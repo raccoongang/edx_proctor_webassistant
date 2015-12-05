@@ -79,9 +79,6 @@
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
                             }
-                            if (item.finished){
-                                $scope.send_review(item, "Suspicious");
-                            }
                             update_status(msg['hash'], msg['status']);
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
                                 attempt_end(msg.hash);
@@ -107,7 +104,6 @@
                     if (confirm(i18n.translate('STOP_ATTEMPT')) === true) {
                         Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function (data) {
                             if (data.data.status = 'submitted') {
-                                exam.finished = true;
                                 $scope.add_review(exam, 'personal', $scope.attempt_review_callback);
                             }
                         }, function () {
