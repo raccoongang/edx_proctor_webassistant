@@ -28,17 +28,20 @@
     </div>
 {% elif user.is_authenticated %}
     <div class="container text-center" ng-init="changeLanguage()">
-        <h1 ng-bind="'ONLY_PROCTORS_ALLOWED' | _translate">
-        </h1>
+        <h1 translate="ONLY_PROCTORS_INSTRUCTORS_ALLOWED"></h1>
         <h1>
-            <button class="btn btn-default" ng-click="logout()" ng-bind="'LOGOUT' | _translate">
+            <button class="btn btn-default"
+                    ng-click="logout()"
+                    translate="LOGOUT">
             </button>
         </h1>
     </div>
 {% else %}
     <div class="container text-center">
         <h1>
-            <button class="btn btn-default" ng-click="sso_auth()" ng-bind="'AUTHORIZE' | _translate">
+            <button class="btn btn-default"
+                    ng-click="sso_auth()"
+                    translate="AUTHORIZE">
             </button>
         </h1>
     </div>
