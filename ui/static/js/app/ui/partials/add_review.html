@@ -4,7 +4,7 @@
             <h3 class="modal-title">{[ i18n('PROCTOR_COMMENT') ]}</h3>
         </div>
         <div class="modal-body">
-            <div ng-if="!exam.common_review">
+            <div ng-if="exam.review_type == 'personal'">
                 <div class="col-xs-4">
                     {[ i18n('STUDENT') ]}
                 </div>
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="clearfix"></div>
-            <div>
+            <div ng-hide="exam.review_type == 'session'">
                 <div class="col-xs-4">
                     {[ i18n('STATUS') ]}
                 </div>

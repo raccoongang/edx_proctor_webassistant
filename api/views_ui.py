@@ -213,7 +213,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
     def partial_update(self, request, *args, **kwargs):
 
         instance = self.get_object()
-        fields_for_update = ['status', 'notify']
+        fields_for_update = ['status', 'notify', 'comment']
         data = {}
 
         for field in fields_for_update:
@@ -235,6 +235,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session = EventSession.objects.get(pk=instance.pk)
             event_session.end_date = datetime.now()
             event_session.status = EventSession.ARCHIVED
+            event_session.comment = data.get('comment')
             event_session.save()
             serializer = self.get_serializer(event_session)
         return Response(serializer.data)

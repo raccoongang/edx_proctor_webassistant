@@ -102,7 +102,7 @@
                 </div>
                 <div ng-if="attempt.status == 'started'">
                     <button class="btn btn-xs btn-success fc-margin-item"
-                            ng-click="add_review(attempt)">
+                            ng-click="add_review(attempt, 'personal', attempt_review_callback)">
                         {[ i18n('ADD_COMMENT') ]}
                     </button>
                     <br>

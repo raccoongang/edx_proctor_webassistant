@@ -1,5 +1,5 @@
 (function(){
-    angular.module('proctor.session', [])
+    angular.module('proctor.session', ['proctor.i18n'])
         .service('TestSession', function($rootScope, $http, Auth, i18n, DateTimeService){
             var Session = null;
 
@@ -25,14 +25,15 @@
                 });
             };
 
-            this.endSession = function(){
+            this.endSession = function(comment){
                 if (Session){
                     return $http({
                         url: $rootScope.apiConf.apiServer + '/event_session/' + Session.id + '/',
                         method: 'PATCH',
                         headers: {Authorization: "Token " + Auth.get_token()},
                         data: JSON.stringify({
-                            status: 'finished'
+                            status: 'finished',
+                            comment: comment
                         })
                     }).then(function(){
                         Session = null;

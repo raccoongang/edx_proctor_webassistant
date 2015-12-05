@@ -1,5 +1,5 @@
 (function(){
     angular.module('proctor').controller('ArchCtrl', function($scope, events){
-        console.log(events);
+        $scope.events = events.data;
     });
 })();
