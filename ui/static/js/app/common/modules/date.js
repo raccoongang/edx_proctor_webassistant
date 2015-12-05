@@ -24,6 +24,11 @@
             weekday: 'long', hour: 'numeric', minute: 'numeric', second: 'numeric'
         };
 
+        var short_datetime_options = {
+            year: 'numeric', month: 'long',  day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric'
+        };
+
         var time_options = {
             hour: 'numeric', minute: 'numeric', second: 'numeric'
         };
@@ -69,6 +74,14 @@
 
         this.get_now_time = function(){
             return localDate(window.localStorage['NG_TRANSLATE_LANG_KEY'], time_options);
+        };
+
+        this.get_localized_date_from_string = function(string){
+            var date = Date.parse(string);
+            return date.toLocaleString(
+                window.localStorage['NG_TRANSLATE_LANG_KEY'],
+                datetime_options
+            );
         };
 
         $rootScope.$watch(function(){

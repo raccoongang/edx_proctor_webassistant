@@ -1,5 +1,5 @@
 (function(){
-    angular.module('proctor').controller('ArchCtrl', function($scope, NgTableParams, events, courses_data){
+    angular.module('proctor').controller('ArchCtrl', function($scope, NgTableParams, DateTimeService, events, courses_data){
         $scope.events = events.data;
 
         $scope.tableParams = new NgTableParams({
@@ -14,6 +14,8 @@
             // Adds `course_name` and `exam_name` to every event
             if (courses_data.data.results !== undefined && courses_data.data.results.length){
                 angular.forEach($scope.events, function(val, key){
+                    val.start_date = DateTimeService.get_localized_date_from_string(val.start_date);
+                    val.end_date = DateTimeService.get_localized_date_from_string(val.end_date);
                     var course = courses_data.data.results.filter({id: val.course_id});
                     if (course.length){
                         val.course_name = course[0].name;
