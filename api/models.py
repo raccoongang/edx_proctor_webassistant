@@ -110,7 +110,7 @@ class Exam(models.Model):
             return course_id.split('/')
 
     def __unicode__(self):
-       return self.exam_id
+        return self.exam_id
 
 
 class EventSessionManager(models.Manager):
@@ -210,3 +210,12 @@ class Student(models.Model):
     email = models.EmailField()
     first_name = models.CharField(max_length=60, blank=True, null=True)
     last_name = models.CharField(max_length=60, blank=True, null=True)
+
+
+class Comment(models.Model):
+    comment = models.TextField()
+    event_status = models.CharField(max_length=60)
+    event_start = models.IntegerField()
+    event_finish = models.IntegerField()
+    exam = models.ForeignKey(Exam)
+    duration = models.IntegerField(blank=True, null=True)

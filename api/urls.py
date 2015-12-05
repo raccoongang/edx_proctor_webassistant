@@ -14,7 +14,9 @@ router.register(r'archived_event_session',
 router.register(r'journaling', views_ui.JournalingViewSet,
                 base_name="journaling"),
 router.register(r'archived_exam', views_ui.ArchivedExamViewSet,
-                base_name="archived-exam")
+                base_name="archived-exam"),
+router.register(r'comment', views_ui.CommentViewSet,
+                base_name="comment")
 
 urlpatterns = patterns(
     '',

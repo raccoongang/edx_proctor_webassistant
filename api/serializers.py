@@ -7,7 +7,7 @@ from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
-from models import Exam, EventSession, ArchivedEventSession
+from models import Exam, EventSession, ArchivedEventSession, Comment
 from journaling.models import Journaling
 
 
@@ -163,7 +163,7 @@ class ArchivedEventSessionSerializer(serializers.ModelSerializer):
 class JournalingSerializer(serializers.ModelSerializer):
     proctor = serializers.ReadOnlyField(source='proctor.username')
     event = serializers.ReadOnlyField(source='event.hash_key')
-    exam = serializers.ReadOnlyField(source='exam.exam_code')
+    exam_code = serializers.ReadOnlyField(source='exam.exam_code')
     type_name = serializers.SerializerMethodField()
     student = serializers.SerializerMethodField()
 
@@ -175,3 +175,13 @@ class JournalingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Journaling
+        exclude = ("exam",)
+
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    exam_code = serializers.ReadOnlyField(source='exam.exam_code')
+
+    class Meta:
+        model = Comment
+        exclude = ("exam",)

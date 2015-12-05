@@ -14,8 +14,8 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam, EventSession, ArchivedEventSession
-from serializers import (EventSessionSerializer,
+from models import Exam, EventSession, ArchivedEventSession, Comment
+from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
                          ExamSerializer)
 from journaling.models import Journaling
@@ -297,6 +297,20 @@ class Review(APIView):
         response = send_review_request(payload)
 
         if response.status_code in [200, 201]:
+            comments = payload['desktopComments']
+            comment_obj_list = []
+            for comment in comments:
+                comment_obj_list.append(
+                    Comment(
+                        comment=comment.get('comments'),
+                        event_status=comment.get('eventStatus'),
+                        event_start=comment.get('eventStart'),
+                        event_finish=comment.get('eventFinish'),
+                        duration=comment.get('duration'),
+                        exam=exam
+                    )
+                )
+            Comment.objects.bulk_create(comment_obj_list)
             exam.attempt_status = 'finished'
             exam.save()
 
@@ -526,7 +540,7 @@ class JournalingViewSet(mixins.ListModelMixin,
     """
     Return list of Journaling with pagiantion.
 
-    You can filter results by `event_hash`, `proctor`,`exam`, `type`, `date`
+    You can filter results by `event_hash`, `proctor`,`exam_code`, `type`, `date`
 
     Add GET parameter in end of URL, for example:
 
@@ -546,7 +560,7 @@ class JournalingViewSet(mixins.ListModelMixin,
         for field, value in self.request.query_params.items():
             if field == "proctor":
                 queryset = queryset.filter(proctor__username=value)
-            if field == "exam":
+            if field == "exam_code":
                 queryset = queryset.filter(exam__exam_code=value)
             if field == "type":
                 queryset = queryset.filter(type=value)
@@ -598,4 +612,32 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                     exam_end_date__gte=query_date,
                     exam_end_date__lt=query_date + timedelta(days=1)
                 )
+        return queryset
+
+
+class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Return list of Archived Exams with pagiantion.
+
+    You can filter results by `exam_code`, `event_start` and `event_status`
+
+    Add GET parameter in end of URL, for example:
+    `?event_start=1449325446&event_status=Suspicious`
+    """
+
+
+    ""
+    serializer_class = CommentSerializer
+    paginate_by = 25
+    queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        queryset = Comment.objects.order_by('-pk').all()
+        for field, value in self.request.query_params.items():
+            if field == "event_status":
+                queryset = queryset.filter(event_status=value)
+            if field == "event_start":
+                queryset = queryset.filter(event_start=value)
+            if field == "exam_code":
+                queryset = queryset.filter(exam__exam_code=value)
         return queryset
