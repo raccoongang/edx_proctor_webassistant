@@ -234,6 +234,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         if change_end_date:
             event_session = EventSession.objects.get(pk=instance.pk)
             event_session.end_date = datetime.now()
+            event_session.status = EventSession.ARCHIVED
             event_session.save()
             serializer = self.get_serializer(event_session)
         return Response(serializer.data)
@@ -480,8 +481,8 @@ def _review_payload(exam, exam_code, review_status, video_link,
 
 
 # Angular redirect
-def redirect_session(request):
-    return redirect('/#/session')
+def redirect_ui(request):
+    return redirect('/#{}'.format(request.path))
 
 
 @api_view(['POST'])
