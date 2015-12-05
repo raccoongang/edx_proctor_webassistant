@@ -526,7 +526,7 @@ class JournalingViewSet(mixins.ListModelMixin,
     """
     Return list of Journaling with pagiantion.
 
-    You can filter results by `proctor`,`exam`,and `type`,`date`
+    You can filter results by `event_hash`, `proctor`,`exam`, `type`, `date`
 
     Add GET parameter in end of URL, for example:
 
@@ -550,12 +550,52 @@ class JournalingViewSet(mixins.ListModelMixin,
                 queryset = queryset.filter(exam__exam_code=value)
             if field == "type":
                 queryset = queryset.filter(type=value)
-            if field == "event":
+            if field == "event_hash":
                 queryset = queryset.filter(event__hash_key=value)
             if field == "date" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
                     datetime__gte=query_date,
                     datetime__lt=query_date + timedelta(days=1)
+                )
+        return queryset
+
+
+class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Return list of Archived Exams with pagiantion.
+
+    You can filter results by `event_hash`, `courseID`, `examStartDate`,
+    `examEndDate`, `username`, `email`
+
+    Add GET parameter in end of URL, for example:
+    `?examStartDate=2015-12-04&email=test@test.com`
+    """
+    serializer_class = ExamSerializer
+    paginate_by = 25
+    queryset = Exam.objects.filter(event__status=EventSession.ARCHIVED).all()
+
+    def get_queryset(self):
+        queryset = Exam.objects.order_by('-pk').all()
+        for field, value in self.request.query_params.items():
+            if field == "event_hash":
+                queryset = queryset.filter(event__hash_key=value)
+            if field == "courseID":
+                queryset = queryset.filter(course_id=value)
+            if field == "username":
+                queryset = queryset.filter(username=value)
+            if field == "email":
+                queryset = queryset.filter(email=value)
+            if field == "examStartDate" and len(value.split("-")) == 3:
+                query_date = datetime.strptime(value, "%Y-%m-%d")
+                queryset = queryset.filter(
+                    exam_start_date__gte=query_date,
+                    exam_start_date__lt=query_date + timedelta(days=1)
+                )
+            if field == "examEndDate" and len(value.split("-")) == 3:
+                query_date = datetime.strptime(value, "%Y-%m-%d")
+                queryset = queryset.filter(
+                    exam_end_date__gte=query_date,
+                    exam_end_date__lt=query_date + timedelta(days=1)
                 )
         return queryset
