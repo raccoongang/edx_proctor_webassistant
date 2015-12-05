@@ -152,6 +152,7 @@
             }
         });
         $translate.use(app.language.current);
+        console.log("Set language to ", app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -185,6 +186,7 @@
         };
 
         $scope.changeLanguage = function (langKey) {
+            if (langKey == undefined) langKey = app.language.current;
             if (lng_is_supported(langKey)) {
                 $translate.use(langKey);
                 i18n.clear_cache();
@@ -201,10 +203,10 @@
         };
 
         $scope.i18n = function(text) {
-            return i18n.translate(text);
+            var res = i18n.translate(text);
+            console.log("translated ", text, " to ", res);
+            return res;
         };
-
-        $scope.changeLanguage(app.language.current);
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){

@@ -27,16 +27,18 @@
         <div class="container-fluid" ng-view></div>
     </div>
 {% elif user.is_authenticated %}
-    <div class="container text-center">
+    <div class="container text-center" ng-init="changeLanguage()">
+        <h1 ng-bind="'ONLY_PROCTORS_ALLOWED' | translate">
+        </h1>
         <h1>
-                {[ i18n('ONLY_PROCTORS_ALLOWED') ]}
+            <button class="btn btn-default" ng-click="logout()" ng-bind="'LOGOUT' | translate">
+            </button>
         </h1>
     </div>
 {% else %}
     <div class="container text-center">
         <h1>
-            <button class="btn btn-default" ng-click="sso_auth()">
-                {[ i18n('AUTHORIZE') ]}
+            <button class="btn btn-default" ng-click="sso_auth()" ng-bind="'AUTHORIZE' | translate">
             </button>
         </h1>
     </div>
