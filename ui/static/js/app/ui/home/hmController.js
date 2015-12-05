@@ -134,7 +134,7 @@
                     modalInstance.result.then(function (data) {
                         if (callback !== undefined)
                             callback(exam, data);
-                        deferred.resolve();
+                        deferred.resolve(data);
                     }, function () {
                         deferred.reject();
                     });
@@ -166,7 +166,7 @@
                                     "duration": 88,
                                     "eventFinish": 88,
                                     "eventStart": 12,
-                                    "eventStatus": val.status.toString()
+                                    "eventStatus": val.status
                                 }
                             );
                         });
@@ -286,12 +286,12 @@
         }
         else if (exam.review_type == 'personal'){
             $scope.available_statuses = [
-                i18n.translate('COMMENT'),
-                i18n.translate('SUSPICIOUS')
+                i18n.translate('COMMENT').toString(),
+                i18n.translate('SUSPICIOUS').toString()
             ];
         }
         $scope.comment = {
-            status: $scope.available_statuses.length?$scope.available_statuses[0]:null,
+            status: $scope.available_statuses.length?$scope.available_statuses[0]:'',
             message: ""
         };
 
@@ -302,6 +302,7 @@
                 status: $scope.comment.status
             };
             ret.timestamp = ret.timestamp.getTime();
+            console.log("modal: ", ret);
             $uibModalInstance.close(ret);
         };
 
