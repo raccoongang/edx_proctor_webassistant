@@ -80,7 +80,7 @@
             var date = new Date(Date.parse(string));
             return date.toLocaleString(
                 window.localStorage['NG_TRANSLATE_LANG_KEY'],
-                datetime_options
+                short_datetime_options
             );
         };
 
