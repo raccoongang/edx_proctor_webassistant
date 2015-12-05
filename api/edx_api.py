@@ -114,17 +114,16 @@ def _journaling_request(request_type, url, data=None, headers=None):
         else:
             result = response.content
     try:
-        payload = unicode(data).encode('utf-8')
+        Journaling.objects.create(
+            type=Journaling.EDX_API_CALL,
+            note="""
+            Call url:%s
+            Sent data: %s
+            Response status: %s
+            Response content: %s
+            """ % (
+                url, unicode(data).encode('utf-8'), str(response.status_code), str(result))
+        )
     except:
-        payload = data
-    Journaling.objects.create(
-        type=Journaling.EDX_API_CALL,
-        note="""
-        Call url:%s
-        Sent data: %s
-        Response status: %s
-        Response content: %s
-        """ % (
-            url, payload, str(response.status_code), str(result))
-    )
+        pass
     return response
