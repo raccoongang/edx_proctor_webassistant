@@ -206,6 +206,7 @@
 
                 $scope.end_session = function(){
                     $scope.add_review({}, 'session').then(function(data){
+                        console.log(data);
                         TestSession.endSession(data.comment).then(function(){
                             delete window.sessionStorage['proctoring'];
                             Polling.stop_all();
