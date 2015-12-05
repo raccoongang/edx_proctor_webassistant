@@ -14,6 +14,8 @@ class ExamsByUserPermsManager(models.Manager):
         qs = super(ExamsByUserPermsManager, self).get_queryset()
         q_objects = []
         if not isinstance(user, AnonymousUser):
+            if user.is_superuser:
+                return qs
             for permission in user.permission_set.all():
                 if permission.object_id != "*":
                     q_objects.append(Q(**{permission._get_exam_field_by_type():
@@ -184,6 +186,7 @@ class Permission(models.Model):
     TYPE_COURSERUN = 'edxcourserun'
 
     OBJECT_TYPE_CHOICES = {
+        ('*', "*"),
         (TYPE_ORG, _("Organization")),
         (TYPE_COURSE, _("Course")),
         (TYPE_COURSERUN, _("Courserun")),

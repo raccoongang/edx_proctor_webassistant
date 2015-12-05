@@ -35,4 +35,5 @@ class IsProctor(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.permission_set.exists()
+        user = request.user
+        return user.is_superuser or user.permission_set.exists()

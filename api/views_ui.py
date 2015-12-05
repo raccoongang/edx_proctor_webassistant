@@ -16,7 +16,8 @@ from rest_framework.authentication import BasicAuthentication, \
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession, ArchivedEventSession
 from serializers import (EventSessionSerializer,
-                         ArchivedEventSessionSerializer, JournalingSerializer)
+                         ArchivedEventSessionSerializer, JournalingSerializer,
+                         ExamSerializer)
 from journaling.models import Journaling
 from edx_api import (start_exam_request, stop_exam_request,
                      poll_status_request,

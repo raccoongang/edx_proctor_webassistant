@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
 from rest_framework.reverse import reverse
 from rest_framework import viewsets, status, mixins
-from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
