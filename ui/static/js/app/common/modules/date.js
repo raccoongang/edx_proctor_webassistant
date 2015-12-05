@@ -77,7 +77,7 @@
         };
 
         this.get_localized_date_from_string = function(string){
-            var date = Date.parse(string);
+            var date = new Date(Date.parse(string));
             return date.toLocaleString(
                 window.localStorage['NG_TRANSLATE_LANG_KEY'],
                 datetime_options
