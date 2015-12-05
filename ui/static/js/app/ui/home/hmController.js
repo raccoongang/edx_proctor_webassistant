@@ -103,19 +103,17 @@
                     }
                 };
 
-                $scope.stop_exam_attempt = function(exam){
-                    $scope.add_review(exam, 'personal', $scope.attempt_review_callback).then(function(){
-                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
-                            if (data.data.status = 'submitted'){
+                $scope.stop_exam_attempt = function (exam) {
+                    if (confirm(i18n.translate('STOP_ATTEMPT')) === true) {
+                        Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function (data) {
+                            if (data.data.status = 'submitted') {
                                 exam.finished = true;
-                                $scope.$apply();
+                                $scope.add_review(exam, 'personal', $scope.attempt_review_callback);
                             }
-                        }, function(){
+                        }, function () {
                             alert(i18n.translate('STOP_EXAM_FAILED'));
                         });
-                    }, function(){
-
-                    });
+                    }
                 };
 
                 $scope.add_review = function (exam, type, callback) {

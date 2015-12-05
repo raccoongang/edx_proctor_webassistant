@@ -48,7 +48,8 @@
   "COMMENT": "Comment",
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
-  "STOP_ALL_ATTEMPTS": "Do You really want to stop all selected sessions",
+  "STOP_ALL_ATTEMPTS": "Do You really want to stop all selected sessions?",
+  "STOP_ATTEMPT": "Do You really want to stop exam attempt?",
   "SESSION_ERROR_1": "Failed to create/join session",
   "SESSION_ERROR_2": "Failed to end current session",
   "REVIEW_SEND_FAILED": "Failed to send review for exam attempt",
