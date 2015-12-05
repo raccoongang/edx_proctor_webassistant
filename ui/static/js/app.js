@@ -243,9 +243,9 @@
         };
     }]);
 
-    app.filter('sc_hack', function() {
-        return function(string) {
-            return string.replace('&amp;', '&');
+    app.filter('_translate', function(i18n) {
+        return function(text) {
+            return i18n.translate(text);
         };
     });
 })();
