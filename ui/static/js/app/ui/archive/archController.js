@@ -1,5 +1,5 @@
 (function(){
-    angular.module('proctor').controller('ArchCtrl', function($scope, events, courses_data){
+    angular.module('proctor').controller('ArchCtrl', function($scope, NgTableParams, events, courses_data){
         $scope.events = events.data;
 
         $scope.tableParams = new NgTableParams({
