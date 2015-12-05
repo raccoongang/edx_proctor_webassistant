@@ -123,6 +123,26 @@
                     }
                 }
             })
+            .when('/archive', {
+                templateUrl: app.path + 'ui/archive/view.html',
+                controller: 'ArchCtrl',
+                resolve: {
+                    deps: function(resolver){
+                        return resolver.load_deps([
+                            app.path + 'ui/archive/archController.js'
+                        ]);
+                    },
+                    data: function($location, Api, Auth){
+                        Auth.authenticate();
+                        if (Auth.get_token()) {
+                            return Api.get_session_data();
+                        }
+                        else {
+                            $location.path('/');
+                        }
+                    }
+                }
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -151,8 +171,6 @@
                 $translate.use(val);
             }
         });
-        $translate.use(app.language.current);
-        console.log("Set language to ", app.language.current);
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout) {
@@ -207,6 +225,8 @@
             console.log("translated ", text, " to ", res);
             return res;
         };
+
+        $scope.changeLanguage();
     }]);
 
     app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
@@ -223,4 +243,9 @@
         };
     }]);
 
+    app.filter('sc_hack', function() {
+        return function(string) {
+            return string.replace('&amp;', '&');
+        };
+    });
 })();
