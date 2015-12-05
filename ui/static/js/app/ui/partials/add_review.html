@@ -1,7 +1,14 @@
 <div>
     <script type="text/ng-template" id="reviewContent.html">
         <div class="modal-header">
-            <h3 class="modal-title">{[ i18n('PROCTOR_COMMENT') ]}</h3>
+            <h3 class="modal-title"
+                ng-if="exam.review_type !== 'session'">
+                {[ i18n('PROCTOR_COMMENT') ]}
+            </h3>
+            <h3 class="modal-title"
+                ng-if="exam.review_type == 'session'">
+                {[ i18n('SESSION_COMMENT') ]}
+            </h3>
         </div>
         <div class="modal-body">
             <div ng-if="exam.review_type == 'personal'">
