@@ -104,7 +104,7 @@
                 };
 
                 $scope.stop_exam_attempt = function(exam){
-                    $scope.add_review(exam).then(function(){
+                    $scope.add_review(exam, 'personal', $scope.attempt_review_callback).then(function(){
                         Api.stop_exam_attempt(exam.examCode, exam.orgExtra.userID).then(function(data){
                             if (data.data.status = 'submitted'){
                                 exam.finished = true;
@@ -116,10 +116,6 @@
                     }, function(){
 
                     });
-                };
-
-                $scope.stop_all_attempts = function(){
-
                 };
 
                 $scope.add_review = function (exam, type, callback) {
