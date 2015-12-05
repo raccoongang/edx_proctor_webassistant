@@ -13,7 +13,6 @@
                 return language_cache[text];
             }
             var translated = translateFilter(text);
-            console.log(typeof translated, translated);
             div.innerHTML = translated;
             var ret = $sce.trustAsHtml(div.textContent).toString();
             language_cache[text] = ret;

@@ -132,10 +132,10 @@
                             app.path + 'ui/archive/archController.js'
                         ]);
                     },
-                    data: function($location, Api, Auth){
+                    events: function($location, Api, Auth){
                         Auth.authenticate();
                         if (Auth.get_token()) {
-                            return Api.get_session_data();
+                            return Api.get_archived_events();
                         }
                         else {
                             $location.path('/');
@@ -241,10 +241,4 @@
             link: function(scope, e, attr) {}
         };
     }]);
-
-    app.filter('_translate', function(i18n) {
-        return function(text) {
-            return i18n.translate(text);
-        };
-    });
 })();
