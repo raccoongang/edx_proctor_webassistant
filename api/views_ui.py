@@ -403,8 +403,9 @@ def bulk_start_exams(request):
     """
 
     exam_codes = request.data.get('list', [])
-    exam_list = Exam.objects.by_user_perms(request.user).filter(
-        exam_code__in=exam_codes)
+    # exam_list = Exam.objects.by_user_perms(request.user).filter(
+    #     exam_code__in=exam_codes)
+    exam_list = Exam.objects.filter(exam_code__in=exam_codes)
     items = bulk_start_exams_request(exam_list)
     for exam in items:
         exam.exam_status = exam.STARTED
