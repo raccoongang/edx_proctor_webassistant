@@ -212,7 +212,9 @@
                             Polling.stop_all();
                             $location.path('/session');
                         }, function(){});
-                    }, function(){});
+                    }, function(){
+                        alert("Failed to add session review");
+                    });
                 };
 
                 var get_not_started_attempts = function(){
