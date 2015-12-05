@@ -1,3 +1,5 @@
-/**
- * Created by hobo on 11/20/15.
- */
+(function(){
+    angular.module('proctor').controller('ArchCtrl', function($scope){
+
+    });
+})();

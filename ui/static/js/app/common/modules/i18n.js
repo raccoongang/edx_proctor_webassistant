@@ -1,5 +1,8 @@
 (function(){
-    var module = angular.module('proctor.i18n', []);
+    var module = angular.module('proctor.i18n', [
+        'pascalprecht.translate',
+        'ngSanitize'
+    ]);
 
     module.service('i18n', function($sce, translateFilter){
         var language_cache = {};

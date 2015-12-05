@@ -83,5 +83,12 @@
                 'data': JSON.stringify({list: list})
             });
         };
+
+        this.get_archived_events = function(){
+            return generic_api_call({
+                'url': get_url('archived_event_session'),
+                'method': 'GET'
+            });
+        };
     }]);
 })();
