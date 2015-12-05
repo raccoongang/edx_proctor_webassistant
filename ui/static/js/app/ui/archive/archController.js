@@ -14,7 +14,7 @@
             // Adds `course_name` and `exam_name` to every event
             if (courses_data.data.results !== undefined && courses_data.data.results.length){
                 angular.forEach($scope.events, function(val, key){
-                    var course = courses_data.results.filter({id: val.course_id});
+                    var course = courses_data.data.results.filter({id: val.course_id});
                     if (course.length){
                         val.course_name = course[0].name;
                         var exam = course[0].proctored_exams.filter({id: val.course_event_id});
