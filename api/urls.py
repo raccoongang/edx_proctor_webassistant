@@ -17,6 +17,8 @@ router.register(r'archived_exam', views_ui.ArchivedExamViewSet,
                 base_name="archived-exam"),
 router.register(r'comment', views_ui.CommentViewSet,
                 base_name="comment")
+router.register(r'permission', views_ui.PermissionViewSet,
+                base_name="permission")
 
 urlpatterns = patterns(
     '',

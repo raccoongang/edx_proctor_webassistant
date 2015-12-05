@@ -50,6 +50,8 @@ class APIRoot(APIView):
                                               request=request),
             "archived_exam": reverse('archived-exam-list',
                                      request=request),
+            "permission": reverse('permission-list',
+                                  request=request),
 
         }
         return Response(result)

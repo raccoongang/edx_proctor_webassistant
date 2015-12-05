@@ -7,7 +7,8 @@ from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import User
-from models import Exam, EventSession, ArchivedEventSession, Comment
+from models import Exam, EventSession, ArchivedEventSession, Comment, \
+    Permission
 from journaling.models import Journaling
 
 
@@ -178,10 +179,15 @@ class JournalingSerializer(serializers.ModelSerializer):
         exclude = ("exam",)
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     exam_code = serializers.ReadOnlyField(source='exam.exam_code')
 
     class Meta:
         model = Comment
         exclude = ("exam",)
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        exclude = ("id", "user")

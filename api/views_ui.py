@@ -14,10 +14,11 @@ from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam, EventSession, ArchivedEventSession, Comment
+from models import Exam, EventSession, ArchivedEventSession, Comment, \
+    Permission
 from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
-                         ExamSerializer)
+                         ExamSerializer, PermissionSerializer)
 from journaling.models import Journaling
 from edx_api import (start_exam_request, stop_exam_request,
                      poll_status_request,
@@ -641,3 +642,11 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if field == "exam_code":
                 queryset = queryset.filter(exam__exam_code=value)
         return queryset
+
+
+class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = PermissionSerializer
+    queryset = Permission.objects.all()
+
+    def get_queryset(self):
+        return Permission.objects.filter(user=self.request.user).all()
