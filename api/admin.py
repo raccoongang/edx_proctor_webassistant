@@ -25,7 +25,8 @@ class ExamAdmin(admin.ModelAdmin):
         }),
         ('Additional', {
             'fields': (
-                'event', 'course_organization', 'course_identify', 'course_run',
+                'event', 'course_organization', 'course_identify',
+                'course_run',
                 'exam_status')
         }),
     )
@@ -34,7 +35,7 @@ class ExamAdmin(admin.ModelAdmin):
 class EventSessionAdmin(admin.ModelAdmin):
     list_display = (
         'testing_center', 'course_id', 'course_event_id', 'proctor', 'status',
-        'start_date','hash_key', 'end_date')
+        'start_date', 'hash_key', 'end_date')
     list_filter = ('proctor', 'status')
     search_fields = (
         'testing_center', 'course_id', 'course_event_id', 'start_date',
@@ -43,9 +44,9 @@ class EventSessionAdmin(admin.ModelAdmin):
 
 
 class PermissionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'object_id', 'object_type')
-    list_filter = ('user', 'object_type')
-    search_fields = ['user', 'object_id', 'object_type']
+    list_display = ('user', 'object_id', 'object_type', 'role')
+    list_filter = ('user', 'object_type', 'role')
+    search_fields = ['user', 'object_id', 'object_type', 'role']
 
 
 class StudentAdmin(admin.ModelAdmin):

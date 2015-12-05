@@ -21,7 +21,7 @@
     </script>
 </head>
 <body ng-app="proctor" ng-cloak translate-cloak ng-controller="MainController">
-{% if user_is_proctor %}
+{% if user_has_access %}
     <div>
         <header></header>
         <div class="container-fluid" ng-view></div>

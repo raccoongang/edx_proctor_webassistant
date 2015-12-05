@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import hashlib
 import operator
-from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
@@ -185,16 +184,26 @@ class Permission(models.Model):
     TYPE_COURSE = 'edxcourse'
     TYPE_COURSERUN = 'edxcourserun'
 
+    ROLE_PROCTOR = 'proctor'
+    ROLE_INSTRUCTOR = 'instructor'
+
     OBJECT_TYPE_CHOICES = {
         ('*', "*"),
         (TYPE_ORG, _("Organization")),
         (TYPE_COURSE, _("Course")),
         (TYPE_COURSERUN, _("Courserun")),
     }
+
+    ROLES_CHOICES = {
+        (ROLE_PROCTOR, _("Proctor")),
+        (ROLE_INSTRUCTOR, _("Instructor")),
+    }
     user = models.ForeignKey(User)
     object_id = models.CharField(max_length=64)
     object_type = models.CharField(max_length=64,
                                    choices=OBJECT_TYPE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLES_CHOICES,
+                            default=ROLE_PROCTOR)
 
     def _get_exam_field_by_type(self):
         fields = {

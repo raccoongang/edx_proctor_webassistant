@@ -11,19 +11,27 @@ def set_roles_for_edx_users(user, permissions):
     '''
     This function create roles for proctors from sso permissions.
     '''
+    proctor_perm = {
+        u'Proctoring', u'*'
+    }
     global_perm = {
         u'Read', u'Update', u'Delete', u'Publication', u'Enroll',
         u'Manage(permissions)'
     }
     permission_list = []
-    for role in permissions:
-        if role['obj_perm'] in ([u'Proctoring'], [u'*']) \
-                or global_perm.issubset(set(role['obj_perm'])):
-            permission_list.append(Permission(
-                object_type=role['obj_type'],
-                object_id=role['obj_id'],
-                user=user
-            )
+    for permission in permissions:
+        if bool(set(permission['obj_perm']) & proctor_perm) or \
+                global_perm.issubset(set(permission['obj_perm'])):
+            role = Permission.ROLE_PROCTOR if bool(
+                set(permission['obj_perm']) & proctor_perm
+            ) else Permission.ROLE_INSTRUCTOR
+            permission_list.append(
+                Permission(
+                    object_type=permission['obj_type'],
+                    object_id=permission['obj_id'],
+                    user=user,
+                    role=role
+                )
             )
     Permission.objects.filter(user=user).delete()
     Permission.objects.bulk_create(permission_list)
