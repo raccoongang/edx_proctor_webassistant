@@ -109,7 +109,7 @@ class ExamViewSet(mixins.ListModelMixin,
                     hash_key=hash_key,
                     status=EventSession.IN_PROGRESS
                 )
-                return Exam.objects.filter(
+                return Exam.objects.by_user_perms(self.request.user).filter(
                     event=event
                 )
             except EventSession.DoesNotExist:

@@ -8,6 +8,28 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
 
+def has_permisssion_to_course(user, course_id):
+    course_data = {}
+    try:
+        edxorg, edxcourse, edxcourserun = Exam.get_course_data(course_id)
+        course_data['edxorg'] = edxorg
+        course_data['edxcourse'] = "/".join((edxorg, edxcourse))
+        course_data['edxcourserun'] = course_id
+    except ValueError as e:
+        return False
+    if not isinstance(user, AnonymousUser):
+        if user.is_superuser:
+            return True
+        for permission in user.permission_set.all():
+            if permission.object_id != "*":
+                if course_data.get(
+                        permission.object_type) == permission.object_id:
+                    return True
+            else:
+                return True
+    return False
+
+
 class ExamsByUserPermsManager(models.Manager):
     def by_user_perms(self, user):
         qs = super(ExamsByUserPermsManager, self).get_queryset()

@@ -6,9 +6,8 @@ from rest_framework import serializers
 from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
-from django.contrib.auth.models import User
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
-    Permission
+    Permission, has_permisssion_to_course
 from journaling.models import Journaling
 
 
@@ -148,6 +147,22 @@ class EventSessionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventSession
+
+    def validate(self, data):
+        '''
+        Data validation
+        :param data: data from post/put request
+        :return: clean data
+        '''
+        if not has_permisssion_to_course(data.get('proctor'),
+                                         data.get('course_id')):
+            raise serializers.ValidationError(
+                "You have not permissions to create event for this course")
+        try:
+            EventSession(**data).full_clean()
+        except ValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
+        return super(EventSessionSerializer, self).validate(data)
 
 
 class ArchivedEventSessionSerializer(serializers.ModelSerializer):
