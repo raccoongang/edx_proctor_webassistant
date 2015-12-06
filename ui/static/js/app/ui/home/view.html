@@ -71,7 +71,8 @@
                 sortable="'orgExtra.firstName'">
                 {[attempt.orgExtra.firstName]} {[attempt.orgExtra.lastName]}
             </td>
-            <td title="i18n('EXAM_START_TIME')">
+            <td title="i18n('EXAM_START_TIME')"
+                ng-if="attempt.started_at">
                 {[ attempt.started_at ]}
             </td>
             <td title="i18n('EXAM_CODE')"

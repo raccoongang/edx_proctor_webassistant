@@ -1,3 +1,7 @@
+<h1>
+    {[ exam_name ]}
+</h1>
+
 <div class="fc-margin-item" ng-repeat="session in sessions">
     <div class="col-xs-6">
         <div>
@@ -10,6 +14,9 @@
         </div>
         <div>
             <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
+        </div>
+        <div>
+            <b>{[ i18n('ENDED_WITH_STATUS') ]}</b>: {[ session.attempt_status ]}
         </div>
     </div>
     <div class="col-xs-6">
