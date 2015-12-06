@@ -19,6 +19,8 @@
   "EVENT_START_TIME": "Started at",
   "EVENT_END_TIME": "Ended at",
   "PROCTOR": "Proctor",
+  "DURATION": "Duration",
+  "MIN": "min",
 
   "ACTIVATE": "Activate",
   "ACCEPT": "Approve",

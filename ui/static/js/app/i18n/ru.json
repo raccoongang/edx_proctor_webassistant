@@ -19,6 +19,8 @@
   "EVENT_START_TIME": "Начало",
   "EVENT_END_TIME": "Окончание",
   "PROCTOR": "Проктор",
+  "DURATION": "Длительность",
+  "MIN": "мин",
 
   "ACTIVATE": "Активировать",
   "ACCEPT": "Подтвердить",

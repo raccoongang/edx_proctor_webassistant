@@ -1,10 +1,15 @@
 <div class="fc-margin-item" ng-repeat="session in sessions">
     <div class="col-xs-6">
         <div>
-            {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
+            <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
         </div>
         <div>
-            {[ session.orgExtra.examStartDate | date_localize ]} - {[ session.orgExtra.examEndDate | date_localize ]}
+            <b>{[ i18n('EVENT_START_TIME') ]}</b>: {[ session.orgExtra.examStartDate | date_localize ]}
+            <br>
+            <b>{[ i18n('EVENT_END_TIME') ]}</b>: {[ session.orgExtra.examEndDate | date_localize ]}
+        </div>
+        <div>
+            <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
         </div>
     </div>
     <div class="col-xs-6">
