@@ -96,7 +96,7 @@ def stop_exams(request):
         for attempt in attempts:
             exam = get_object_or_404(
                 Exam.objects.by_user_perms(request.user),
-                exam_code=attempts['attempt_code']
+                exam_code=attempt['attempt_code']
             )
             user_id = attempt.get('user_id')
             action = attempt.get('action')

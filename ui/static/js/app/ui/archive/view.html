@@ -1,5 +1,9 @@
+<div class="fc-margin-item col-xs-12 col-sm-6">
+    <input class="form-control" ng-model="search">
+</div>
+<div class="clearfix"></div>
 <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
-    <tr ng-repeat="event in $data">
+    <tr ng-repeat="event in $data | search">
         <td title="i18n('COURSE_NAME')"
             sortable="'course_name'">
             <a href="">{[event.course_name]}</a>
