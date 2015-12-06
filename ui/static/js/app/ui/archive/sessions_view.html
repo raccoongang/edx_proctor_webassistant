@@ -4,7 +4,7 @@
             {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
         </div>
         <div>
-            {[ session.orgExtra.examStartDate ]} - {[ session.orgExtra.examEndDate ]}
+            {[ session.orgExtra.examStartDate | date_localize ]} - {[ session.orgExtra.examEndDate | date_localize ]}
         </div>
     </div>
     <div class="col-xs-6">

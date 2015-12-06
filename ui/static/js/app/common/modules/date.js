@@ -97,4 +97,10 @@
             }
         }, true);
     });
+
+    app.filter('date_localize', function(DateTimeService) {
+        return function(input) {
+            return DateTimeService.get_localized_date_from_string(input);
+        };
+    });
 })();
