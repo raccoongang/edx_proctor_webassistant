@@ -1,3 +1,14 @@
-<div>
+<div class="fc-margin-item" ng-repeat="session in sessions">
+    <div class="col-xs-6">
+        <div>
+            {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
+        </div>
+        <div>
+            {[ session.orgExtra.examStartDate ]} - {[ session.orgExtra.examEndDate ]}
+        </div>
+    </div>
+    <div class="col-xs-6">
 
+    </div>
+    <div class="clearfix"></div>
 </div>
