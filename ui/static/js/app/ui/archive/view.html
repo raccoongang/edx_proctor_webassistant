@@ -6,15 +6,15 @@
     <tr ng-repeat="event in $data | search">
         <td title="i18n('COURSE_NAME')"
             sortable="'course_name'">
-            <a href="">{[event.course_name]}</a>
+            <a href="/#/archive/{[ event.hash_key ]}">{[event.course_name]}</a>
         </td>
         <td title="i18n('EXAM_NAME')"
             sortable="'exam_name'">
-            <a href="">{[event.exam_name]}</a>
+            <a href="/#/archive/{[ event.hash_key ]}">{[event.exam_name]}</a>
         </td>
         <td title="i18n('TESTING_CENTER')"
             sortable="'testing_center'">
-            <a href="">{[event.testing_center]}</a>
+            <a href="/#/archive/{[ event.hash_key ]}">{[event.testing_center]}</a>
         </td>
         <td title="i18n('EVENT_START_TIME')"
             sortable="'start_date'">

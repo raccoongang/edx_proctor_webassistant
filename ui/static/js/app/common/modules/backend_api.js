@@ -90,5 +90,13 @@
                 'method': 'GET'
             });
         };
+
+        this.get_archived_sessions = function(event_hash){
+            return generic_api_call({
+                'url': get_url('archived_exam'),
+                'method': 'GET',
+                'params': {event_hash: event_hash}
+            });
+        };
     }]);
 })();

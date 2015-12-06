@@ -133,6 +133,20 @@
                     }
                 }
             })
+            .when('/archive/:hash', {
+                templateUrl: app.path + 'ui/archive/sessions_view.html',
+                controller: 'ArchAttCtrl',
+                resolve: {
+                    deps: function(resolver){
+                        return resolver.load_deps([
+                            app.path + 'ui/archive/archAttController.js'
+                        ]);
+                    },
+                    sessions: function($route, Api){
+                        return Api.get_archived_sessions($route.current.params.hash);
+                    }
+                }
+            })
             .otherwise({
                 redirectTo: '/'
             });
