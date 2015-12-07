@@ -175,7 +175,10 @@
                             while ($scope.ws_data[idx].examCode !== exam.examCode) {
                                 idx++;
                             }
-                            $scope.ws_data[idx].status = 'finished';
+                            if (status == 'Clean')
+                                $scope.ws_data[idx].status = 'verified';
+                            else if (status == 'Suspicious')
+                                $scope.ws_data[idx].status = 'rejected';
                             exam.review_sent = true;
                             attempt_end(exam.hash);
                         }).error(function(){
@@ -243,7 +246,9 @@
                     angular.forEach($scope.exams.checked, function(val, key){
                         var item = $scope.ws_data.filter({examCode: val});
                         if (item.length){
-                            list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
+                            if (['verified', 'rejected'].in_array(item.status)){
+                                list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
+                            }
                         }
                     });
                     return list;
