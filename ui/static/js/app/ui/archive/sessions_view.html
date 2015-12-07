@@ -17,7 +17,7 @@
     <div class="clearfix"></div>
 </div>
 
-<div class="fc-margin-item" ng-repeat="session in sessions | filter: search">
+<div class="fc-margin-item panel" ng-repeat="session in sessions | filter: search">
     <div class="col-xs-6">
         <div>
             <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
@@ -35,7 +35,23 @@
         </div>
     </div>
     <div class="col-xs-6">
-
+        <div class="fc-margin-item"
+             ng-repeat="comment in session.comments"
+             ng-if="session.comments.length">
+            <div>
+                <b>{[ i18n('COMMENT') ]}</b>: {[ comment.comment ]}
+            </div>
+            <div>
+                <b>{[ i18n('TIMESTAMP') ]}</b>: {[ comment.event_start ]}
+            </div>
+            <div>
+                <b>{[ i18n('TYPE') ]}</b>: {[ comment.event_status ]}
+            </div>
+        </div>
+        <div class="fc-margin-item"
+             ng-if="!session.comments.length">
+            {[ i18n('NO_COMMENTS') ]}
+        </div>
     </div>
     <div class="clearfix"></div>
 </div>
