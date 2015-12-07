@@ -26,7 +26,7 @@ from edx_api import (start_exam_request, stop_exam_request,
                      bulk_start_exams_request,
                      bulk_send_review_request)
 from api.auth import CsrfExemptSessionAuthentication, SsoTokenAuthentication, \
-    IsProctor
+    IsProctor, IsInstructor, IsProctorOrInstructor
 from api.utils import catch_exception
 
 
@@ -595,7 +595,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-    permission_classes = (IsAuthenticated, IsProctor)
+    permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
     def get_queryset(self):
         queryset = Exam.objects.order_by('-pk').all()
