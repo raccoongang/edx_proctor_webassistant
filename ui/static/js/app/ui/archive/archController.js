@@ -8,7 +8,7 @@
             page: 1,
             count: 10
         }, {
-            dataset: $scope.events
+            data: $scope.events
         });
 
         var get_event_data = function(){
