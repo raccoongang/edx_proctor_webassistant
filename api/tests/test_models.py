@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from api.models import Exam, Permission
 
 
+class HasPermissionToCourseTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'test1', 'test1@test.com', 'testpassword'
+        )
+
+
 class ExamByUserPermsManagerTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(

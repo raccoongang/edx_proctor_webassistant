@@ -46,7 +46,7 @@ class ExamsByUserPermsManager(models.Manager):
             if len(q_objects):
                 return qs.filter(reduce(operator.or_, q_objects))
 
-        return []
+        return qs.filter(pk__lt=0)
 
 
 class Exam(models.Model):

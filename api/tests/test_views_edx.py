@@ -2,8 +2,8 @@ import json
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.test import APIRequestFactory
-from api.models import Exam, EventSession
+from rest_framework.test import APIRequestFactory, force_authenticate
+from api.models import Exam, EventSession, Permission
 from api.views_edx import APIRoot, ExamViewSet
 from mock import patch
 
@@ -27,12 +27,19 @@ class ExamViewSetTestCase(TestCase):
         self.event.course_id = 'org1/course1/run1'
         self.event.course_event_id = '1'
         self.event.status = EventSession.IN_PROGRESS
-        self.event.proctor = User.objects.create_user(
+        self.user = User.objects.create_user(
             'test',
             'test@test.com',
             'password'
         )
+        self.event.proctor = self.user
         self.event.save()
+        Permission.objects.create(
+            user=self.user,
+            object_type="*",
+            object_id="*",
+            role=Permission.ROLE_PROCTOR
+        )
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -58,7 +65,9 @@ class ExamViewSetTestCase(TestCase):
         factory = APIRequestFactory()
         request = factory.get(
             '/api/exam_register/?session=%s' % self.event.hash_key)
+        force_authenticate(request, user=self.user)
         view = ExamViewSet.as_view({'get': 'list'})
+
         response = view(request)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
