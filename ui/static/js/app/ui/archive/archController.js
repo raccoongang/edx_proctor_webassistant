@@ -11,10 +11,8 @@
                 course_name: ''
             }
         }, {
-            total: $scope.events.length,
-            getData: function(params){
-                return $scope.events;
-            }
+            filterDelay: 0,
+            data: $scope.events
         });
 
         var get_event_data = function(){

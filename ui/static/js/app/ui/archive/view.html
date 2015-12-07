@@ -1,34 +1,34 @@
 
 <table ng-table="tableParams" show-filter="true" class="table table-bordered table-striped">
-    <tr ng-repeat="event in $data">
+    <tr ng-repeat="event in $data track by event.hash_key">
         <td title="i18n('COURSE_NAME')"
-            sortable="'course_name'"
-            filter="{ course_name: 'text' }">
+            filter="{course_name: 'text'}"
+            sortable="'course_name'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.course_name]}</a>
         </td>
         <td title="i18n('EXAM_NAME')"
-            sortable="'exam_name'"
-            filter="{ exam_name: 'text' }">
+            filter="{exam_name: 'text'}"
+            sortable="'exam_name'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.exam_name]}</a>
         </td>
         <td title="i18n('TESTING_CENTER')"
-            sortable="'testing_center'"
-            filter="{ testing_center: 'text' }">
+            filter="{testing_center: 'text'}"
+            sortable="'testing_center'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.testing_center]}</a>
         </td>
         <td title="i18n('EVENT_START_TIME')"
-            sortable="'start_date'"
-            filter="{ start_date: 'text' }">
+            filter="{start_date: 'text'}"
+            sortable="'start_date'">
             {[ event.start_date ]}
         </td>
         <td title="i18n('EVENT_END_TIME')"
-            sortable="'end_date'"
-            filter="{ end_date: 'text' }">
+            filter="{end_date: 'text'}"
+            sortable="'end_date'">
             {[ event.end_date ]}
         </td>
         <td title="i18n('PROCTOR')"
-            sortable="'proctor'"
-            filter="{ proctor: 'text' }">
+            filter="{proctor: 'text'}"
+            sortable="'proctor'">
             {[ event.proctor ]}
         </td>
         <td title="i18n('COMMENT')">
