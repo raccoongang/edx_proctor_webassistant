@@ -18,7 +18,7 @@ from models import Exam, EventSession, ArchivedEventSession, Comment, \
     Permission
 from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
-                         ExamSerializer, PermissionSerializer)
+                         ArchivedExamSerializer, PermissionSerializer)
 from journaling.models import Journaling
 from edx_api import (start_exam_request, stop_exam_request,
                      poll_status_request,
@@ -272,9 +272,11 @@ class Review(APIView):
 
     @catch_exception
     def post(self, request):
+        """
+        Passing review statuses:  `Clean`, `Rules Violation`
 
-        passing_review_status = ['Clean', 'Rules Violation']
-        failing_review_status = ['Not Reviewed', 'Suspicious']
+        Failing review status: `Not Reviewed`, `Suspicious`
+        """
         payload = request.data
         required_fields = ['examMetaData', 'reviewStatus',
                            'videoReviewLink', 'desktopComments']
@@ -587,7 +589,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     Add GET parameter in end of URL, for example:
     `?examStartDate=2015-12-04&email=test@test.com`
     """
-    serializer_class = ExamSerializer
+    serializer_class = ArchivedExamSerializer
     paginate_by = 50
     queryset = Exam.objects.filter(event__status=EventSession.ARCHIVED).all()
     authentication_classes = (

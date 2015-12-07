@@ -140,6 +140,21 @@ class ExamSerializer(serializers.ModelSerializer):
         return super(ExamSerializer, self).validate(data)
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    exam_code = serializers.ReadOnlyField(source='exam.exam_code')
+
+    class Meta:
+        model = Comment
+        exclude = ("exam",)
+
+
+class ArchivedExamSerializer(ExamSerializer):
+    comments = CommentSerializer(source='comment_set', many=True)
+
+    class Meta:
+        model = Exam
+
+
 class EventSessionSerializer(serializers.ModelSerializer):
     hash_key = serializers.CharField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
@@ -157,7 +172,7 @@ class EventSessionSerializer(serializers.ModelSerializer):
 
         if not self.instance and not has_permisssion_to_course(
                 data.get('proctor'),
-                data.get('course_id','')):
+                data.get('course_id', '')):
             raise serializers.ValidationError(
                 "You have not permissions to create event for this course")
         # try:
@@ -193,14 +208,6 @@ class JournalingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Journaling
-        exclude = ("exam",)
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    exam_code = serializers.ReadOnlyField(source='exam.exam_code')
-
-    class Meta:
-        model = Comment
         exclude = ("exam",)
 
 
