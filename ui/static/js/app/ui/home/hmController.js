@@ -164,8 +164,8 @@
                                 {
                                     "comments": val.comment,
                                     "duration": 88,
-                                    "eventFinish": 88,
-                                    "eventStart": 12,
+                                    "eventFinish": val.timestamp,
+                                    "eventStart": val.timestamp,
                                     "eventStatus": val.status
                                 }
                             );

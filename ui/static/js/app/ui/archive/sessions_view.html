@@ -49,7 +49,7 @@
                 <b>{[ i18n('COMMENT') ]}</b>: {[ comment.comment ]}
             </div>
             <div>
-                <b>{[ i18n('TIMESTAMP') ]}</b>: {[ comment.event_start ]}
+                <b>{[ i18n('TIMESTAMP') ]}</b>: {[ comment.event_start | date_localize_timestamp ]}
             </div>
             <div>
                 <b>{[ i18n('TYPE') ]}</b>: {[ comment.event_status ]}
