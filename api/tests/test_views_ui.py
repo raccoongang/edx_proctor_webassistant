@@ -95,15 +95,19 @@ class ViewsUITestCase(TestCase):
         factory = APIRequestFactory()
         with patch('api.views_ui.send_review_request') as edx_request:
             edx_request.return_value = MockResponse()
+            data = {
+                "desktopComments": "",
+                "examMetaData": '{"examCode": "%s"}' % self.exam.exam_code,
+                "reviewStatus": "Clean",
+                "videoReviewLink": "http://video.url",
+            }
             request = factory.post(
-                '/api/review/', data={'attempt_code': self.exam.exam_code})
+                '/api/review/', data=data)
             force_authenticate(request, user=self.user)
             view = Review.as_view()
             response = view(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            data = json.loads(response.content)
-            self.assertEqual('review_was_sent', data['status'])
 
     def test_send_wrong_review(self):
         factory = APIRequestFactory()

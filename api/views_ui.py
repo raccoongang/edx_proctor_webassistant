@@ -280,15 +280,16 @@ class Review(APIView):
         payload = request.data
         required_fields = ['examMetaData', 'reviewStatus',
                            'videoReviewLink', 'desktopComments']
-
-        exam = get_object_or_404(
-            Exam.objects.by_user_perms(request.user),
-            exam_code=payload['examMetaData']['examCode']
-        )
-
         for field in required_fields:
             if field not in payload:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if isinstance(payload['examMetaData'], basestring):
+            payload['examMetaData'] = json.loads(payload['examMetaData'])
+        exam = get_object_or_404(
+            Exam.objects.by_user_perms(request.user),
+            exam_code=payload['examMetaData'].get('examCode', '')
+        )
 
         payload['examMetaData'].update(
             {
@@ -298,7 +299,6 @@ class Review(APIView):
         )
 
         response = send_review_request(payload)
-
         if response.status_code in [200, 201]:
             comments = payload['desktopComments']
             comment_obj_list = []
