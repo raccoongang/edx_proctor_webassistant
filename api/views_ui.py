@@ -598,7 +598,14 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
     def get_queryset(self):
-        queryset = Exam.objects.order_by('-pk').all()
+
+        queryset = Exam.objects.by_user_perms(
+            self.request.user).order_by('-pk').all()
+        if self.request.user.permission_set.filter(
+                role=Permission.ROLE_PROCTOR).exists():
+            queryset = queryset.filter(
+                event__proctor=self.request.user)
+
         for field, value in self.request.query_params.items():
             if field == "event_hash":
                 queryset = queryset.filter(event__hash_key=value)
