@@ -8,7 +8,7 @@
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-                    <input type="text" ng-model="searchFilter" class="form-control" placeholder="{[ i18n('SEARCH') ]}">
+                    <input type="text" ng-model="search.filter" class="form-control" placeholder="{[ i18n('SEARCH') ]}">
                 </div>
             </div>
         </form>
@@ -25,7 +25,7 @@
         <div class="clearfix"></div>
     </div>
 
-    <div class="fc-margin-item panel" ng-repeat="session in sessions | filter:searchFilter">
+    <div class="fc-margin-item panel" ng-repeat="session in sessions | filter:search.filter">
         <div class="col-xs-6">
             <div>
                 <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
