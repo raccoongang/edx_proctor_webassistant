@@ -1,4 +1,5 @@
 <div ng-if="sessions.length">
+    {[ search.filter ]}
     <h1>
         {[ i18n('EXAM_ARCHIVE') ]}: {[ exam_name ]}
     </h1>
@@ -25,7 +26,7 @@
         <div class="clearfix"></div>
     </div>
 
-    <div class="fc-margin-item panel" ng-repeat="session in sessions | filter:search.filter">
+    <div class="fc-margin-item panel" ng-repeat="session in sessions">
         <div class="col-xs-6">
             <div>
                 <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
