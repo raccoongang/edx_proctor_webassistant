@@ -1,9 +1,12 @@
 <h1>
-    {[ exam_name ]}
+    {[ i18n('EXAM_ARCHIVE') ]}: {[ exam_name ]}
 </h1>
 
 <div class="fc-margin-item col-xs-12 col-sm-6">
-    <input type="text" class="form-control" ng-model="search" placeholder="{[ i18n('SEARCH') ]}">
+    <input type="text"
+           class="form-control"
+           ng-model="searchFilter"
+           placeholder="{[ i18n('SEARCH') ]}"/>
 </div>
 <div class="clearfix"></div>
 
@@ -17,7 +20,7 @@
     <div class="clearfix"></div>
 </div>
 
-<div class="fc-margin-item panel" ng-repeat="session in sessions | filter: search">
+<div class="fc-margin-item panel" ng-repeat="session in sessions | filter:searchFilter">
     <div class="col-xs-6">
         <div>
             <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
