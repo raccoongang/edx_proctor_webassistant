@@ -63,15 +63,15 @@
         </div>
         <div class="clearfix"></div>
     </div>
-    <br>
-    <div class="text-center">
-        <a href="/#/archive">
-            <button class="btn btn-primary">
-                {[ i18n('BACK') ]}
-            </button>
-        </a>
-    </div>
 </div>
-<div ng-if="!sessions.length">
-
+<div ng-if="!sessions.length" class="text-center">
+    {[ i18n('NO_SESSIONS') ]}
+</div>
+<br>
+<div class="text-center">
+    <a href="/#/archive">
+        <button class="btn btn-primary">
+            {[ i18n('BACK') ]}
+        </button>
+    </a>
 </div>
