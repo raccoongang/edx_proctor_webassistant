@@ -154,14 +154,16 @@ class EventSessionSerializer(serializers.ModelSerializer):
         :param data: data from post/put request
         :return: clean data
         '''
-        if not has_permisssion_to_course(data.get('proctor'),
-                                         data.get('course_id')):
+
+        if not self.instance and not has_permisssion_to_course(
+                data.get('proctor'),
+                data.get('course_id','')):
             raise serializers.ValidationError(
                 "You have not permissions to create event for this course")
-        try:
-            EventSession(**data).full_clean()
-        except ValidationError as e:
-            raise serializers.ValidationError(e.message_dict)
+        # try:
+        #     EventSession(**data).full_clean()
+        # except ValidationError as e:
+        #     raise serializers.ValidationError(e.message_dict)
         return super(EventSessionSerializer, self).validate(data)
 
 

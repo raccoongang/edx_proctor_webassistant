@@ -219,7 +219,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         for field in fields_for_update:
             data[field] = request.data.get(field)
         change_end_date = instance.status == EventSession.IN_PROGRESS and \
-                          data.get('status') == EventSession.FINISHED
+                          data.get('status') == EventSession.ARCHIVED
         if instance.status != data.get('status'):
             Journaling.objects.create(
                 type=Journaling.EVENT_SESSION_STATUS_CHANGE,
@@ -232,10 +232,8 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         if change_end_date:
-            event_session = EventSession.objects.get(pk=instance.pk)
+            event_session = ArchivedEventSession.objects.get(pk=instance.pk)
             event_session.end_date = datetime.now()
-            event_session.status = EventSession.ARCHIVED
-            event_session.comment = data.get('comment')
             event_session.save()
             serializer = self.get_serializer(event_session)
         return Response(serializer.data)

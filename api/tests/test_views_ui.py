@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
-from api.models import Exam, Permission, EventSession
+from api.models import Exam, Permission, EventSession, ArchivedEventSession
 from api.views_ui import start_exam, poll_status, Review, EventSessionViewSet
 from mock import patch
 
@@ -123,12 +123,17 @@ class EventSessionViewSetTestCase(TestCase):
         self.user = User.objects.create_user(
             'test', 'test@example.com', 'testpassword'
         )
+        Permission.objects.create(
+            user=self.user,
+            object_type="*",
+            object_id="*"
+        )
 
     def test_create_event(self):
         factory = APIRequestFactory()
         event_data = {
             'testing_center': u'test_center',
-            'course_id': u'test course',
+            'course_id': u'test/course/id',
             'course_event_id': u'test course event'
         }
         request = factory.post(
@@ -152,15 +157,16 @@ class EventSessionViewSetTestCase(TestCase):
     def test_update_event(self):
         event = EventSession()
         event.testing_center = "new center"
-        event.course_id = "new course"
+        event.course_id = "new/course/id"
         event.course_event_id = "new event"
         event.proctor = self.user
         event.save()
         self.assertEqual(event.end_date, None)
         factory = APIRequestFactory()
         event_data = {
-            'status': EventSession.FINISHED,
+            'status': EventSession.ARCHIVED,
             'notify': 'new notify',
+            'comment': 'new comment'
         }
         request = factory.patch(
             '/api/event_session/%s' % event.pk, data=event_data)
@@ -171,7 +177,7 @@ class EventSessionViewSetTestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(type(data), dict)
-        event = EventSession.objects.get(pk=data['id'])
+        event = ArchivedEventSession.objects.get(pk=data['id'])
         self.assertDictContainsSubset({
             "status": event.status,
             "notify": event.notify,

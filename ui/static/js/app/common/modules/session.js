@@ -32,7 +32,7 @@
                         method: 'PATCH',
                         headers: {Authorization: "Token " + Auth.get_token()},
                         data: JSON.stringify({
-                            status: 'finished',
+                            status: 'archived',
                             comment: comment
                         })
                     }).then(function(){

@@ -148,12 +148,10 @@ class ArchivedEventSessionManager(models.Manager):
 
 class EventSession(models.Model):
     IN_PROGRESS = 'in_progress'
-    FINISHED = 'finished'
     ARCHIVED = 'archived'
 
     SESSION_STATUS_CHOICES = {
         (IN_PROGRESS, _("In progress")),
-        (FINISHED, _("Finished")),
         (ARCHIVED, _("Archived")),
     }
     testing_center = models.CharField(max_length=64)
