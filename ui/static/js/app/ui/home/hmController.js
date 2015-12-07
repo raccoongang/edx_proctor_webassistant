@@ -246,7 +246,7 @@
                     angular.forEach($scope.exams.checked, function(val, key){
                         var item = $scope.ws_data.filter({examCode: val});
                         if (item.length){
-                            if (['verified', 'rejected'].in_array(item.status)){
+                            if (!['verified', 'rejected'].in_array(item.status)){
                                 list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
                             }
                         }
