@@ -1,72 +1,77 @@
-<h1>
-    {[ i18n('EXAM_ARCHIVE') ]}: {[ exam_name ]}
-</h1>
+<div ng-if="sessions.length">
+    <h1>
+        {[ i18n('EXAM_ARCHIVE') ]}: {[ exam_name ]}
+    </h1>
 
-<div class="fc-margin-item col-xs-12 col-sm-6">
-    <form>
-        <div class="form-group">
-            <div class="input-group">
-                <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-                <input type="text" ng-model="searchFilter" class="form-control" placeholder="{[ i18n('SEARCH') ]}">
+    <div class="fc-margin-item col-xs-12 col-sm-6">
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                    <input type="text" ng-model="searchFilter" class="form-control" placeholder="{[ i18n('SEARCH') ]}">
+                </div>
             </div>
-        </div>
-    </form>
-</div>
-<div class="clearfix"></div>
-
-<div class="fc-margin-item" style="background-color: #eee;">
-    <div class="col-xs-6">
-        {[ i18n('EXAM_INFO') ]}
-    </div>
-    <div class="col-xs-6">
-        {[ i18n('EXAM_COMMENTS') ]}
+        </form>
     </div>
     <div class="clearfix"></div>
-</div>
 
-<div class="fc-margin-item panel" ng-repeat="session in sessions | filter:searchFilter">
-    <div class="col-xs-6">
-        <div>
-            <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
+    <div class="fc-margin-item" style="background-color: #eee;">
+        <div class="col-xs-6">
+            {[ i18n('EXAM_INFO') ]}
         </div>
-        <div>
-            <b>{[ i18n('EVENT_START_TIME') ]}</b>: {[ session.orgExtra.examStartDate | date_localize ]}
-            <br>
-            <b>{[ i18n('EVENT_END_TIME') ]}</b>: {[ session.orgExtra.examEndDate | date_localize ]}
+        <div class="col-xs-6">
+            {[ i18n('EXAM_COMMENTS') ]}
         </div>
-        <div>
-            <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
-        </div>
-        <div>
-            <b>{[ i18n('ENDED_WITH_STATUS') ]}</b>: {[ session.attempt_status ]}
-        </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="col-xs-6">
-        <div class="fc-margin-item"
-             ng-repeat="comment in session.comments"
-             ng-if="session.comments.length">
+
+    <div class="fc-margin-item panel" ng-repeat="session in sessions | filter:searchFilter">
+        <div class="col-xs-6">
             <div>
-                <b>{[ i18n('COMMENT') ]}</b>: {[ comment.comment ]}
+                <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
             </div>
             <div>
-                <b>{[ i18n('TIMESTAMP') ]}</b>: {[ comment.event_start | date_localize_timestamp ]}
+                <b>{[ i18n('EVENT_START_TIME') ]}</b>: {[ session.orgExtra.examStartDate | date_localize ]}
+                <br>
+                <b>{[ i18n('EVENT_END_TIME') ]}</b>: {[ session.orgExtra.examEndDate | date_localize ]}
             </div>
             <div>
-                <b>{[ i18n('TYPE') ]}</b>: {[ comment.event_status ]}
+                <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
+            </div>
+            <div>
+                <b>{[ i18n('ENDED_WITH_STATUS') ]}</b>: {[ session.attempt_status ]}
             </div>
         </div>
-        <div class="fc-margin-item"
-             ng-if="!session.comments.length">
-            {[ i18n('NO_COMMENTS') ]}
+        <div class="col-xs-6">
+            <div class="fc-margin-item"
+                 ng-repeat="comment in session.comments"
+                 ng-if="session.comments.length">
+                <div>
+                    <b>{[ i18n('COMMENT') ]}</b>: {[ comment.comment ]}
+                </div>
+                <div>
+                    <b>{[ i18n('TIMESTAMP') ]}</b>: {[ comment.event_start | date_localize_timestamp ]}
+                </div>
+                <div>
+                    <b>{[ i18n('TYPE') ]}</b>: {[ comment.event_status ]}
+                </div>
+            </div>
+            <div class="fc-margin-item"
+                 ng-if="!session.comments.length">
+                {[ i18n('NO_COMMENTS') ]}
+            </div>
         </div>
+        <div class="clearfix"></div>
     </div>
-    <div class="clearfix"></div>
+    <br>
+    <div class="text-center">
+        <a href="/#/archive">
+            <button class="btn btn-primary">
+                {[ i18n('BACK') ]}
+            </button>
+        </a>
+    </div>
 </div>
-<br>
-<div class="text-center">
-    <a href="/#/archive">
-        <button class="btn btn-primary">
-            {[ i18n('BACK') ]}
-        </button>
-    </a>
+<div ng-if="!sessions.length">
+
 </div>
