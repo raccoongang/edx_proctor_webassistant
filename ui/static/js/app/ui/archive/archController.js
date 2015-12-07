@@ -6,7 +6,8 @@
 
         $scope.tableParams = new NgTableParams({
             page: 1,
-            count: 10
+            count: 10,
+            filter: {}
         }, {
             getData: function(params){
                 return $scope.events;
