@@ -8,7 +8,9 @@
             page: 1,
             count: 10
         }, {
-            data: $scope.events
+            getData: function(params){
+                return $scope.events;
+            }
         });
 
         var get_event_data = function(){
