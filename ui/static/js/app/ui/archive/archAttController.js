@@ -6,6 +6,7 @@
 
         $scope.$watch('search.filter', function(val){
             $scope.sessions = $filter('filter')($scope.sessions, val);
+            console.log($scope.sessions);
         });
     });
 })();
