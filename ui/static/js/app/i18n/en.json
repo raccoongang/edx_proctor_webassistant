@@ -26,6 +26,9 @@
   "EXAM_INFO": "Student Session Info",
   "EXAM_COMMENTS": "Session Comments",
   "SEARCH": "Search",
+  "TIMESTAMP": "Timestamp",
+  "TYPE": "Type",
+  "NO_COMMENTS": "There were no comments during the session",
 
   "ACTIVATE": "Activate",
   "ACCEPT": "Approve",
