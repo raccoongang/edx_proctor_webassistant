@@ -3,10 +3,14 @@
 </h1>
 
 <div class="fc-margin-item col-xs-12 col-sm-6">
-    <input type="text"
-           class="form-control"
-           ng-model="searchFilter"
-           placeholder="{[ i18n('SEARCH') ]}"/>
+    <form>
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                <input type="text" class="form-control" placeholder="{[ i18n('SEARCH') ]}" ng-model="searchFilter">
+            </div>
+        </div>
+    </form>
 </div>
 <div class="clearfix"></div>
 

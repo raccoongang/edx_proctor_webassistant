@@ -1,12 +1,17 @@
 (function(){
     angular.module('proctor').controller('ArchCtrl', function($scope, NgTableParams, DateTimeService, events, courses_data){
         $scope.events = events.data;
+        $scope.searchFilter = '';
 
         $scope.tableParams = new NgTableParams({
             page: 1,
             count: 10
         }, {
             data: $scope.events
+        });
+
+        $scope.$watch('searchFilter', function(){
+            $scope.tableParams.reload();
         });
 
         var get_event_data = function(){

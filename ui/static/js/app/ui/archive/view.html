@@ -1,8 +1,14 @@
 <div class="fc-margin-item col-xs-12 col-sm-6">
-    <input type="text"
-           class="form-control"
-           ng-model="searchFilter"
-           placeholder="{[ i18n('SEARCH') ]}"/>
+    <div class="fc-margin-item col-xs-12 col-sm-6">
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="{[ i18n('SEARCH') ]}" ng-model="searchFilter">
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 <div class="clearfix"></div>
 <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
