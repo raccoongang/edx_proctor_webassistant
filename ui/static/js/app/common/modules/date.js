@@ -84,6 +84,14 @@
             );
         };
 
+        this.get_localized_date_from_timestamp = function(timestamp){
+            var date = new Date(timestamp);
+            return date.toLocaleString(
+                window.localStorage['NG_TRANSLATE_LANG_KEY'],
+                short_datetime_options
+            );
+        };
+
         $rootScope.$watch(function(){
             if (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined){
                 return window.localStorage['NG_TRANSLATE_LANG_KEY'];
@@ -101,6 +109,12 @@
     app.filter('date_localize', function(DateTimeService) {
         return function(input) {
             return DateTimeService.get_localized_date_from_string(input);
+        };
+    });
+
+    app.filter('date_localize_timestamp', function(DateTimeService) {
+        return function(input) {
+            return DateTimeService.get_localized_date_from_timestamp(input);
         };
     });
 })();

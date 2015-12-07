@@ -1,12 +1,20 @@
 (function(){
-    angular.module('proctor').controller('ArchCtrl', function($scope, NgTableParams, DateTimeService, events, courses_data){
-        $scope.events = events.data;
+    angular.module('proctor').controller('ArchCtrl', function($scope, $filter, NgTableParams, DateTimeService, events, courses_data){
+        $scope.events = angular.copy(events.data);
+        $scope.searchFilter = '';
+        $scope.data = [];
 
         $scope.tableParams = new NgTableParams({
             page: 1,
-            count: 10
+            count: 10,
+            filter: {
+                course_name: ''
+            }
         }, {
-            data: $scope.events
+            total: $scope.events.length,
+            getData: function(params){
+                return $scope.events;
+            }
         });
 
         var get_event_data = function(){

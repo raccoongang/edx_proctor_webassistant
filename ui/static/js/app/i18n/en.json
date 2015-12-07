@@ -29,6 +29,8 @@
   "TIMESTAMP": "Timestamp",
   "TYPE": "Type",
   "NO_COMMENTS": "There were no comments during the session",
+  "EXAM_ARCHIVE": "Attempts Archive for",
+  "NO_SESSIONS": "No expired students sessions found",
 
   "ACTIVATE": "Activate",
   "ACCEPT": "Approve",

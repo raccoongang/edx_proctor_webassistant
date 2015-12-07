@@ -164,8 +164,8 @@
                                 {
                                     "comments": val.comment,
                                     "duration": 88,
-                                    "eventFinish": 88,
-                                    "eventStart": 12,
+                                    "eventFinish": val.timestamp,
+                                    "eventStart": val.timestamp,
                                     "eventStatus": val.status
                                 }
                             );
@@ -220,7 +220,9 @@
                     var list = [];
                     angular.forEach($scope.ws_data, function(val, key){
                         if (val.status == undefined || !val.status){
-                            list.push(val.examCode);
+                            if ($scope.exams.checked.in_array(val.examCode)) {
+                                list.push(val.examCode);
+                            }
                         }
                     });
                     return list;
