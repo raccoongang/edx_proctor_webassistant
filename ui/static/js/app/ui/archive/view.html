@@ -1,6 +1,6 @@
 
 <table ng-table="tableParams" show-filter="true" class="table table-bordered table-striped">
-    <tr ng-repeat="event in data">
+    <tr ng-repeat="event in $data">
         <td title="i18n('COURSE_NAME')"
             sortable="'course_name'"
             filter="{ 'course_name': 'text' }">
