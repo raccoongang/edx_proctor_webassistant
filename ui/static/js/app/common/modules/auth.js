@@ -2,7 +2,7 @@
 
 (function(){
     var module = angular.module('tokenAuth', []);
-    module.service('Auth', ['$cookies', function($cookies){
+    module.service('Auth', ['$cookies', 'permissions', function($cookies, permissions){
         var token = '';
         var username = $cookies.get('authenticated_user');
 
@@ -11,6 +11,9 @@
             if (c !== undefined){
                 token = c;
                 $cookies.put('authenticated_token', undefined);
+                permissions.get().then(function(data){
+                    console.log(data);
+                });
             }
             //else {
             //    var cookies = $cookies.getAll();
@@ -29,4 +32,17 @@
             return username;
         };
     }]);
+
+    module.factory('permissions', function($rootScope, $http){
+        var get = function(){
+            return $http({
+                url: $rootScope.apiConf.apiServer + '/permission/',
+                method: 'GET'
+            });
+        };
+
+        return {
+            get: get
+        };
+    });
 })();
