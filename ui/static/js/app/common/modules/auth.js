@@ -33,12 +33,16 @@
         };
     }]);
 
-    module.service('permissions', function($rootScope, $http){
+    module.factory('permissions', function($rootScope, $http){
         var get = function(){
             return $http({
                 url: $rootScope.apiConf.apiServer + '/permission/',
                 method: 'GET'
             });
+        };
+
+        return {
+            get: get
         };
     });
 })();
