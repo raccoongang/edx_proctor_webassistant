@@ -135,7 +135,7 @@ def stop_exams(request):
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctor))
+@permission_classes((IsAuthenticated, IsProctorOrInstructor))
 def poll_status(request):
     """
     Get statuses for list of exams
