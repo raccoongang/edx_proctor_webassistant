@@ -23,7 +23,8 @@ def has_permisssion_to_course(user, course_id):
         for permission in user.permission_set.all():
             if permission.object_id != "*":
                 if course_data.get(
-                        permission.object_type) == permission.object_id:
+                        permission.object_type
+                ) == permission.prepare_object_id():
                     return True
             else:
                 return True
@@ -40,7 +41,7 @@ class ExamsByUserPermsManager(models.Manager):
             for permission in user.permission_set.all():
                 if permission.object_id != "*":
                     q_objects.append(Q(**{permission._get_exam_field_by_type():
-                                              permission.object_id}))
+                                              permission.prepare_object_id()}))
                 else:
                     return qs
             if len(q_objects):
@@ -114,10 +115,10 @@ class Exam(models.Model):
     objects = ExamsByUserPermsManager()
 
     def generate_key(self):
-        '''
+        """
         generate key for edx
         :return: string
-        '''
+        """
         str_to_hash = str(self.exam_code) + str(self.user_id) + str(
             self.exam_id) + str(self.email)
         return hashlib.md5(str_to_hash).hexdigest()
@@ -232,6 +233,19 @@ class Permission(models.Model):
             self.TYPE_COURSERUN: "course_run"
         }
         return fields[self.object_type]
+
+    def prepare_object_id(self):
+        return self.object_id if \
+            self.object_type != Permission.TYPE_COURSE else \
+            Permission._course_run_to_course(self.object_id)
+
+    @classmethod
+    def _course_run_to_course(cls, courserun):
+        try:
+            edxorg, edxcourse, edxcourserun = Exam.get_course_data(courserun)
+            return "/".join((edxorg, edxcourse))
+        except:
+            return courserun
 
 
 class Student(models.Model):

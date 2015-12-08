@@ -67,6 +67,18 @@ def start_exam(request, attempt_code):
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated, IsProctor))
 def stop_exam(request, attempt_code):
+    """
+    Endpoint for exam stops. Attempt code sends in url.
+    POST parameters:
+        {
+            'hash': "hash_key",
+            'status': "submitted"
+        }
+
+    :param request:
+    :param attempt_code:
+    :return:
+    """
     exam = get_object_or_404(
         Exam.objects.by_user_perms(request.user),
         exam_code=attempt_code

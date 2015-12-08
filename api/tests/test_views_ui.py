@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
 from api.models import Exam, Permission, EventSession, ArchivedEventSession
-from api.views_ui import start_exam, poll_status, Review, EventSessionViewSet
+from api import views_ui
 from mock import patch
 
 
@@ -54,7 +54,8 @@ class ViewsUITestCase(TestCase):
             request = factory.get(
                 '/api/start_exam/%s' % self.exam.exam_code)
             force_authenticate(request, user=self.user)
-            response = start_exam(request, attempt_code=self.exam.exam_code)
+            response = views_ui.start_exam(request,
+                                           attempt_code=self.exam.exam_code)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
@@ -70,12 +71,74 @@ class ViewsUITestCase(TestCase):
             request = factory.get(
                 '/api/start_exam/%s' % self.exam.exam_code)
             force_authenticate(request, user=self.user)
-            response = start_exam(request, attempt_code=self.exam.exam_code)
+            response = views_ui.start_exam(request,
+                                           attempt_code=self.exam.exam_code)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
             data = json.loads(response.content)
             self.assertIn('error', data)
 
+    def test_stop_exam(self):
+        factory = APIRequestFactory()
+        with patch('api.views_ui.stop_exam_request') as edx_request:
+            edx_request.return_value = MockResponse(
+                status_code=status.HTTP_200_OK
+            )
+            request = factory.put('/api/stop_exam/%s' % self.exam.exam_code)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exam(request,
+                                          attempt_code=self.exam.exam_code)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            response.render()
+            data = {
+                'action': 'action',
+                'user_id': self.exam.user_id
+            }
+            request = factory.put('/api/stop_exam/%s' % self.exam.exam_code,
+                                  data=data)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exam(request,
+                                          attempt_code=self.exam.exam_code)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            response.render()
+            data = json.loads(response.content)
+            self.assertDictContainsSubset({
+                'hash': self.exam.generate_key(),
+                'status': "submitted"
+            },
+                data
+            )
+
+    def test_stop_exams(self):
+        factory = APIRequestFactory()
+        with patch('api.views_ui.stop_exam_request') as edx_request:
+            edx_request.return_value = MockResponse(
+                status_code=status.HTTP_200_OK
+            )
+            request = factory.put('/api/stop_exam/%s' % self.exam.exam_code)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exam(request,
+                                          attempt_code=self.exam.exam_code)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+            response.render()
+            data = {
+                'action': 'action',
+                'user_id': self.exam.user_id
+            }
+            request = factory.put('/api/stop_exam/%s' % self.exam.exam_code,
+                                  data=data)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exam(request,
+                                          attempt_code=self.exam.exam_code)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            response.render()
+            data = json.loads(response.content)
+            self.assertDictContainsSubset({
+                'hash': self.exam.generate_key(),
+                'status': "submitted"
+            },
+                data
+            )
     def test_poll_status(self):
         factory = APIRequestFactory()
         data = {'list': [self.exam.exam_code]}
@@ -87,7 +150,7 @@ class ViewsUITestCase(TestCase):
             request = factory.post(
                 '/api/poll_status', data)
             force_authenticate(request, user=self.user)
-            response = poll_status(request)
+            response = views_ui.poll_status(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -104,7 +167,7 @@ class ViewsUITestCase(TestCase):
             request = factory.post(
                 '/api/review/', data=data)
             force_authenticate(request, user=self.user)
-            view = Review.as_view()
+            view = views_ui.Review.as_view()
             response = view(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -116,7 +179,7 @@ class ViewsUITestCase(TestCase):
             request = factory.post(
                 '/api/review/', data={'attempt_code': self.exam.exam_code})
             force_authenticate(request, user=self.user)
-            view = Review.as_view()
+            view = views_ui.Review.as_view()
             response = view(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
@@ -143,7 +206,7 @@ class EventSessionViewSetTestCase(TestCase):
         request = factory.post(
             '/api/event_session/', data=event_data)
         force_authenticate(request, user=self.user)
-        view = EventSessionViewSet.as_view({'post': 'create'})
+        view = views_ui.EventSessionViewSet.as_view({'post': 'create'})
         response = view(request)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -175,7 +238,8 @@ class EventSessionViewSetTestCase(TestCase):
         request = factory.patch(
             '/api/event_session/%s' % event.pk, data=event_data)
         force_authenticate(request, user=self.user)
-        view = EventSessionViewSet.as_view({'patch': 'partial_update'})
+        view = views_ui.EventSessionViewSet.as_view(
+            {'patch': 'partial_update'})
         response = view(request, pk=event.pk)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
