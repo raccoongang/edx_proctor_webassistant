@@ -15,7 +15,7 @@ from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
-    Permission
+    Permission, InProgressEventSession
 from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
                          ArchivedExamSerializer, PermissionSerializer)
@@ -180,7 +180,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
     You can **update** only `status` and `notify` fields
     """
     serializer_class = EventSessionSerializer
-    queryset = EventSession.objects.all()
+    queryset = InProgressEventSession.objects.all()
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
@@ -194,7 +194,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         # Return existing session if match test_center, ourse_id and exam_id
         # so the proctor is able to connect to existing session
         data['status'] = EventSession.IN_PROGRESS
-        sessions = EventSession.objects.filter(**data).order_by('-start_date')
+        sessions = InProgressEventSession.objects.filter(**data).order_by('-start_date')
         if sessions:
             session = sessions[0]
             serializer = EventSessionSerializer(session)
@@ -612,7 +612,8 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
 
         queryset = Exam.objects.by_user_perms(
-            self.request.user).order_by('-pk').all()
+            self.request.user).filter(
+            event__status=EventSession.ARCHIVED).order_by('-pk').all()
         if self.request.user.permission_set.filter(
                 role=Permission.ROLE_PROCTOR).exists():
             queryset = queryset.filter(
@@ -651,8 +652,6 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     Add GET parameter in end of URL, for example:
     `?event_start=1449325446&event_status=Suspicious`
     """
-
-    ""
     serializer_class = CommentSerializer
     paginate_by = 25
     queryset = Comment.objects.all()

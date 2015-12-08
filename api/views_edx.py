@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from api.web_soket_methods import send_ws_msg
 from journaling.models import Journaling
 from serializers import ExamSerializer
-from models import Exam, EventSession
+from models import Exam, EventSession, InProgressEventSession
 
 
 class APIRoot(APIView):
@@ -105,14 +105,13 @@ class ExamViewSet(mixins.ListModelMixin,
         hash_key = self.request.query_params.get('session')
         if hash_key is not None and hash_key:
             try:
-                event = EventSession.objects.get(
+                event = InProgressEventSession.objects.get(
                     hash_key=hash_key,
-                    status=EventSession.IN_PROGRESS
                 )
                 return Exam.objects.by_user_perms(self.request.user).filter(
                     event=event
                 )
-            except EventSession.DoesNotExist:
+            except InProgressEventSession.DoesNotExist:
                 return Exam.objects.filter(pk__lt=0)
         else:
             return []
@@ -121,10 +120,9 @@ class ExamViewSet(mixins.ListModelMixin,
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        event = EventSession.objects.filter(
+        event = InProgressEventSession.objects.filter(
             course_id=serializer.validated_data.get('course_id'),
             course_event_id=serializer.validated_data.get('exam_id'),
-            status=EventSession.IN_PROGRESS
         ).order_by('-start_date')
         if not event:
             return _send_journaling_response(

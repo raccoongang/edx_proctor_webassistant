@@ -135,9 +135,10 @@ class Exam(models.Model):
         return self.exam_id
 
 
-class EventSessionManager(models.Manager):
+class InProgressEventSessionManager(models.Manager):
     def get_queryset(self):
-        return super(EventSessionManager, self).get_queryset().exclude(
+        return super(InProgressEventSessionManager,
+                     self).get_queryset().exclude(
             status=EventSession.ARCHIVED)
 
 
@@ -171,8 +172,6 @@ class EventSession(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
-    objects = EventSessionManager()
-
     @staticmethod
     def post_save(sender, instance, created, **kwargs):
         if created and not instance.hash_key:
@@ -191,6 +190,13 @@ class EventSession(models.Model):
 
 post_save.connect(EventSession.post_save, EventSession,
                   dispatch_uid='add_hash')
+
+
+class InProgressEventSession(EventSession):
+    class Meta:
+        proxy = True
+
+    objects = InProgressEventSessionManager()
 
 
 class ArchivedEventSession(EventSession):

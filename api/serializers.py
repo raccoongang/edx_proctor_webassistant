@@ -9,7 +9,7 @@ from django.utils.translation import ugettext as _
 from rest_framework.response import Response
 
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
-    Permission, has_permisssion_to_course
+    Permission, has_permisssion_to_course, InProgressEventSession
 from journaling.models import Journaling
 
 
@@ -163,7 +163,7 @@ class EventSessionSerializer(serializers.ModelSerializer):
     end_date = serializers.DateTimeField(read_only=True)
 
     class Meta:
-        model = EventSession
+        model = InProgressEventSession
 
     def validate(self, data):
         '''

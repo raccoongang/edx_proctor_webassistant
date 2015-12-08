@@ -55,7 +55,7 @@ class StudentAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.Exam, ExamAdmin)
-admin.site.register(models.EventSession, EventSessionAdmin)
+admin.site.register(models.InProgressEventSession, EventSessionAdmin)
 admin.site.register(models.ArchivedEventSession, EventSessionAdmin)
 admin.site.register(models.Permission, PermissionAdmin)
 admin.site.register(models.Student, StudentAdmin)
