@@ -82,7 +82,10 @@
                             app.path + 'common/services/exam_polling.js'
                         ]);
                     },
-                    students: function($location, TestSession, Api){
+                    students: function($location, TestSession, Api, Auth){
+                        if (!Auth.is_proctor()){
+                            $location.path('/archive');
+                        }
                         if (window.sessionStorage['proctoring'] !== undefined){
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
