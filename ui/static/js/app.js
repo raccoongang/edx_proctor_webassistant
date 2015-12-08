@@ -86,21 +86,23 @@
                         if (!Auth.is_proctor()){
                             $location.path('/archive');
                         }
-                        if (window.sessionStorage['proctoring'] !== undefined){
-                            TestSession.setSession(
-                                JSON.parse(window.sessionStorage['proctoring'])
-                            );
-                        }
-                        if (!TestSession.getSession()){
-                            $location.path('/session');
-                        }
                         else{
-                            var ret = Api.restore_session();
-                            if (ret == undefined){
+                            if (window.sessionStorage['proctoring'] !== undefined){
+                                TestSession.setSession(
+                                    JSON.parse(window.sessionStorage['proctoring'])
+                                );
+                            }
+                            if (!TestSession.getSession()){
                                 $location.path('/session');
                             }
-                            else
-                                return ret;
+                            else{
+                                var ret = Api.restore_session();
+                                if (ret == undefined){
+                                    $location.path('/session');
+                                }
+                                else
+                                    return ret;
+                            }
                         }
                     }
                 }
