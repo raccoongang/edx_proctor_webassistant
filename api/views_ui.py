@@ -683,3 +683,17 @@ class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Permission.objects.filter(user=self.request.user).all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        result = {
+            Permission.ROLE_PROCTOR: [],
+            Permission.ROLE_INSTRUCTOR: []
+        }
+        for row in serializer.data:
+            result[row['role']].append({
+                "object_type": row['object_type'],
+                "object_id": row['object_id'],
+            })
+        return Response(result)

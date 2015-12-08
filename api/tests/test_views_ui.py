@@ -139,6 +139,7 @@ class ViewsUITestCase(TestCase):
             },
                 data
             )
+
     def test_poll_status(self):
         factory = APIRequestFactory()
         data = {'list': [self.exam.exam_code]}

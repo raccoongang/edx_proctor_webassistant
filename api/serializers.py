@@ -6,6 +6,8 @@ from rest_framework import serializers
 from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+from rest_framework.response import Response
+
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
     Permission, has_permisssion_to_course
 from journaling.models import Journaling
@@ -212,6 +214,11 @@ class JournalingSerializer(serializers.ModelSerializer):
 
 
 class PermissionSerializer(serializers.ModelSerializer):
+    object_id = serializers.SerializerMethodField()
+
+    def get_object_id(self,obj):
+        return obj.prepare_object_id()
+
     class Meta:
         model = Permission
         exclude = ("id", "user")
