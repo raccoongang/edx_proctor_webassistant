@@ -135,7 +135,7 @@ def stop_exams(request):
 @api_view(['POST'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctorOrInstructor))
+@permission_classes((IsAuthenticated, IsProctor))
 def poll_status(request):
     """
     Get statuses for list of exams
@@ -258,7 +258,7 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-    permission_classes = (IsAuthenticated, IsProctor)
+    permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
 
 class Review(APIView):
@@ -392,7 +392,7 @@ class BulkReview(APIView):
 
 @api_view(['GET'])
 @authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated, IsProctor))
+@permission_classes((IsAuthenticated, IsProctorOrInstructor))
 def get_exams_proctored(request):
     response = get_proctored_exams_request()
     return Response(
@@ -679,7 +679,7 @@ class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
-    permission_classes = (IsAuthenticated, IsProctor)
+    permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
     def get_queryset(self):
         return Permission.objects.filter(user=self.request.user).all()
