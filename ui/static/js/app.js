@@ -118,15 +118,7 @@
                         ]);
                     },
                     data: function ($location, Api, Auth) {
-                        var ret = Api.get_session_data();
-                        Auth.is_proctor().then(function (is) {
-                            if (is) {
-                                return ret;
-                            }
-                            else {
-                                $location.path('/');
-                            }
-                        });
+                        return Api.get_session_data();
                     }
                 }
             })
