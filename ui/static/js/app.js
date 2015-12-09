@@ -83,27 +83,24 @@
                         ]);
                     },
                     students: function ($location, TestSession, Api, Auth) {
-                        if (!Auth.is_proctor()) {
-                            $location.path('/archive');
+                        Auth.is_proctor();
+                        if (window.sessionStorage['proctoring'] !== undefined) {
+                            TestSession.setSession(
+                                JSON.parse(window.sessionStorage['proctoring'])
+                            );
+                        }
+                        if (!TestSession.getSession()) {
+                            $location.path('/session');
                         }
                         else {
-                            if (window.sessionStorage['proctoring'] !== undefined) {
-                                TestSession.setSession(
-                                    JSON.parse(window.sessionStorage['proctoring'])
-                                );
-                            }
-                            if (!TestSession.getSession()) {
+                            var ret = Api.restore_session();
+                            if (ret == undefined) {
                                 $location.path('/session');
                             }
-                            else {
-                                var ret = Api.restore_session();
-                                if (ret == undefined) {
-                                    $location.path('/session');
-                                }
-                                else
-                                    return ret;
-                            }
+                            else
+                                return ret;
                         }
+
                     }
                 }
             })
