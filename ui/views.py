@@ -20,16 +20,12 @@ class Index(View):
 
 
 def _logout(request):
-    requests.get(
-        "{}/{}/".format(settings.SSO_NPOED_URL, 'logout'),
-        cookies=dict(request.COOKIES)
-    )
     response = logout(request=request, next_page='index')
-    for key, val in dict(request.COOKIES).items():
-        response.delete_cookie(key)
     domain = settings.AUTH_SESSION_COOKIE_DOMAIN
-    response.set_cookie('authenticated', False, domain=domain)
-    response.set_cookie('authenticated_user', 'Anonymous', domain=domain)
     response.set_cookie('authenticated_token', None, domain=domain)
-    response.set_cookie('sessionid', '', domain='sso.test.npoed.ru')
-    return response
+    ret = requests.get(
+        "{}/{}/".format(settings.SSO_NPOED_URL, 'logout'),
+        cookies=dict(request.COOKIES),
+        headers=request.headers
+    )
+    return ret
