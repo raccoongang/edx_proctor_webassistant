@@ -19,8 +19,9 @@ class Index(View):
 
 
 def _logout(request):
-    requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
+    res = requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
     response = logout(request=request, next_page='index')
     for key, val in request.COOKIES.items():
         response.delete_cookie(key)
+    response.cookies = res.cookies
     return response
