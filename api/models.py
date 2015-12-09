@@ -188,15 +188,15 @@ class EventSession(models.Model):
                             self.course_event_id))
 
 
-post_save.connect(EventSession.post_save, EventSession,
-                  dispatch_uid='add_hash')
-
-
 class InProgressEventSession(EventSession):
     class Meta:
         proxy = True
 
     objects = InProgressEventSessionManager()
+
+
+post_save.connect(InProgressEventSession.post_save, InProgressEventSession,
+                  dispatch_uid='add_hash')
 
 
 class ArchivedEventSession(EventSession):
