@@ -1,7 +1,7 @@
 {% load static %}
 {% load pipeline %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="proctor">
 <head>
     <meta charset="UTF-8">
     <title>Proctoring</title>
@@ -20,7 +20,7 @@
         }
     </script>
 </head>
-<body ng-app="proctor" ng-cloak translate-cloak ng-controller="MainController">
+<body ng-cloak translate-cloak ng-controller="MainController">
 {% if user_has_access %}
     <div>
         <header></header>
