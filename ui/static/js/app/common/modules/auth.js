@@ -15,7 +15,9 @@
                 permissions.get().then(function(data){
                     restrictions = data.data;
                 });
+                return true;
             }
+            return false;
         };
 
         this.get_token = function(){

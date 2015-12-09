@@ -185,8 +185,7 @@
     app.factory('resolver', function ($rootScope, $q, $timeout, $location, Auth) {
         return {
             load_deps: function (dependencies, callback) {
-                Auth.authenticate();
-                if (Auth.get_token()) {
+                if (Auth.authenticate()){
                     var deferred = $q.defer();
                     $script(dependencies, function () {
                         $timeout(function () {
