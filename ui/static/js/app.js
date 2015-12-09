@@ -75,7 +75,7 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function (resolver) {
+                    deps: function(resolver){
                         return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
                             app.path + 'ui/home/hmDirectives.js',
@@ -86,6 +86,7 @@
                         Auth.is_proctor().then(function(data){
                             console.log(data);
                         });
+                        return true;
                         //if (window.sessionStorage['proctoring'] !== undefined) {
                         //    TestSession.setSession(
                         //        JSON.parse(window.sessionStorage['proctoring'])
