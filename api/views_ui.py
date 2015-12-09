@@ -103,6 +103,8 @@ def stop_exam(request, attempt_code):
 @permission_classes((IsAuthenticated, IsProctor))
 def stop_exams(request):
     attempts = request.data.get('attempts')
+    if isinstance(attempts, basestring):
+                attempts = json.loads(attempts)
     if attempts:
         status_list = []
         for attempt in attempts:
@@ -298,6 +300,8 @@ class Review(APIView):
 
         if isinstance(payload['examMetaData'], basestring):
             payload['examMetaData'] = json.loads(payload['examMetaData'])
+        if isinstance(payload['desktopComments'], basestring):
+            payload['desktopComments'] = json.loads(payload['desktopComments'])
         exam = get_object_or_404(
             Exam.objects.by_user_perms(request.user),
             exam_code=payload['examMetaData'].get('examCode', '')

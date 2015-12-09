@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
-from api.models import Exam, Permission, EventSession, ArchivedEventSession
+from api.models import Exam, Permission, EventSession, ArchivedEventSession, \
+    Comment
 from api import views_ui
 from mock import patch
 
@@ -109,34 +110,47 @@ class ViewsUITestCase(TestCase):
                 data
             )
 
-    # def test_stop_exams(self):
-    #     factory = APIRequestFactory()
-    #     with patch('api.views_ui.stop_exam_request') as edx_request:
-    #         edx_request.return_value = MockResponse(
-    #             status_code=status.HTTP_200_OK
-    #         )
-    #         request = factory.put('/api/stop_exams/')
-    #         force_authenticate(request, user=self.user)
-    #         response = views_ui.stop_exams(request)
-    #         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    #         response.render()
-    #         data = [{
-    #             'attempt_code': self.exam.exam_code,
-    #             'action': 'action',
-    #             'user_id': self.exam.user_id
-    #         }]
-    #         request = factory.put('/api/stop_exams/', data=data)
-    #         force_authenticate(request, user=self.user)
-    #         response = views_ui.stop_exams(request)
-    #         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #         response.render()
-    #         data = json.loads(response.content)
-    #         self.assertDictContainsSubset({
-    #             'hash': self.exam.generate_key(),
-    #             'status': "submitted"
-    #         },
-    #             data
-    #         )
+    def test_stop_exams(self):
+        factory = APIRequestFactory()
+        wrong_data = {
+            "attempts":
+                """[{
+                    "attempt_code": "%s"
+                }]""" % self.exam.exam_code
+        }
+        data = {
+            "attempts":
+                """[{
+                    "attempt_code": "%s",
+                    "action": "action",
+                    "user_id": %s
+                }]""" % (self.exam.exam_code, self.exam.user_id),
+        }
+        request = factory.put('/api/stop_exams/')
+        force_authenticate(request, user=self.user)
+        response = views_ui.stop_exams(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        request = factory.put('/api/stop_exams/', wrong_data)
+        force_authenticate(request, user=self.user)
+        response = views_ui.stop_exams(request)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        with patch('api.views_ui.stop_exam_request') as edx_request:
+            edx_request.return_value = MockResponse(
+                status_code=status.HTTP_400_BAD_REQUEST
+            )
+            request = factory.put('/api/stop_exams/', data=data)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exams(request)
+            self.assertEqual(response.status_code,
+                             status.HTTP_500_INTERNAL_SERVER_ERROR)
+        with patch('api.views_ui.stop_exam_request') as edx_request:
+            edx_request.return_value = MockResponse(
+                status_code=status.HTTP_200_OK
+            )
+            request = factory.put('/api/stop_exams/', data=data)
+            force_authenticate(request, user=self.user)
+            response = views_ui.stop_exams(request)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_poll_status(self):
         factory = APIRequestFactory()
@@ -155,10 +169,19 @@ class ViewsUITestCase(TestCase):
 
     def test_send_review(self):
         factory = APIRequestFactory()
+        comment_count = Comment.objects.count()
         with patch('api.views_ui.send_review_request') as edx_request:
             edx_request.return_value = MockResponse()
             data = {
-                "desktopComments": "",
+                "desktopComments": """[
+                        {
+                            "comments": "Browsing other websites",
+                            "duration": 88,
+                            "eventFinish": 88,
+                            "eventStart": 12,
+                            "eventStatus": "Suspicious"
+                        }
+                    ]""",
                 "examMetaData": '{"examCode": "%s"}' % self.exam.exam_code,
                 "reviewStatus": "Clean",
                 "videoReviewLink": "http://video.url",
@@ -170,6 +193,7 @@ class ViewsUITestCase(TestCase):
             response = view(request)
             response.render()
             self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(comment_count + 1, Comment.objects.count())
 
     def test_send_wrong_review(self):
         factory = APIRequestFactory()
@@ -209,6 +233,24 @@ class EventSessionViewSetTestCase(TestCase):
         response = view(request)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data = json.loads(response.content)
+        self.assertEqual(type(data), dict)
+        event = EventSession.objects.get(pk=data['id'])
+        self.assertDictContainsSubset({
+            "testing_center": event.testing_center,
+            "course_id": event.course_id,
+            "course_event_id": event.course_event_id,
+        },
+            event_data
+        )
+
+        request = factory.post(
+            '/api/event_session/', data=event_data)
+        force_authenticate(request, user=self.user)
+        view = views_ui.EventSessionViewSet.as_view({'post': 'create'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(type(data), dict)
         event = EventSession.objects.get(pk=data['id'])
