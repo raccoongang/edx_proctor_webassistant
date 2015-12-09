@@ -236,7 +236,7 @@
             $http({
                 method: 'GET',
                 url: app.sso_logout_url
-            }).then(function(){
+            }).finally(function(){
                 window.location = window.app.logoutUrl;
             });
         };
