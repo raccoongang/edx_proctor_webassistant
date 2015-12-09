@@ -116,7 +116,7 @@
                         var ret = resolver.load_deps([
                             app.path + 'ui/sessions/rsController.js'
                         ]);
-                        Auth.is_proctor().then(function(is){
+                        return Auth.is_proctor().then(function(is){
                             if (is){
                                 return ret;
                             }
