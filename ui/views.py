@@ -20,4 +20,5 @@ class Index(View):
 
 def _logout(request):
     requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
+    print(request.COOKIES)
     return logout(request=request, next_page='index')
