@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Proctoring</title>
     <base href="/">
     <meta name="viewport" content="width=device-width">
     <script src="{% static 'js/lib/script.min.js' %}"></script>
@@ -16,8 +16,7 @@
         window.app = {
             rootPath : "{% static 'js/app/' %}",
             logoutUrl : "{% url 'logout' %}",
-            loginUrl : "{% url 'social:begin' 'sso_npoed-oauth2' %}",
-            ssoLogout: "{{ sso_logout }}"
+            loginUrl : "{% url 'social:begin' 'sso_npoed-oauth2' %}"
         }
     </script>
 </head>

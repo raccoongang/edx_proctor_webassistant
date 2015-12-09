@@ -12,8 +12,5 @@ class Index(View):
         return render(
             request,
             self.template_name,
-            {
-                'user_has_access': user_has_access,
-                'sso_logout': "{}/{}/".format(settings.SSO_NPOED_URL, 'logout')
-            }
+            {'user_has_access': user_has_access}
         )

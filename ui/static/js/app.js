@@ -39,7 +39,6 @@
         app.factory = $provide.factory;
 
         app.path = window.app.rootPath;
-        app.sso_logout_url = window.app.ssoLogout;
         app.language = {
             current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
             supported: ['en', 'ru']
@@ -208,8 +207,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$cookies', '$http', 'i18n',
-        function ($scope, $translate, $cookies, $http, i18n) {
+    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n',
+        function ($scope, $translate, $http, i18n) {
 
             var lng_is_supported = function (val) {
                 return app.language.supported.indexOf(val) >= 0 ? true : false;
@@ -233,21 +232,11 @@
             };
 
             $scope.logout = function () {
-                $http({
-                    method: 'GET',
-                    url: app.sso_logout_url
-                }).finally(function () {
-                    var cookies = $cookies.getAll();
-                    angular.forEach(cookies, function (v, k) {
-                        $cookies.remove(k);
-                    });
-                    window.location = window.app.logoutUrl;
-                });
+                window.location = window.app.logoutUrl;
             };
 
             $scope.i18n = function (text) {
-                var res = i18n.translate(text);
-                return res;
+                return i18n.translate(text);
             };
 
             $scope.changeLanguage();
