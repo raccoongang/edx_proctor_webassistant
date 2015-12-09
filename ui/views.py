@@ -1,4 +1,5 @@
 import requests
+import requests.cookies
 from django.shortcuts import render
 from django.views.generic import View
 from django.conf import settings
@@ -21,5 +22,7 @@ class Index(View):
 def _logout(request):
     res = requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
     response = logout(request=request, next_page='index')
-    response.cookies = res.cookies
+    response.set_cookie('authenticated', None)
+    response.set_cookie('authenticated_user', None)
+    response.set_cookie('authenticated_token', None)
     return response
