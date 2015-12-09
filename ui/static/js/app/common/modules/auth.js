@@ -12,12 +12,8 @@
             if (c !== undefined){
                 token = c;
                 $cookies.put('authenticated_token', undefined);
-                permissions.get().then(function(data){
-                    restrictions = data.data;
-                });
-                return true;
+                restrictions =  permissions.get();
             }
-            return false;
         };
 
         this.get_token = function(){
@@ -29,8 +25,10 @@
         };
 
         this.is_proctor = function(){
-            console.log(restrictions.role, restrictions.role == 'proctor');
-            return restrictions.role == 'proctor';
+            restrictions.then(function(data){
+                console.log(data);
+                return data.role == 'proctor';
+            });
         };
     }]);
 

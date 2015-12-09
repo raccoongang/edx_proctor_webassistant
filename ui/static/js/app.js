@@ -30,8 +30,7 @@
                          $httpProvider,
                          $translateProvider,
                          $translateLocalStorageProvider,
-                         $interpolateProvider
-    ) {
+                         $interpolateProvider) {
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;
@@ -42,7 +41,7 @@
         app.path = window.app.rootPath;
         app.sso_logout_url = window.app.ssoLogout;
         app.language = {
-            current: (window.localStorage['NG_TRANSLATE_LANG_KEY']!==undefined && window.localStorage['NG_TRANSLATE_LANG_KEY'])?window.localStorage['NG_TRANSLATE_LANG_KEY']:'ru',
+            current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
             supported: ['en', 'ru']
         };
 
@@ -62,11 +61,11 @@
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
-        $provide.decorator('uibModalBackdropDirective', function($delegate) {
+        $provide.decorator('uibModalBackdropDirective', function ($delegate) {
             $delegate[0].templateUrl = app.path + 'ui/partials/modal/backdrop.html';
             return $delegate;
         });
-        $provide.decorator('uibModalWindowDirective', function($delegate) {
+        $provide.decorator('uibModalWindowDirective', function ($delegate) {
             $delegate[0].templateUrl = app.path + 'ui/partials/modal/window.html';
             return $delegate;
         });
@@ -76,34 +75,35 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    students: function($location, TestSession, resolver, Api, Auth){
-                        resolver.load_deps([
+                    deps: function (resolver) {
+                        return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
                             app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/exam_polling.js'
-                        ], function(){
-                            if (!Auth.is_proctor()){
-                                $location.path('/archive');
+                        ]);
+                    },
+                    students: function ($location, TestSession, Api, Auth) {
+                        if (!Auth.is_proctor()) {
+                            $location.path('/archive');
+                        }
+                        else {
+                            if (window.sessionStorage['proctoring'] !== undefined) {
+                                TestSession.setSession(
+                                    JSON.parse(window.sessionStorage['proctoring'])
+                                );
                             }
-                            else{
-                                if (window.sessionStorage['proctoring'] !== undefined){
-                                    TestSession.setSession(
-                                        JSON.parse(window.sessionStorage['proctoring'])
-                                    );
-                                }
-                                if (!TestSession.getSession()){
+                            if (!TestSession.getSession()) {
+                                $location.path('/session');
+                            }
+                            else {
+                                var ret = Api.restore_session();
+                                if (ret == undefined) {
                                     $location.path('/session');
                                 }
-                                else{
-                                    var ret = Api.restore_session();
-                                    if (ret == undefined){
-                                        $location.path('/session');
-                                    }
-                                    else
-                                        return ret;
-                                }
+                                else
+                                    return ret;
                             }
-                        });
+                        }
                     }
                 }
             })
@@ -111,12 +111,12 @@
                 templateUrl: app.path + 'ui/sessions/view.html',
                 controller: 'SessionCtrl',
                 resolve: {
-                    deps: function(resolver){
+                    deps: function (resolver) {
                         return resolver.load_deps([
                             app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
-                    data: function(Api){
+                    data: function (Api) {
                         return Api.get_session_data();
                     }
                 }
@@ -125,15 +125,15 @@
                 templateUrl: app.path + 'ui/archive/view.html',
                 controller: 'ArchCtrl',
                 resolve: {
-                    deps: function(resolver){
+                    deps: function (resolver) {
                         return resolver.load_deps([
                             app.path + 'ui/archive/archController.js'
                         ]);
                     },
-                    events: function(Api){
+                    events: function (Api) {
                         return Api.get_archived_events();
                     },
-                    courses_data: function(Api){
+                    courses_data: function (Api) {
                         return Api.get_session_data();
                     }
                 }
@@ -142,12 +142,12 @@
                 templateUrl: app.path + 'ui/archive/sessions_view.html',
                 controller: 'ArchAttCtrl',
                 resolve: {
-                    deps: function(resolver){
+                    deps: function (resolver) {
                         return resolver.load_deps([
                             app.path + 'ui/archive/archAttController.js'
                         ]);
                     },
-                    sessions: function($route, Api){
+                    sessions: function ($route, Api) {
                         return Api.get_archived_sessions($route.current.params.hash);
                     }
                 }
@@ -164,18 +164,18 @@
             domain = match[1];
         var api_port = '', socket_port = '';
         var protocol = 'http://';
-        if("https:" == document.location.protocol){
+        if ("https:" == document.location.protocol) {
             protocol = 'https://';
         }
         $rootScope.apiConf = {
             domain: domain,
             protocol: protocol,
-            ioServer: domain + (socket_port?':' + socket_port:''),
-            apiServer: protocol + domain + (api_port?':' + api_port:'') + '/api'
+            ioServer: domain + (socket_port ? ':' + socket_port : ''),
+            apiServer: protocol + domain + (api_port ? ':' + api_port : '') + '/api'
         };
 
         // Preload language files
-        angular.forEach(app.language.supported, function(val){
+        angular.forEach(app.language.supported, function (val) {
             if (val !== app.language.current) {
                 $translate.use(val);
             }
@@ -185,7 +185,7 @@
     app.factory('resolver', function ($rootScope, $q, $timeout, $location, Auth) {
         return {
             load_deps: function (dependencies, callback) {
-                if (Auth.authenticate()){
+                if (Auth.authenticate()) {
                     var deferred = $q.defer();
                     $script(dependencies, function () {
                         $timeout(function () {
@@ -207,61 +207,62 @@
 
     // MAIN CONTROLLER
     app.controller('MainController', ['$scope', '$translate', '$cookies', '$http', 'i18n',
-        function($scope, $translate, $cookies, $http, i18n){
+        function ($scope, $translate, $cookies, $http, i18n) {
 
-        var lng_is_supported = function(val){
-            return app.language.supported.indexOf(val) >= 0?true:false;
-        };
+            var lng_is_supported = function (val) {
+                return app.language.supported.indexOf(val) >= 0 ? true : false;
+            };
 
-        $scope.get_supported_languages = function(){
-            return app.language.supported;
-        };
+            $scope.get_supported_languages = function () {
+                return app.language.supported;
+            };
 
-        $scope.changeLanguage = function (langKey) {
-            if (langKey == undefined) langKey = app.language.current;
-            if (lng_is_supported(langKey)) {
-                $translate.use(langKey);
-                i18n.clear_cache();
-                app.language.current = langKey;
-            }
-        };
+            $scope.changeLanguage = function (langKey) {
+                if (langKey == undefined) langKey = app.language.current;
+                if (lng_is_supported(langKey)) {
+                    $translate.use(langKey);
+                    i18n.clear_cache();
+                    app.language.current = langKey;
+                }
+            };
 
-        $scope.sso_auth = function(){
-            window.location = window.app.loginUrl;
-        };
+            $scope.sso_auth = function () {
+                window.location = window.app.loginUrl;
+            };
 
-        $scope.logout = function(){
-            $http({
-                method: 'GET',
-                url: app.sso_logout_url
-            }).finally(function(){
-                var cookies = $cookies.getAll();
-                angular.forEach(cookies, function (v, k) {
-                    $cookies.remove(k);
+            $scope.logout = function () {
+                $http({
+                    method: 'GET',
+                    url: app.sso_logout_url
+                }).finally(function () {
+                    var cookies = $cookies.getAll();
+                    angular.forEach(cookies, function (v, k) {
+                        $cookies.remove(k);
+                    });
+                    window.location = window.app.logoutUrl;
                 });
-                window.location = window.app.logoutUrl;
-            });
-        };
+            };
 
-        $scope.i18n = function(text) {
-            var res = i18n.translate(text);
-            return res;
-        };
+            $scope.i18n = function (text) {
+                var res = i18n.translate(text);
+                return res;
+            };
 
-        $scope.changeLanguage();
-    }]);
+            $scope.changeLanguage();
+        }]);
 
-    app.controller('HeaderController', ['$scope', '$location', function($scope, $location){
-        $scope.session = function(){
+    app.controller('HeaderController', ['$scope', '$location', function ($scope, $location) {
+        $scope.session = function () {
             $location.path('/session');
         };
     }]);
 
-    app.directive('header', [function(){
+    app.directive('header', [function () {
         return {
             restrict: 'E',
             templateUrl: app.path + 'ui/partials/header.html',
-            link: function(scope, e, attr) {}
+            link: function (scope, e, attr) {
+            }
         };
     }]);
 })();
