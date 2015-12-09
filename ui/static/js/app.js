@@ -81,8 +81,10 @@
                             app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/exam_polling.js'
                         ]);
+                    },
+                    students: function(){
+                        return [];
                     }
-                    //,
                     //students: function ($location, TestSession, Api, Auth) {
                     //    Auth.is_proctor().then(function(data){
                     //        if (window.sessionStorage['proctoring'] !== undefined) {
