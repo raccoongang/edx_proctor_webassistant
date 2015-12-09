@@ -25,7 +25,6 @@ def _logout(request):
     response.set_cookie('authenticated_token', None, domain=domain)
     ret = requests.get(
         "{}/{}/".format(settings.SSO_NPOED_URL, 'logout'),
-        cookies=dict(request.COOKIES),
-        headers=request.headers
+        cookies=dict(request.COOKIES)
     )
     return ret
