@@ -20,8 +20,10 @@ class Index(View):
 
 
 def _logout(request):
-    res = requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
+    requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
     response = logout(request=request, next_page='index')
+    for key, val in dict(request.COOKIES).items():
+        response.delete_cookie(key)
     response.set_cookie('authenticated', None)
     response.set_cookie('authenticated_user', None)
     response.set_cookie('authenticated_token', None)
