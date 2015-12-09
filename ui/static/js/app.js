@@ -81,29 +81,30 @@
                             app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/exam_polling.js'
                         ]);
-                    },
-                    students: function ($location, TestSession, Api, Auth) {
-                        Auth.is_proctor().then(function(data){
-                            if (window.sessionStorage['proctoring'] !== undefined) {
-                                TestSession.setSession(
-                                    JSON.parse(window.sessionStorage['proctoring'])
-                                );
-                            }
-                            if (!TestSession.getSession()) {
-                                $location.path('/session');
-                            }
-                            else {
-                                var ret = Api.restore_session();
-                                if (ret == undefined) {
-                                    $location.path('/session');
-                                }
-                                else
-                                    return ret;
-                            }
-                        }, function(){
-                            $location.path('/archive');
-                        });
                     }
+                    //,
+                    //students: function ($location, TestSession, Api, Auth) {
+                    //    Auth.is_proctor().then(function(data){
+                    //        if (window.sessionStorage['proctoring'] !== undefined) {
+                    //            TestSession.setSession(
+                    //                JSON.parse(window.sessionStorage['proctoring'])
+                    //            );
+                    //        }
+                    //        if (!TestSession.getSession()) {
+                    //            $location.path('/session');
+                    //        }
+                    //        else {
+                    //            var ret = Api.restore_session();
+                    //            if (ret == undefined) {
+                    //                $location.path('/session');
+                    //            }
+                    //            else
+                    //                return ret;
+                    //        }
+                    //    }, function(){
+                    //        $location.path('/archive');
+                    //    });
+                    //}
                 }
             })
             .when('/session', {
