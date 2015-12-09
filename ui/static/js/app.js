@@ -74,7 +74,7 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function(resolver){
+                    deps: function (resolver) {
                         return resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
                             app.path + 'ui/home/hmDirectives.js',
@@ -82,8 +82,8 @@
                         ]);
                     },
                     students: function ($location, TestSession, Api, Auth) {
-                        Auth.is_proctor().then(function(is){
-                            if (is){
+                        Auth.is_proctor().then(function (is) {
+                            if (is) {
                                 if (window.sessionStorage['proctoring'] !== undefined) {
                                     TestSession.setSession(
                                         JSON.parse(window.sessionStorage['proctoring'])
@@ -101,7 +101,7 @@
                                         return ret;
                                 }
                             }
-                            else{
+                            else {
                                 $location.path('/archive');
                             }
                         });
@@ -118,16 +118,16 @@
                         ]);
                     },
                     data: function ($location, Api, Auth) {
-                        Auth.is_proctor().then(function(is){
-                            if (is){
-                                Api.get_session_data().then(function(data){
+                        Api.get_session_data().then(function (data) {
+                            Auth.is_proctor().then(function (is) {
+                                if (is) {
                                     return data;
-                                });
-                            }
-                            else{
-                                $location.path('/');
-                                return true;
-                            }
+                                }
+                                else {
+                                    $location.path('/');
+                                    return true;
+                                }
+                            });
                         });
                     }
                 }
