@@ -2,20 +2,19 @@
 
 (function(){
     var module = angular.module('tokenAuth', []);
-    module.service('Auth', ['$cookies', 'permissions', function($cookies, permissions){
+    module.service('Auth', ['$cookies', '$q', 'permissions', function($cookies, $q, permissions){
         var token = '';
         var username = $cookies.get('authenticated_user');
-        var restrictions = [];
+        var restrictions = null;
 
         this.authenticate = function(){
             var c = $cookies.get('authenticated_token');
             if (c !== undefined){
                 token = c;
                 $cookies.put('authenticated_token', undefined);
-                permissions.get().then(function(data){
-                    restrictions = data.data;
-                });
+                return true;
             }
+            return false;
         };
 
         this.get_token = function(){
@@ -27,7 +26,16 @@
         };
 
         this.is_proctor = function(){
-            return restrictions.proctor !== undefined;
+            var deferred = $q.defer();
+            if (token){
+                permissions.get().then(function(data){
+                    restrictions = data.data;
+                    deferred.resolve(restrictions.role == 'proctor');
+                }, function(){
+                    deferred.resolve(false);
+                });
+            }
+            return deferred.promise;
         };
     }]);
 

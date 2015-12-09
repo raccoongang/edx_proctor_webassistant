@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Proctoring</title>
     <base href="/">
     <meta name="viewport" content="width=device-width">
     <script src="{% static 'js/lib/script.min.js' %}"></script>
@@ -14,9 +14,9 @@
 
     <script>
         window.app = {
-            rootPath : "{% static 'js/app/' %}",
-            logoutUrl : "{% url 'logout' %}",
-            loginUrl : "{% url 'social:begin' 'sso_npoed-oauth2' %}"
+            rootPath: "{% static 'js/app/' %}",
+            logoutUrl: "{% url 'logout' %}",
+            loginUrl: "{% url 'social:begin' 'sso_npoed-oauth2' %}"
         }
     </script>
 </head>
@@ -29,6 +29,7 @@
 {% elif user.is_authenticated %}
     <div class="container text-center" ng-init="changeLanguage()">
         <h1 translate="ONLY_PROCTORS_INSTRUCTORS_ALLOWED"></h1>
+
         <h1>
             <button class="btn btn-default"
                     ng-click="logout()"

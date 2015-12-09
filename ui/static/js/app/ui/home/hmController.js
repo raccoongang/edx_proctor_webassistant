@@ -2,20 +2,11 @@
 
 (function () {
     angular.module('proctor').controller(
-        'MainCtrl', ['$scope',
-                     '$interval',
-                     '$location',
-                     '$q',
-                     'WS',
-                     'Api',
-                     'Auth',
-                     'i18n',
-                     'NgTableParams',
-                     '$uibModal',
-                     'TestSession',
-                     'Polling',
-                     'DateTimeService',
-                     'students',
+        'MainCtrl', ['$scope', '$interval', '$location',
+                     '$q', 'WS', 'Api', 'Auth', 'i18n',
+                     'NgTableParams', '$uibModal',
+                     'TestSession', 'Polling',
+                     'DateTimeService', 'students',
             function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
