@@ -30,5 +30,6 @@ def _logout(request):
     domain = settings.AUTH_SESSION_COOKIE_DOMAIN
     response.set_cookie('authenticated', False, domain=domain)
     response.set_cookie('authenticated_user', 'Anonymous', domain=domain)
-    response.set_cookie('authenticated_token', '', domain=domain)
+    response.set_cookie('authenticated_token', None, domain=domain)
+    response.set_cookie('sessionid', None, domain='sso.test.npoed.ru')
     return response
