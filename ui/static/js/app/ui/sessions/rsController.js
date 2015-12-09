@@ -1,6 +1,5 @@
 (function(){
     angular.module('proctor').controller('SessionCtrl', function($scope, $location, data, TestSession, DateTimeService){
-        console.log(data);
         $scope.courses = [];
         $scope.exams = [];
         $scope.session = {};

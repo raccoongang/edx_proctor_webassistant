@@ -112,12 +112,20 @@
                 templateUrl: app.path + 'ui/sessions/view.html',
                 controller: 'SessionCtrl',
                 resolve: {
-                    deps: function (resolver) {
-                        return resolver.load_deps([
+                    deps: function ($location, resolver, Auth) {
+                        var ret = resolver.load_deps([
                             app.path + 'ui/sessions/rsController.js'
                         ]);
+                        Auth.is_proctor().then(function(is){
+                            if (is){
+                                return ret;
+                            }
+                            else{
+                                $location.path('/archive');
+                            }
+                        });
                     },
-                    data: function ($location, Api, Auth) {
+                    data: function (Api) {
                         return Api.get_session_data();
                     }
                 }
