@@ -84,25 +84,25 @@
                     },
                     students: function ($location, TestSession, Api, Auth) {
                         Auth.is_proctor().then(function(data){
-                            console.log(data);
+                            if (window.sessionStorage['proctoring'] !== undefined) {
+                                TestSession.setSession(
+                                    JSON.parse(window.sessionStorage['proctoring'])
+                                );
+                            }
+                            if (!TestSession.getSession()) {
+                                $location.path('/session');
+                            }
+                            else {
+                                var ret = Api.restore_session();
+                                if (ret == undefined) {
+                                    $location.path('/session');
+                                }
+                                else
+                                    return ret;
+                            }
+                        }, function(){
+                            $location.path('/archive');
                         });
-                        return true;
-                        //if (window.sessionStorage['proctoring'] !== undefined) {
-                        //    TestSession.setSession(
-                        //        JSON.parse(window.sessionStorage['proctoring'])
-                        //    );
-                        //}
-                        //if (!TestSession.getSession()) {
-                        //    $location.path('/session');
-                        //}
-                        //else {
-                        //    var ret = Api.restore_session();
-                        //    if (ret == undefined) {
-                        //        $location.path('/session');
-                        //    }
-                        //    else
-                        //        return ret;
-                        //}
                     }
                 }
             })

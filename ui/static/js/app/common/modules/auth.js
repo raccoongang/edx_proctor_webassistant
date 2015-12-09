@@ -29,6 +29,8 @@
                 permissions.get().then(function(data){
                     restrictions = data.data;
                     deferred.resolve(restrictions.role == 'proctor');
+                }, function(){
+                    deferred.resolve(false);
                 });
             }
             return deferred.promise;
