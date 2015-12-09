@@ -120,7 +120,9 @@
                     data: function ($location, Api, Auth) {
                         Auth.is_proctor().then(function(is){
                             if (is){
-                                return Api.get_session_data();
+                                Api.get_session_data().then(function(data){
+                                    return data;
+                                });
                             }
                             else{
                                 $location.path('/');
