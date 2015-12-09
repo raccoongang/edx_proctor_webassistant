@@ -117,7 +117,7 @@
                             app.path + 'ui/sessions/rsController.js'
                         ]);
                     },
-                    data: function (Api) {
+                    data: function (Api, Auth) {
                         Auth.is_proctor().then(function(is){
                             if (is){
                                 return Api.get_session_data();
