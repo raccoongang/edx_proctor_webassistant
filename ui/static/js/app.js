@@ -83,7 +83,7 @@
                         ]);
                     },
                     students: function ($location, TestSession, Api, Auth) {
-                        Auth.is_proctor();
+                        console.log(Auth.is_proctor());
                         if (window.sessionStorage['proctoring'] !== undefined) {
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
