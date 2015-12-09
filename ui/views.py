@@ -1,6 +1,8 @@
+import requests
 from django.shortcuts import render
 from django.views.generic import View
 from django.conf import settings
+from django.contrib.auth.views import logout
 
 
 class Index(View):
@@ -14,3 +16,9 @@ class Index(View):
             self.template_name,
             {'user_has_access': user_has_access}
         )
+
+
+def _logout(request):
+    ret = requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
+    if ret.status_code == 302:
+        return logout(request)
