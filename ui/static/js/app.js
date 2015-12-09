@@ -118,16 +118,14 @@
                         ]);
                     },
                     data: function ($location, Api, Auth) {
-                        Api.get_session_data().then(function (data) {
-                            Auth.is_proctor().then(function (is) {
-                                if (is) {
-                                    return data;
-                                }
-                                else {
-                                    $location.path('/');
-                                    return true;
-                                }
-                            });
+                        var ret = Api.get_session_data();
+                        Auth.is_proctor().then(function (is) {
+                            if (is) {
+                                return ret;
+                            }
+                            else {
+                                $location.path('/');
+                            }
                         });
                     }
                 }
