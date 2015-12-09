@@ -43,7 +43,6 @@ urlpatterns = patterns(
     url(
         r'^logout/$',
         logout,
-        name='logout',
-        kwargs={'next_page': '/'}
+        name='logout'
     ),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
