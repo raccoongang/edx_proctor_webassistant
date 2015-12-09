@@ -76,35 +76,34 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function(resolver){
-                        return resolver.load_deps([
+                    students: function($location, TestSession, resolver, Api, Auth){
+                        resolver.load_deps([
                             app.path + 'ui/home/hmController.js',
                             app.path + 'ui/home/hmDirectives.js',
                             app.path + 'common/services/exam_polling.js'
-                        ]);
-                    },
-                    students: function($location, TestSession, Api, Auth){
-                        if (!Auth.is_proctor()){
-                            $location.path('/archive');
-                        }
-                        else{
-                            if (window.sessionStorage['proctoring'] !== undefined){
-                                TestSession.setSession(
-                                    JSON.parse(window.sessionStorage['proctoring'])
-                                );
-                            }
-                            if (!TestSession.getSession()){
-                                $location.path('/session');
+                        ], function(){
+                            if (!Auth.is_proctor()){
+                                $location.path('/archive');
                             }
                             else{
-                                var ret = Api.restore_session();
-                                if (ret == undefined){
+                                if (window.sessionStorage['proctoring'] !== undefined){
+                                    TestSession.setSession(
+                                        JSON.parse(window.sessionStorage['proctoring'])
+                                    );
+                                }
+                                if (!TestSession.getSession()){
                                     $location.path('/session');
                                 }
-                                else
-                                    return ret;
+                                else{
+                                    var ret = Api.restore_session();
+                                    if (ret == undefined){
+                                        $location.path('/session');
+                                    }
+                                    else
+                                        return ret;
+                                }
                             }
-                        }
+                        });
                     }
                 }
             })

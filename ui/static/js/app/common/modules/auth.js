@@ -5,7 +5,7 @@
     module.service('Auth', ['$cookies', 'permissions', function($cookies, permissions){
         var token = '';
         var username = $cookies.get('authenticated_user');
-        var restrictions = [];
+        var restrictions = null;
 
         this.authenticate = function(){
             var c = $cookies.get('authenticated_token');
