@@ -83,25 +83,27 @@
                     },
                     students: function ($location, TestSession, Api, Auth) {
                         Auth.is_proctor().then(function(is){
-                            console.log(is);
-                            if (window.sessionStorage['proctoring'] !== undefined) {
-                                TestSession.setSession(
-                                    JSON.parse(window.sessionStorage['proctoring'])
-                                );
-                            }
-                            if (!TestSession.getSession()) {
-                                $location.path('/session');
-                            }
-                            else {
-                                var ret = Api.restore_session();
-                                if (ret == undefined) {
+                            if (is){
+                                if (window.sessionStorage['proctoring'] !== undefined) {
+                                    TestSession.setSession(
+                                        JSON.parse(window.sessionStorage['proctoring'])
+                                    );
+                                }
+                                if (!TestSession.getSession()) {
                                     $location.path('/session');
                                 }
-                                else
-                                    return ret;
+                                else {
+                                    var ret = Api.restore_session();
+                                    if (ret == undefined) {
+                                        $location.path('/session');
+                                    }
+                                    else
+                                        return ret;
+                                }
                             }
-                        }, function(){
-                            $location.path('/archive');
+                            else{
+                                $location.path('/archive');
+                            }
                         });
                     }
                 }
