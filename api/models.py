@@ -139,7 +139,7 @@ class InProgressEventSessionManager(models.Manager):
     def get_queryset(self):
         return super(InProgressEventSessionManager,
                      self).get_queryset().exclude(
-            status=EventSession.IN_PROGRESS)
+            status=EventSession.ARCHIVED)
 
 
 class ArchivedEventSessionManager(models.Manager):
