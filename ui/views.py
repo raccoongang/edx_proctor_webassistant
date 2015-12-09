@@ -24,7 +24,8 @@ def _logout(request):
     response = logout(request=request, next_page='index')
     for key, val in dict(request.COOKIES).items():
         response.delete_cookie(key)
-    response.set_cookie('authenticated', None)
-    response.set_cookie('authenticated_user', None)
-    response.set_cookie('authenticated_token', None)
+    domain = settings.AUTH_SESSION_COOKIE_DOMAIN
+    response.set_cookie('authenticated', False, domain=domain)
+    response.set_cookie('authenticated_user', 'Anonymous', domain=domain)
+    response.set_cookie('authenticated_token', '', domain=domain)
     return response
