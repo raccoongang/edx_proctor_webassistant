@@ -208,8 +208,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n',
-        function($scope, $translate, $http, i18n){
+    app.controller('MainController', ['$scope', '$translate', '$cookies', '$http', 'i18n',
+        function($scope, $translate, $cookies, $http, i18n){
 
         var lng_is_supported = function(val){
             return app.language.supported.indexOf(val) >= 0?true:false;
@@ -237,6 +237,10 @@
                 method: 'GET',
                 url: app.sso_logout_url
             }).finally(function(){
+                var cookies = $cookies.getAll();
+                angular.forEach(cookies, function (v, k) {
+                    $cookies.remove(k);
+                });
                 window.location = window.app.logoutUrl;
             });
         };
