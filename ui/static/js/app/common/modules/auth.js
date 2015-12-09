@@ -27,7 +27,7 @@
         };
 
         this.is_proctor = function(){
-            return restrictions.proctor !== undefined;
+            return restrictions.role == 'proctor';
         };
     }]);
 
