@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from ui.views import Index
+from ui.views import Index, _logout as logout
 from api.views_ui import redirect_ui
 from social.utils import setting_name
 from social.apps.django_app.views import complete
@@ -42,7 +42,7 @@ urlpatterns = patterns(
     url('', include('social.apps.django_app.urls', namespace='social')),
     url(
         r'^logout/$',
-        'django.contrib.auth.views.logout',
+        logout,
         name='logout',
         kwargs={'next_page': '/'}
     ),
