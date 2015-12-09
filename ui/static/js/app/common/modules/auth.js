@@ -28,11 +28,10 @@
         this.is_proctor = function(){
             var deferred = $q.defer();
             if (token){
-                permissions.get().then(function(data){
+                permissions.get().finally(function(data) {
+                    console.log(data);
                     restrictions = data.data;
                     deferred.resolve(restrictions.role == 'proctor');
-                }, function(){
-                    deferred.resolve(false);
                 });
             }
             return deferred.promise;
