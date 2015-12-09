@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.views.generic import View
 from django.conf import settings
 from django.contrib.auth.views import logout
-from django.http import HttpResponse
 
 
 class Index(View):
@@ -21,5 +20,4 @@ class Index(View):
 
 def _logout(request):
     requests.get("{}/{}/".format(settings.SSO_NPOED_URL, 'logout'))
-    logout(request)
-    return HttpResponse(status=200)
+    return logout(request=request, next_page='index')
