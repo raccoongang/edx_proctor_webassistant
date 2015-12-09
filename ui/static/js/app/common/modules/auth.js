@@ -27,6 +27,7 @@
         };
 
         this.is_proctor = function(){
+            console.log(restrictions.role, restrictions.role == 'proctor');
             return restrictions.role == 'proctor';
         };
     }]);
