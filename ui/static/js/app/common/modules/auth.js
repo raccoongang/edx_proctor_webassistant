@@ -12,7 +12,9 @@
             if (c !== undefined){
                 token = c;
                 $cookies.put('authenticated_token', undefined);
+                return true;
             }
+            return false;
         };
 
         this.get_token = function(){
