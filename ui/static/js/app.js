@@ -118,7 +118,14 @@
                         ]);
                     },
                     data: function (Api) {
-                        return Api.get_session_data();
+                        Auth.is_proctor().then(function(is){
+                            if (is){
+                                return Api.get_session_data();
+                            }
+                            else{
+                                $location.path('/archive');
+                            }
+                        });
                     }
                 }
             })
