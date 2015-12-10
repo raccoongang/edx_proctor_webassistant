@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.conf import settings
-# from django.contrib.auth.views import logout
+from django.contrib.auth import logout as lgt
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import redirect
 
@@ -35,6 +35,8 @@ def logout(request, next_page=None,
         next_page = request.build_absolute_uri('/')
 
     domain = settings.AUTH_SESSION_COOKIE_DOMAIN
+
+    lgt(request)
 
     response = redirect('%s?%s=%s' % (settings.SSO_NPOED_URL + "/logout",
                                       redirect_field_name, next_page))
