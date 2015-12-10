@@ -34,7 +34,7 @@
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;
-        // app.filter = $filterProvider.register;
+        app.filter = $filterProvider.register;
         app.service = $provide.service;
         app.factory = $provide.factory;
 
