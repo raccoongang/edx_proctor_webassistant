@@ -15,7 +15,7 @@ from rest_framework.authentication import BasicAuthentication, \
     TokenAuthentication
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
-    Permission, InProgressEventSession
+    Permission, InProgressEventSession, has_permisssion_to_course
 from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
                          ArchivedExamSerializer, PermissionSerializer)
@@ -104,7 +104,7 @@ def stop_exam(request, attempt_code):
 def stop_exams(request):
     attempts = request.data.get('attempts')
     if isinstance(attempts, basestring):
-                attempts = json.loads(attempts)
+        attempts = json.loads(attempts)
     if attempts:
         status_list = []
         for attempt in attempts:
@@ -196,7 +196,8 @@ class EventSessionViewSet(mixins.ListModelMixin,
         # Return existing session if match test_center, ourse_id and exam_id
         # so the proctor is able to connect to existing session
         data['status'] = EventSession.IN_PROGRESS
-        sessions = InProgressEventSession.objects.filter(**data).order_by('-start_date')
+        sessions = InProgressEventSession.objects.filter(**data).order_by(
+            '-start_date')
         if sessions:
             session = sessions[0]
             serializer = EventSessionSerializer(session)
@@ -255,12 +256,76 @@ class EventSessionViewSet(mixins.ListModelMixin,
 
 class ArchivedEventSessionViewSet(mixins.ListModelMixin,
                                   viewsets.GenericViewSet):
+    """
+    Return list of Archived Event session with pagiantion.
+
+    You can filter results by `testing_center`, `proctor`, `hash_key`,
+    `course_id`, `course_event_id`, `start_date`, `end_date`
+
+    Add GET parameter in end of URL, for example:
+    `?start_date=2015-12-04&proctor=proctor_username`
+    """
     serializer_class = ArchivedEventSessionSerializer
     queryset = ArchivedEventSession.objects.all()
+    paginate_by = 25
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
         BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctorOrInstructor)
+
+    def get_queryset(self):
+
+        queryset = ArchivedEventSession.objects.order_by('-pk').all()
+        if self.request.user.permission_set.filter(
+                role=Permission.ROLE_PROCTOR).exists():
+            queryset = queryset.filter(
+                proctor=self.request.user)
+
+        for field, value in self.request.query_params.items():
+            if field == "testing_center":
+                queryset = queryset.filter(testing_center=value)
+            if field == "proctor":
+                queryset = queryset.filter(proctor__username=value)
+            if field == "hash_key":
+                queryset = queryset.filter(hash_key=value)
+            if field == "course_id":
+                queryset = queryset.filter(course_id=value)
+            if field == "course_event_id":
+                queryset = queryset.filter(course_event_id=value)
+            if field == "start_date" and len(value.split("-")) == 3:
+                query_date = datetime.strptime(value, "%Y-%m-%d")
+                queryset = queryset.filter(
+                    start_date__gte=query_date,
+                    start_date__lt=query_date + timedelta(days=1)
+                )
+            if field == "end_date" and len(value.split("-")) == 3:
+                query_date = datetime.strptime(value, "%Y-%m-%d")
+                queryset = queryset.filter(
+                    end_date__gte=query_date,
+                    end_date__lt=query_date + timedelta(days=1)
+                )
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        if self.request.user.permission_set.filter(
+                role=Permission.ROLE_PROCTOR).exists():
+            result = []
+            for row in serializer.data:
+                if has_permisssion_to_course(self.request.user,
+                                             row['course_id']):
+                    result.append(row)
+        else:
+            result = serializer.data
+
+        return Response(result)
 
 
 class Review(APIView):
