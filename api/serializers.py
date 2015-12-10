@@ -152,10 +152,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ArchivedExamSerializer(ExamSerializer):
     comments = CommentSerializer(source='comment_set', many=True)
-
     class Meta:
         model = Exam
         exclude = (
+            'exam_code', 'reviewed_exam', 'reviewer_notes', 'exam_password',
+            'exam_sponsor', 'exam_name', 'ssi_product',
             'course_id', 'email', 'exam_end_date', 'exam_id',
             'exam_start_date',
             'first_name', 'last_name', 'no_of_students', 'user_id', 'username',
