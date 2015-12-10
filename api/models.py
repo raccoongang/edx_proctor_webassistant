@@ -8,13 +8,14 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
 
-def has_permisssion_to_course(user, course_id,permissions = None):
+def has_permisssion_to_course(user, course_id, permissions=None):
     course_data = {}
     try:
         edxorg, edxcourse, edxcourserun = Exam.get_course_data(course_id)
         course_data['edxorg'] = edxorg
         course_data['edxcourse'] = "/".join((edxorg, edxcourse))
-        course_data['edxcourserun'] = course_id
+        course_data['edxcourserun'] = "/".join(
+            (edxorg, edxcourse, edxcourserun))
     except ValueError as e:
         return False
     if not isinstance(user, AnonymousUser):
@@ -173,6 +174,39 @@ class EventSession(models.Model):
     end_date = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
+    course_run = models.CharField(
+        max_length=64,
+        blank=True,
+        null=True,
+        db_index=True
+    )
+
+    @staticmethod
+    def update_queryset_with_permissions(queryset, user):
+        if user.permission_set.filter(
+                role=Permission.ROLE_PROCTOR).exists():
+            is_super_proctor = False
+            for permission in user.permission_set.filter(
+                    role=Permission.ROLE_PROCTOR).all():
+                if permission.object_id == "*":
+                    is_super_proctor = True
+                    break
+            if not is_super_proctor:
+                queryset = queryset.filter(
+                    proctor=user)
+        elif user.permission_set.filter(
+                role=Permission.ROLE_INSTRUCTOR).exists():
+            for permission in user.permission_set.filter(
+                    role=Permission.ROLE_INSTRUCTOR).all():
+                q_objects = []
+                if permission.object_id != "*":
+                    q_objects.append(Q(**{"course_run__startswith":
+                                              permission.prepare_object_id()}))
+            if len(q_objects):
+                queryset = queryset.filter(reduce(operator.or_, q_objects))
+
+        return queryset
+
     @staticmethod
     def post_save(sender, instance, created, **kwargs):
         if created and not instance.hash_key:
@@ -181,6 +215,10 @@ class EventSession(models.Model):
                     instance.course_id) + str(
                     instance.course_event_id) + str(instance.proctor.pk) + str(
                     instance.start_date)).hexdigest()
+            instance.save()
+        if created or not instance.course_run:
+            org, course, courserun = Exam.get_course_data(instance.course_id)
+            instance.course_run = "/".join((org, course, courserun))
             instance.save()
 
     def __unicode__(self):
@@ -196,8 +234,7 @@ class InProgressEventSession(EventSession):
     objects = InProgressEventSessionManager()
 
 
-post_save.connect(InProgressEventSession.post_save, InProgressEventSession,
-                  dispatch_uid='add_hash')
+
 
 
 class ArchivedEventSession(EventSession):
@@ -206,6 +243,8 @@ class ArchivedEventSession(EventSession):
 
     objects = ArchivedEventSessionManager()
 
+post_save.connect(InProgressEventSession.post_save, InProgressEventSession,
+                  dispatch_uid='add_hash')
 
 class Permission(models.Model):
     TYPE_ORG = 'edxorg'

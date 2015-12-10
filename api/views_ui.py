@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import json
 from datetime import datetime, timedelta
+
+import operator
 from django.shortcuts import redirect
-from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
@@ -11,11 +13,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets, status, mixins
-from rest_framework.authentication import BasicAuthentication, \
-    TokenAuthentication
+from rest_framework.authentication import BasicAuthentication
 from api.web_soket_methods import send_ws_msg
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
-    Permission, InProgressEventSession, has_permisssion_to_course
+    Permission, InProgressEventSession
 from serializers import (EventSessionSerializer, CommentSerializer,
                          ArchivedEventSessionSerializer, JournalingSerializer,
                          ArchivedExamSerializer, PermissionSerializer)
@@ -276,10 +277,11 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     def get_queryset(self):
 
         queryset = ArchivedEventSession.objects.order_by('-pk').all()
-        if self.request.user.permission_set.filter(
-                role=Permission.ROLE_PROCTOR).exists():
-            queryset = queryset.filter(
-                proctor=self.request.user)
+
+        queryset = EventSession.update_queryset_with_permissions(
+            queryset,
+            self.request.user
+        )
 
         for field, value in self.request.query_params.items():
             if field == "testing_center":
@@ -315,19 +317,8 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        if self.request.user.permission_set.filter(
-                role=Permission.ROLE_PROCTOR).exists():
-            result = []
-            permissions = self.request.user.permission_set.all()
-            for row in serializer.data:
-                if has_permisssion_to_course(self.request.user,
-                                             row['course_id'],
-                                             permissions):
-                    result.append(row)
-        else:
-            result = serializer.data
 
-        return Response(result)
+        return Response(serializer.data)
 
 
 class Review(APIView):

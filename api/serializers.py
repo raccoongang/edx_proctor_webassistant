@@ -7,7 +7,6 @@ from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from rest_framework.response import Response
-
 from models import Exam, EventSession, ArchivedEventSession, Comment, \
     Permission, has_permisssion_to_course, InProgressEventSession
 from journaling.models import Journaling
@@ -131,7 +130,7 @@ class ExamSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Wrong courseId data")
         data['course_organization'] = course_org
         data['course_identify'] = "/".join((course_org, course_id))
-        data['course_run'] = data['course_id']
+        data['course_run'] = "/".join((course_org, course_id, course_run))
         data['exam_end_date'] = parser.parse(data['exam_end_date'])
         data['exam_start_date'] = parser.parse(data['exam_start_date'])
         del (data['orgExtra'])
@@ -152,6 +151,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ArchivedExamSerializer(ExamSerializer):
     comments = CommentSerializer(source='comment_set', many=True)
+
     class Meta:
         model = Exam
         exclude = (
@@ -183,10 +183,6 @@ class EventSessionSerializer(serializers.ModelSerializer):
                 data.get('course_id', '')):
             raise serializers.ValidationError(
                 "You have not permissions to create event for this course")
-        # try:
-        #     EventSession(**data).full_clean()
-        # except ValidationError as e:
-        #     raise serializers.ValidationError(e.message_dict)
         return super(EventSessionSerializer, self).validate(data)
 
 
