@@ -68,11 +68,13 @@
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "STOP_ALL_ATTEMPTS": "Do You really want to stop all selected sessions?",
+  "NOT_REVIEWED_SESSIONS": "There are not reviewed attempts",
   "STOP_ATTEMPT": "Do You really want to stop exam attempt?",
   "SESSION_ERROR_1": "Failed to create/join session",
   "SESSION_ERROR_2": "Failed to end current session",
   "REVIEW_SEND_FAILED": "Failed to send review for exam attempt",
   "STOP_EXAM_FAILED": "Failed to stop exam attempt",
   "STOP_EXAMS_FAILED": "Failed to stop selected attempts",
-  "ONLY_PROCTORS_INSTRUCTORS_ALLOWED": "Only proctor or instructor has an access to this service"
+  "ONLY_PROCTORS_INSTRUCTORS_ALLOWED": "Only proctor or instructor has an access to this service",
+  "EVENT_COMMENT_ERROR": "Failed to add session review"
 }

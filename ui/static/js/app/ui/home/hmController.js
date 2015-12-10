@@ -201,16 +201,31 @@
                     $scope.exams.checked = [];
                 };
 
-                $scope.end_session = function(){
-                    $scope.add_review({}, 'session').then(function(data){
-                        TestSession.endSession(data.comment).then(function(){
-                            delete window.sessionStorage['proctoring'];
-                            Polling.stop_all();
-                            $location.path('/session');
-                        }, function(){});
-                    }, function(){
-                        alert("Failed to add session review");
+                var there_are_not_reviewed_attempts = function(){
+                    var list = [];
+                    angular.forEach($scope.ws_data, function(val, key){
+                        if (val.review_sent == undefined || !val.review_sent) {
+                            list.push(val.hash);
+                        }
                     });
+                    return list.length > 0;
+                };
+
+                $scope.end_session = function(){
+                    if (!there_are_not_reviewed_attempts()){
+                        $scope.add_review({}, 'session').then(function(data){
+                            TestSession.endSession(data.comment).then(function(){
+                                delete window.sessionStorage['proctoring'];
+                                Polling.stop_all();
+                                $location.path('/session');
+                            }, function(){});
+                        }, function(){
+                            alert(i18n.translate('EVENT_COMMENT_ERROR'));
+                        });
+                    }
+                    else{
+                        alert(i18n.translate('NOT_REVIEWED_SESSIONS'));
+                    }
                 };
 
                 var get_not_started_attempts = function(){
