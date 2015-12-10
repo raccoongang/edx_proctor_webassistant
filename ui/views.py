@@ -34,5 +34,15 @@ def logout(request, next_page=None,
     else:
         next_page = request.build_absolute_uri('/')
 
-    return redirect('%s?%s=%s' % (settings.SSO_NPOED_URL + "/logout",
-                                      redirect_field_name, next_page))
+    response = logout(
+        request=request,
+        next_page='%s?%s=%s' % (
+            settings.SSO_NPOED_URL + "/logout",
+            redirect_field_name, next_page)
+    )
+    domain = settings.AUTH_SESSION_COOKIE_DOMAIN
+    response.set_cookie('authenticated', False, domain=domain)
+    response.set_cookie('authenticated_user', 'Anonymous', domain=domain)
+    response.set_cookie('authenticated_token', None, domain=domain)
+
+    return response
