@@ -1,3 +1,6 @@
 <div>
-
+    <input type="text" ng-model="search"/>
+    <div ng-repeat="item in data | filter:search">
+        {[ item.name ]} - {[ item.age ]}
+    </div>
 </div>

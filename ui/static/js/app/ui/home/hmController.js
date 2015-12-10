@@ -52,7 +52,7 @@
                 };
 
                 var update_status = function (idx, status) {
-                    var obj = $scope.ws_data.filter({hash: idx});
+                    var obj = $scope.ws_data.filterBy({hash: idx});
                     if (obj.length > 0) {
                         if (obj[0].review_sent !== true)
                             obj[0]['status'] = status;
@@ -68,7 +68,7 @@
                             return;
                         }
                         if (msg['hash'] && msg['status']){
-                            var item = $scope.ws_data.filter({hash: msg.hash});
+                            var item = $scope.ws_data.filterBy({hash: msg.hash});
                             item = item.length?item[0]:null;
                             if (msg.status == 'started' && item && item.status == 'ready_to_start'){
                                 item.started_at = DateTimeService.get_now_time();
@@ -201,16 +201,31 @@
                     $scope.exams.checked = [];
                 };
 
-                $scope.end_session = function(){
-                    $scope.add_review({}, 'session').then(function(data){
-                        TestSession.endSession(data.comment).then(function(){
-                            delete window.sessionStorage['proctoring'];
-                            Polling.stop_all();
-                            $location.path('/session');
-                        }, function(){});
-                    }, function(){
-                        alert("Failed to add session review");
+                var there_are_not_reviewed_attempts = function(){
+                    var list = [];
+                    angular.forEach($scope.ws_data, function(val, key){
+                        if (val.review_sent == undefined || !val.review_sent) {
+                            list.push(val.hash);
+                        }
                     });
+                    return list.length > 0;
+                };
+
+                $scope.end_session = function(){
+                    if (!there_are_not_reviewed_attempts()){
+                        $scope.add_review({}, 'session').then(function(data){
+                            TestSession.endSession(data.comment).then(function(){
+                                delete window.sessionStorage['proctoring'];
+                                Polling.stop_all();
+                                $location.path('/session');
+                            }, function(){});
+                        }, function(){
+                            alert(i18n.translate('EVENT_COMMENT_ERROR'));
+                        });
+                    }
+                    else{
+                        alert(i18n.translate('NOT_REVIEWED_SESSIONS'));
+                    }
                 };
 
                 var get_not_started_attempts = function(){
@@ -238,7 +253,7 @@
                 var get_items_to_stop = function(){
                     var list = [];
                     angular.forEach($scope.exams.checked, function(val, key){
-                        var item = $scope.ws_data.filter({examCode: val});
+                        var item = $scope.ws_data.filterBy({examCode: val});
                         if (item.length){
                             if (!['verified', 'rejected'].in_array(item.status)){
                                 list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
@@ -255,7 +270,7 @@
                             $scope.add_review({}, 'common').then(function(data){
                                 data.status = "Comment";
                                 angular.forEach(list, function(val, key){
-                                    var res = $scope.ws_data.filter({examCode: val.attempt_code})[0];
+                                    var res = $scope.ws_data.filterBy({examCode: val.attempt_code})[0];
                                     if (res.comments == undefined){
                                         res.comments = [];
                                     }

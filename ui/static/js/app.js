@@ -161,6 +161,17 @@
                     }
                 }
             })
+            .when('/profile', {
+                templateUrl: app.path + 'ui/profile/view.html',
+                controller: 'ProfileCtrl',
+                resolve: {
+                    deps: function (resolver) {
+                        return resolver.load_deps([
+                            app.path + 'ui/profile/pfController.js'
+                        ]);
+                    }
+                }
+            })
             .otherwise({
                 redirectTo: '/'
             });
