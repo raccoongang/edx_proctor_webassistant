@@ -1,8 +1,6 @@
 (function(){
     angular.module('proctor').controller('ArchCtrl', function($scope, $filter, NgTableParams, DateTimeService, events, courses_data){
-        $scope.events = angular.copy(events.data);
-        $scope.searchFilter = '';
-        $scope.data = [];
+        $scope.events = angular.copy(events.data.results);
 
         $scope.tableParams = new NgTableParams({
             page: 1,
