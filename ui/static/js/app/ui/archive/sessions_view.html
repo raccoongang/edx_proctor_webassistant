@@ -24,7 +24,7 @@
         <div class="clearfix"></div>
     </div>
 
-    <div class="fc-margin-item panel" ng-repeat="session in sessions">
+    <div class="fc-margin-item panel" ng-repeat="session in sessions | filter:search.filter">
         <div class="col-xs-6">
             <div>
                 <b>{[ i18n('FULL_NAME') ]}</b>: {[ session.orgExtra.firstName ]} {[ session.orgExtra.lastName ]}
