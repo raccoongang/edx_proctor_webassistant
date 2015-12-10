@@ -8,7 +8,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
 
-def has_permisssion_to_course(user, course_id):
+def has_permisssion_to_course(user, course_id,permissions = None):
     course_data = {}
     try:
         edxorg, edxcourse, edxcourserun = Exam.get_course_data(course_id)
@@ -20,7 +20,8 @@ def has_permisssion_to_course(user, course_id):
     if not isinstance(user, AnonymousUser):
         if user.is_superuser:
             return True
-        for permission in user.permission_set.all():
+        permissions = permissions if permissions else user.permission_set.all()
+        for permission in permissions:
             if permission.object_id != "*":
                 if course_data.get(
                         permission.object_type

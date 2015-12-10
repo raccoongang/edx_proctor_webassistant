@@ -318,9 +318,11 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
         if self.request.user.permission_set.filter(
                 role=Permission.ROLE_PROCTOR).exists():
             result = []
+            permissions = self.request.user.permission_set.all()
             for row in serializer.data:
                 if has_permisssion_to_course(self.request.user,
-                                             row['course_id']):
+                                             row['course_id'],
+                                             permissions):
                     result.append(row)
         else:
             result = serializer.data
