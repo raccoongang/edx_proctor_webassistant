@@ -21,6 +21,13 @@
                     $location.path('/session');
                 }
 
+                $scope.test_list = [
+                    {name: "dfjfd", status: "sdfhsdhsd"},
+                    {name: "jdfsgjfs", status: "sdfhsfhsf"},
+                    {name: "xf4tw4", status: "rtyw45"},
+                    {name: "rethrh", status: "353636"}
+                ];
+
                 $scope.ws_data = [];
 
                 // get student exams from session
