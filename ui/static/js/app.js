@@ -167,7 +167,7 @@
                 resolve: {
                     deps: function (resolver) {
                         return resolver.load_deps([
-                            app.path + 'ui/archive/pfController.js'
+                            app.path + 'ui/profile/pfController.js'
                         ]);
                     }
                 }
