@@ -155,6 +155,11 @@ class ArchivedExamSerializer(ExamSerializer):
 
     class Meta:
         model = Exam
+        exclude = (
+            'course_id', 'email', 'exam_end_date', 'exam_id',
+            'exam_start_date',
+            'first_name', 'last_name', 'no_of_students', 'user_id', 'username',
+            'course_organization', 'course_identify', 'course_run')
 
 
 class EventSessionSerializer(serializers.ModelSerializer):
@@ -216,7 +221,7 @@ class JournalingSerializer(serializers.ModelSerializer):
 class PermissionSerializer(serializers.ModelSerializer):
     object_id = serializers.SerializerMethodField()
 
-    def get_object_id(self,obj):
+    def get_object_id(self, obj):
         return obj.prepare_object_id()
 
     class Meta:
