@@ -316,20 +316,6 @@ class Review(APIView):
 
         response = send_review_request(payload)
         if response.status_code in [200, 201]:
-            comments = payload['desktopComments']
-            comment_obj_list = []
-            for comment in comments:
-                comment_obj_list.append(
-                    Comment(
-                        comment=comment.get('comments'),
-                        event_status=comment.get('eventStatus'),
-                        event_start=comment.get('eventStart'),
-                        event_finish=comment.get('eventFinish'),
-                        duration=comment.get('duration'),
-                        exam=exam
-                    )
-                )
-            Comment.objects.bulk_create(comment_obj_list)
             exam.attempt_status = 'finished'
             exam.save()
 
@@ -548,6 +534,14 @@ def comments_journaling(request):
                    comment.get('eventStatus'),
                    comment.get('comments'),
                    ),
+        )
+        Comment.objects.create(
+            comment=comment.get('comments'),
+            event_status=comment.get('eventStatus'),
+            event_start=comment.get('eventStart'),
+            event_finish=comment.get('eventFinish'),
+            duration=comment.get('duration'),
+            exam=exam
         )
         send_ws_msg(data, channel=exam.event.hash_key)
         return Response(status=status.HTTP_201_CREATED)
