@@ -19,6 +19,7 @@
                 }
                 else{
                     $location.path('/session');
+                    return;
                 }
 
                 $scope.ws_data = [];
@@ -29,6 +30,18 @@
                         val.status = val.attempt_status;
                         $scope.ws_data.push(val);
                         Polling.add_item(val.examCode); // first item starts cyclic update
+                        Api.get_comments(val.examCode).then(function(data){
+                            var comments = data.data;
+                            val.comments = [];
+                            angular.forEach(comments, function(v, k){
+                                var item = {
+                                    comment: v.comment,
+                                    timestamp: v.event_start,
+                                    status: v.event_status
+                                };
+                                val.comments.push(item);
+                            });
+                        });
                     });
                 }
 
@@ -139,6 +152,15 @@
                 // When proctor adds any comment for single student's exam attempt
                 $scope.attempt_review_callback = function(attempt, data){
                     attempt.comments.push(data);
+                    Api.save_comment(
+                        {
+                            "comments": data.comment,
+                            "duration": 1,
+                            "eventFinish": data.timestamp,
+                            "eventStart": data.timestamp,
+                            "eventStatus": data.status
+                        }
+                    );
                 };
 
                 $scope.send_review = function (exam, status) {
@@ -286,6 +308,26 @@
                 $scope.accept_student = function(exam){
                     exam.accepted = true;
                 };
+
+                $scope.show_comments = function(exam){
+                    var deferred = $q.defer();
+
+                    var modalInstance = $uibModal.open({
+                        animation: true,
+                        templateUrl: 'comments.html',
+                        controller: 'CommentCtrl',
+                        size: 'lg',
+                        resolve: {
+                            exam: exam
+                        }
+                    });
+
+                    modalInstance.result.then(function () {
+                        deferred.resolve();
+                    });
+
+                    return deferred.promise;
+                };
             }]);
 
     angular.module('proctor').controller('ReviewCtrl', function ($scope, $uibModalInstance, TestSession, DateTimeService, i18n, exam) {
@@ -322,6 +364,22 @@
 
         $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
+        };
+
+        $scope.i18n = function(text){
+            return i18n.translate(text);
+        };
+
+        $scope.get_date = function(){
+            return DateTimeService.get_now_date();
+        };
+    });
+
+    angular.module('proctor').controller('CommentCtrl', function ($scope, $uibModalInstance, DateTimeService, i18n, exam) {
+        $scope.comments = exam.comments;
+
+        $scope.ok = function () {
+            $uibModalInstance.close();
         };
 
         $scope.i18n = function(text){

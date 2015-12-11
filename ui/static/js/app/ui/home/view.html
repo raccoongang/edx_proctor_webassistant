@@ -63,7 +63,7 @@
     </div>
 
     <table ng-table="tableParams" show-filter="false" class="table table-bordered table-striped">
-        <tr ng-repeat="attempt in $data">
+        <tr ng-repeat="attempt in $data" ng-click="show_comments(attempt)">
             <td>
                 <input type="checkbox" checklist-model="exams.checked" checklist-value="attempt.examCode">
             </td>
@@ -127,4 +127,5 @@
     </table>
 
     <review-modal></review-modal>
+    <comments></comments>
 </div>
