@@ -74,20 +74,24 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function (resolver, Auth) {
+                    deps: function (resolver, Auth, $q) {
+                        var deferred = $q.defer();
                         Auth.is_proctor().then(function (is) {
                             if (is) {
-                                return resolver.load_deps([
+                                resolver.load_deps([
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
                                     app.path + 'common/services/exam_polling.js'
-                                ]);
+                                ]).success(function () {
+                                    deferred.resolve();
+                                });
                             }
-                            else{
+                            else {
                                 $location.path('/archive');
                                 return true;
                             }
                         });
+                        return deferred.promise;
                     },
                     students: function ($location, TestSession, Api) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
@@ -120,11 +124,11 @@
                         var ret = resolver.load_deps([
                             app.path + 'ui/sessions/rsController.js'
                         ]);
-                        return Auth.is_proctor().then(function(is){
-                            if (is){
+                        return Auth.is_proctor().then(function (is) {
+                            if (is) {
                                 return ret;
                             }
-                            else{
+                            else {
                                 $location.path('/archive');
                             }
                         });
@@ -174,7 +178,7 @@
                             app.path + 'ui/profile/pfController.js'
                         ]);
                     },
-                    me: function(Auth){
+                    me: function (Auth) {
                         return true;
                     }
                 }
