@@ -466,7 +466,8 @@ def get_exams_proctored(request):
     for result in content.get('results', []):
         if has_permisssion_to_course(request.user, result.get('id'),
                                      permissions):
-            results.append(result)
+            if result['proctored_exams']:
+                results.append(result)
     content['results'] = results
     return Response(
             status=response.status_code,
