@@ -17,10 +17,6 @@
                         $scope.session_duration = TestSession.getSessionDuration();
                     }, 1000);
                 }
-                else{
-                    $location.path('/session');
-                    return;
-                }
 
                 $scope.ws_data = [];
 
