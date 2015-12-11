@@ -169,6 +169,9 @@
                         return resolver.load_deps([
                             app.path + 'ui/profile/pfController.js'
                         ]);
+                    },
+                    me: function(Auth){
+                        return true;
                     }
                 }
             })

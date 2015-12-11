@@ -65,6 +65,7 @@
 
   "SUSPICIOUS": "Suspicious",
   "COMMENT": "Comment",
+  "COMMENT": "Comments",
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "STOP_ALL_ATTEMPTS": "Do You really want to stop all selected sessions?",

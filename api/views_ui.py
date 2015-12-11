@@ -372,6 +372,16 @@ class Review(APIView):
             }
         )
 
+        for comment in payload['desktopComments']:
+            Comment.objects.get_or_create(
+                comment=comment.get('comments'),
+                event_status=comment.get('eventStatus'),
+                event_start=comment.get('eventStart'),
+                event_finish=comment.get('eventFinish'),
+                duration=comment.get('duration'),
+                exam=exam
+            )
+
         response = send_review_request(payload)
         if response.status_code in [200, 201]:
             exam.attempt_status = 'finished'
@@ -382,60 +392,60 @@ class Review(APIView):
         )
 
 
-class BulkReview(APIView):
-    authentication_classes = (
-        SsoTokenAuthentication, CsrfExemptSessionAuthentication,
-        BasicAuthentication)
-    permission_classes = (IsAuthenticated, IsProctor)
-
-    def post(self, request):
-        """
-        Request example:
-
-            [
-                {
-                    "examMetaData": {
-                        "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
-                        "ssiRecordLocator": "5649f201ab718b6610285f81",
-                        "reviewedExam": true,
-                        "reviewerNotes": "Everything is ok"
-                    },
-                     "reviewStatus": "Clean",
-                     "videoReviewLink": "http://video.url",
-                     "desktopComments": [
-                        {
-                            "comments": "Browsing other websites",
-                            "duration": 88,
-                            "eventFinish": 88,
-                            "eventStart": 12,
-                            "eventStatus": "Suspicious"
-                        }
-                     ]
-                },
-                {...}
-            ]
-
-        """
-        review_payload_list = []
-        exams = request.data
-        for exam in exams:
-            try:
-                exam_obj = Exam.objects.by_user_perms(request.user).get(
-                    exam_code=exam.get('examMetaData', {}).get('examCode')
-                )
-            except Exam.DoesNotExist:
-                continue
-
-            review_payload_list.append(_review_payload(
-                exam_obj,
-                exam_obj.exam_code,
-                exam.get('reviewStatus', {}),
-                exam.get('videoReviewLink', {}),
-                exam.get('desktopComments', {})
-            ))
-
-        data = bulk_send_review_request(review_payload_list)
-        return Response(data=data, status=200)
+# class BulkReview(APIView):
+#     authentication_classes = (
+#         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
+#         BasicAuthentication)
+#     permission_classes = (IsAuthenticated, IsProctor)
+#
+#     def post(self, request):
+#         """
+#         Request example:
+#
+#             [
+#                 {
+#                     "examMetaData": {
+#                         "examCode": "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
+#                         "ssiRecordLocator": "5649f201ab718b6610285f81",
+#                         "reviewedExam": true,
+#                         "reviewerNotes": "Everything is ok"
+#                     },
+#                      "reviewStatus": "Clean",
+#                      "videoReviewLink": "http://video.url",
+#                      "desktopComments": [
+#                         {
+#                             "comments": "Browsing other websites",
+#                             "duration": 88,
+#                             "eventFinish": 88,
+#                             "eventStart": 12,
+#                             "eventStatus": "Suspicious"
+#                         }
+#                      ]
+#                 },
+#                 {...}
+#             ]
+#
+#         """
+#         review_payload_list = []
+#         exams = request.data
+#         for exam in exams:
+#             try:
+#                 exam_obj = Exam.objects.by_user_perms(request.user).get(
+#                     exam_code=exam.get('examMetaData', {}).get('examCode')
+#                 )
+#             except Exam.DoesNotExist:
+#                 continue
+#
+#             review_payload_list.append(_review_payload(
+#                 exam_obj,
+#                 exam_obj.exam_code,
+#                 exam.get('reviewStatus', {}),
+#                 exam.get('videoReviewLink', {}),
+#                 exam.get('desktopComments', {})
+#             ))
+#
+#         data = bulk_send_review_request(review_payload_list)
+#         return Response(data=data, status=200)
 
 
 @api_view(['GET'])
@@ -485,61 +495,63 @@ def bulk_start_exams(request):
     return Response(status=status.HTTP_200_OK)
 
 
-def _review_payload(exam, exam_code, review_status, video_link,
-                    desktop_comments):
-    return {
-        "examDate": "",
-        "examProcessingStatus": "Review Completed",
-        "examTakerEmail": " ",
-        "examTakerFirstName": exam.first_name,
-        "examTakerLastName": exam.last_name,
-        "keySetVersion": "",
-        "examApiData": {
-            "duration": exam.duration,
-            "examCode": exam.exam_code,
-            "examName": exam.exam_name,
-            "examPassword": exam.exam_password,
-            "examSponsor": exam.exam_sponsor,
-            "examUrl": "http://localhost:8000/api/edx_proctoring/proctoring_launch_callback/start_exam/4d07a01a-1502-422e-b943-93ac04dc6ced",
-            "orgExtra": {
-                "courseID": exam.course_id,
-                "examEndDate": exam.exam_end_date,
-                "examID": exam.exam_id,
-                "examStartDate": exam.exam_start_date,
-                "noOfStudents": exam.no_of_students
-            },
-            "organization": exam.organization,
-            "reviewedExam": exam.reviewed_exam,
-            "reviewerNotes": exam.reviewer_notes,
-            "ssiProduct": "rp-now"
-        },
-        "overAllComments": "",
-        "reviewStatus": review_status,
-        "userPhotoBase64String": "",
-        "videoReviewLink": video_link,
-        "examMetaData": {
-            "examCode": exam_code,
-            "examName": exam.exam_name,
-            "examSponsor": exam.exam_sponsor,
-            "organization": exam.organization,
-            "reviewedExam": "True",
-            "reviewerNotes": "Closed Book",
-            "simulatedExam": "False",
-            "ssiExamToken": "",
-            "ssiProduct": "rp-now",
-            "ssiRecordLocator": exam.generate_key()
-        },
-        "desktopComments": desktop_comments,
-        "webCamComments": [
-            {
-                "comments": "Photo ID not provided",
-                "duration": 796,
-                "eventFinish": 796,
-                "eventStart": 0,
-                "eventStatus": "Suspicious"
-            }
-        ]
-    }
+# def _review_payload(exam, exam_code, review_status, video_link,
+#                     desktop_comments):
+#     return {
+#         "examDate": "",
+#         "examProcessingStatus": "Review Completed",
+#         "examTakerEmail": " ",
+#         "examTakerFirstName": exam.first_name,
+#         "examTakerLastName": exam.last_name,
+#         "keySetVersion": "",
+#         "examApiData": {
+#             "duration": exam.duration,
+#             "examCode": exam.exam_code,
+#             "examName": exam.exam_name,
+#             "examPassword": exam.exam_password,
+#             "examSponsor": exam.exam_sponsor,
+#             "examUrl": "http://localhost:8000/api/edx_proctoring/"
+#                        "proctoring_launch_callback/start_exam/"
+#                        "4d07a01a-1502-422e-b943-93ac04dc6ced",
+#             "orgExtra": {
+#                 "courseID": exam.course_id,
+#                 "examEndDate": exam.exam_end_date,
+#                 "examID": exam.exam_id,
+#                 "examStartDate": exam.exam_start_date,
+#                 "noOfStudents": exam.no_of_students
+#             },
+#             "organization": exam.organization,
+#             "reviewedExam": exam.reviewed_exam,
+#             "reviewerNotes": exam.reviewer_notes,
+#             "ssiProduct": "rp-now"
+#         },
+#         "overAllComments": "",
+#         "reviewStatus": review_status,
+#         "userPhotoBase64String": "",
+#         "videoReviewLink": video_link,
+#         "examMetaData": {
+#             "examCode": exam_code,
+#             "examName": exam.exam_name,
+#             "examSponsor": exam.exam_sponsor,
+#             "organization": exam.organization,
+#             "reviewedExam": "True",
+#             "reviewerNotes": "Closed Book",
+#             "simulatedExam": "False",
+#             "ssiExamToken": "",
+#             "ssiProduct": "rp-now",
+#             "ssiRecordLocator": exam.generate_key()
+#         },
+#         "desktopComments": desktop_comments,
+#         "webCamComments": [
+#             {
+#                 "comments": "Photo ID not provided",
+#                 "duration": 796,
+#                 "eventFinish": 796,
+#                 "eventStart": 0,
+#                 "eventStatus": "Suspicious"
+#             }
+#         ]
+#     }
 
 
 # Angular redirect
@@ -593,15 +605,6 @@ def comments_journaling(request):
                    comment.get('comments'),
                    ),
         )
-        Comment.objects.create(
-            comment=comment.get('comments'),
-            event_status=comment.get('eventStatus'),
-            event_start=comment.get('eventStart'),
-            event_finish=comment.get('eventFinish'),
-            duration=comment.get('duration'),
-            exam=exam
-        )
-        send_ws_msg(data, channel=exam.event.hash_key)
         return Response(status=status.HTTP_201_CREATED)
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -612,7 +615,8 @@ class JournalingViewSet(mixins.ListModelMixin,
     """
     Return list of Journaling with pagiantion.
 
-    You can filter results by `event_hash`, `proctor`,`exam_code`, `type`, `date`
+    You can filter results by `event_hash`, `proctor`,`exam_code`,
+    `type`, `date`
 
     Add GET parameter in end of URL, for example:
 
@@ -699,7 +703,8 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return queryset
 
 
-class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
     """
     Return list of Archived Exams with pagiantion.
 
@@ -726,6 +731,22 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if field == "exam_code":
                 queryset = queryset.filter(exam__exam_code=value)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        comment = request.data.get('comment')
+        exam = get_object_or_404(
+            Exam.objects.by_user_perms(request.user),
+            exam_code=request.data.get('examCode')
+        )
+        Comment.objects.create(
+            comment=comment.get('comments'),
+            event_status=comment.get('eventStatus'),
+            event_start=comment.get('eventStart'),
+            event_finish=comment.get('eventFinish'),
+            duration=comment.get('duration'),
+            exam=exam
+        )
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):

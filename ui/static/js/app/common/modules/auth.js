@@ -2,7 +2,7 @@
 
 (function(){
     var module = angular.module('tokenAuth', []);
-    module.service('Auth', ['$cookies', '$q', 'permissions', function($cookies, $q, permissions){
+    module.service('Auth', ['$cookies', '$q', '$http', 'permissions', function($cookies, $q, $http, permissions){
         var token = '';
         var username = $cookies.get('authenticated_user');
         var restrictions = null;
@@ -36,6 +36,14 @@
                 });
             }
             return deferred.promise;
+        };
+
+        this.get_profile = function(){
+            if (token){
+                $http({
+                    url: "https://sso.test.npoed.ru/api/me"
+                });
+            }
         };
     }]);
 

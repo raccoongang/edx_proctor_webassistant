@@ -69,7 +69,13 @@
             </td>
             <td title="i18n('FULL_NAME')"
                 sortable="'orgExtra.firstName'">
-                {[attempt.orgExtra.firstName]} {[attempt.orgExtra.lastName]}
+                <a href="" ng-click="show_comments(attempt)">
+                    {[attempt.orgExtra.firstName]} {[attempt.orgExtra.lastName]}
+                </a>
+            </td>
+            <td title="E-mail"
+                sortable="'orgExtra.email'">
+                {[attempt.orgExtra.email]}
             </td>
             <td title="i18n('EXAM_START_TIME')">
                 {[ attempt.started_at ]}
@@ -127,4 +133,5 @@
     </table>
 
     <review-modal></review-modal>
+    <comments></comments>
 </div>

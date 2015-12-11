@@ -98,5 +98,21 @@
                 'params': {event_hash: event_hash}
             });
         };
+
+        this.save_comment = function(comment){
+            return generic_api_call({
+                'url': get_url('comment'),
+                'method': 'POST',
+                'data': JSON.stringify({comment: comment})
+            });
+        };
+
+        this.get_comments = function(attempt_code){
+            return generic_api_call({
+                'url': get_url('comment'),
+                'method': 'GET',
+                'params': {exam_code: attempt_code}
+            });
+        };
     }]);
 })();
