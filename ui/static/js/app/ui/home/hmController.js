@@ -31,7 +31,7 @@
                         $scope.ws_data.push(val);
                         Polling.add_item(val.examCode); // first item starts cyclic update
                         Api.get_comments(val.examCode).then(function(data){
-                            var comments = data.data;
+                            var comments = data.data.results;
                             val.comments = [];
                             angular.forEach(comments, function(v, k){
                                 var item = {
