@@ -75,39 +75,40 @@
                 controller: 'MainCtrl',
                 resolve: {
                     deps: function (resolver) {
-                        return resolver.load_deps([
-                            app.path + 'ui/home/hmController.js',
-                            app.path + 'ui/home/hmDirectives.js',
-                            app.path + 'common/services/exam_polling.js'
-                        ]);
-                    },
-                    students: function ($location, TestSession, Api, Auth) {
-                        return Auth.is_proctor().then(function (is) {
+                        Auth.is_proctor().then(function (is) {
                             if (is) {
-                                if (window.sessionStorage['proctoring'] !== undefined) {
-                                    TestSession.setSession(
-                                        JSON.parse(window.sessionStorage['proctoring'])
-                                    );
-                                }
-                                var session = TestSession.getSession();
-                                if (!session) {
-                                    $location.path('/session');
-                                    return true;
-                                }
-                                else {
-                                    var ret = Api.restore_session();
-                                    if (ret == undefined) {
-                                        $location.path('/session');
-                                        return true;
-                                    }
-                                    else
-                                        return ret;
-                                }
+                                return resolver.load_deps([
+                                    app.path + 'ui/home/hmController.js',
+                                    app.path + 'ui/home/hmDirectives.js',
+                                    app.path + 'common/services/exam_polling.js'
+                                ]);
                             }
-                            else {
+                            else{
                                 $location.path('/archive');
+                                return true;
                             }
                         });
+                    },
+                    students: function ($location, TestSession, Api, Auth) {
+                        if (window.sessionStorage['proctoring'] !== undefined) {
+                            TestSession.setSession(
+                                JSON.parse(window.sessionStorage['proctoring'])
+                            );
+                        }
+                        var session = TestSession.getSession();
+                        if (!session) {
+                            $location.path('/session');
+                            return true;
+                        }
+                        else {
+                            var ret = Api.restore_session();
+                            if (ret == undefined) {
+                                $location.path('/session');
+                                return true;
+                            }
+                            else
+                                return ret;
+                        }
                     }
                 }
             })
