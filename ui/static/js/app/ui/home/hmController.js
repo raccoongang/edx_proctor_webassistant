@@ -253,7 +253,7 @@
                 var get_not_started_attempts = function(){
                     var list = [];
                     angular.forEach($scope.ws_data, function(val, key){
-                        if (val.status == undefined || !val.status){
+                        if (val.status == undefined || !val.status || val.status == 'created'){
                             if ($scope.exams.checked.in_array(val.examCode)) {
                                 list.push(val.examCode);
                             }
