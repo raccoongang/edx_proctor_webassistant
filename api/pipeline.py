@@ -1,4 +1,6 @@
 import logging
+
+from django.contrib.auth.models import User
 from django.db import transaction
 from api.models import Permission
 from social.pipeline import partial
@@ -48,3 +50,19 @@ def create_or_update_permissions(backend, user, response, *args, **kwargs):
             log.error(u'set_roles_for_edx_users error: {}'.format(e))
 
     return response
+
+
+@partial.partial
+def update_user_name(backend, user, response, *args, **kwargs):
+    """
+    Ensure that we have the necessary information about a user (either an
+    existing account or registration data) to proceed with the pipeline.
+    """
+    try:
+            user = User.objects.get(email=response['email'])
+            user.first_name = response.get('firstname')
+            user.last_name = response.get('lastname')
+            user.save()
+    except User.DoesNotExist:
+        pass
+

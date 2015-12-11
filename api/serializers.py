@@ -45,11 +45,11 @@ class JSONSerializerField(serializers.Field):
                     json_data[field_name] = data[field_name]
                 else:
                     raise serializers.ValidationError(
-                        _(
-                            "orgExtra fields list incorrect. Missed %s" % field_name))
+                            _(
+                                    "orgExtra fields list incorrect. Missed %s" % field_name))
         except ValueError:
             raise serializers.ValidationError(
-                _("orgExtra field value error. Must be json"))
+                    _("orgExtra field value error. Must be json"))
         return json_data
 
     def to_representation(self, instance):
@@ -59,7 +59,7 @@ class JSONSerializerField(serializers.Field):
         result = {}
         for field in self.FIELD_LIST:
             result[field] = getattr(
-                instance, re.sub('([A-Z]+)', r'_\1', field).lower()
+                    instance, re.sub('([A-Z]+)', r'_\1', field).lower()
             )
         return result
 
@@ -84,7 +84,7 @@ class ExamSerializer(serializers.ModelSerializer):
     hash = HashField(read_only=True)
 
     orgExtra = JSONSerializerField(
-        style={'base_template': 'textarea.html'},
+            style={'base_template': 'textarea.html'},
     )
 
     def to_representation(self, instance):
@@ -125,7 +125,7 @@ class ExamSerializer(serializers.ModelSerializer):
             data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
         try:
             course_org, course_id, course_run = Exam.get_course_data(
-                data['course_id'])
+                    data['course_id'])
         except ValueError as e:
             raise serializers.ValidationError("Wrong courseId data")
         data['course_organization'] = course_org
@@ -182,12 +182,18 @@ class EventSessionSerializer(serializers.ModelSerializer):
                 data.get('proctor'),
                 data.get('course_id', '')):
             raise serializers.ValidationError(
-                "You have not permissions to create event for this course")
+                    "You have not permissions to create event for this course")
         return super(EventSessionSerializer, self).validate(data)
 
 
 class ArchivedEventSessionSerializer(serializers.ModelSerializer):
-    proctor = serializers.ReadOnlyField(source='proctor.username')
+    proctor = serializers.SerializerMethodField()
+    serializers.ReadOnlyField(source='proctor.username')
+
+    def get_proctor(self, obj):
+        proctor = obj.proctor
+        return ' '.join([proctor.first_name,
+                         proctor.last_name]).strip() or proctor.username
 
     class Meta:
         read_only_fields = (

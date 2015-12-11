@@ -229,9 +229,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
     'api.pipeline.create_or_update_permissions',
-    'social.pipeline.user.user_details'
+    'social.pipeline.user.user_details',
+    'api.pipeline.update_user_name'
 )
-
 SSO_NPOED_URL = "http://sso.sandbox-m.raccoongang.com"
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '76ec51ced99df8b65070'
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = 'c0f4186cbb06b08b8ca997e0ff233d711f1a209a'

@@ -2,9 +2,7 @@
 import json
 from datetime import datetime, timedelta
 
-import operator
 from django.shortcuts import redirect
-from django.db.models import Q
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
@@ -287,7 +285,12 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
             if field == "testing_center":
                 queryset = queryset.filter(testing_center=value)
             if field == "proctor":
-                queryset = queryset.filter(proctor__username=value)
+                try:
+                    first_name, last_name = value.split(" ")
+                    queryset = queryset.filter(proctor__first_name=first_name,
+                                               proctor__last_name=last_name)
+                except ValueError:
+                    queryset = queryset.filter(proctor__username=value)
             if field == "hash_key":
                 queryset = queryset.filter(hash_key=value)
             if field == "course_id":
