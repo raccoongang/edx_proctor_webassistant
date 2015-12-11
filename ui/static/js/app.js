@@ -74,7 +74,7 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function (resolver) {
+                    deps: function (resolver, Auth) {
                         Auth.is_proctor().then(function (is) {
                             if (is) {
                                 return resolver.load_deps([
@@ -89,7 +89,7 @@
                             }
                         });
                     },
-                    students: function ($location, TestSession, Api, Auth) {
+                    students: function ($location, TestSession, Api) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
