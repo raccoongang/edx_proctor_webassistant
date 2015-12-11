@@ -310,23 +310,25 @@
                 };
 
                 $scope.show_comments = function(exam){
-                    var deferred = $q.defer();
+                    if (exam.comments.length){
+                        var deferred = $q.defer();
 
-                    var modalInstance = $uibModal.open({
-                        animation: true,
-                        templateUrl: 'comments.html',
-                        controller: 'CommentCtrl',
-                        size: 'lg',
-                        resolve: {
-                            exam: exam
-                        }
-                    });
+                        var modalInstance = $uibModal.open({
+                            animation: true,
+                            templateUrl: 'comments.html',
+                            controller: 'CommentCtrl',
+                            size: 'lg',
+                            resolve: {
+                                exam: exam
+                            }
+                        });
 
-                    modalInstance.result.then(function () {
-                        deferred.resolve();
-                    });
+                        modalInstance.result.then(function () {
+                            deferred.resolve();
+                        });
 
-                    return deferred.promise;
+                        return deferred.promise;
+                    }
                 };
             }]);
 
