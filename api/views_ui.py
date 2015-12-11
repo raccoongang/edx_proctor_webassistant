@@ -470,7 +470,7 @@ def get_exams_proctored(request):
     content['results'] = results
     return Response(
             status=response.status_code,
-            data=json.dumps(content)
+            data=content
     )
 
 
