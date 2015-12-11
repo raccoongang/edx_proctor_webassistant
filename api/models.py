@@ -234,17 +234,17 @@ class InProgressEventSession(EventSession):
     objects = InProgressEventSessionManager()
 
 
-
-
-
 class ArchivedEventSession(EventSession):
     class Meta:
         proxy = True
 
     objects = ArchivedEventSessionManager()
 
+post_save.connect(ArchivedEventSession.post_save, ArchivedEventSession,
+                  dispatch_uid='add_hash')
 post_save.connect(InProgressEventSession.post_save, InProgressEventSession,
                   dispatch_uid='add_hash')
+
 
 class Permission(models.Model):
     TYPE_ORG = 'edxorg'
