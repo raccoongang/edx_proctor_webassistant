@@ -373,14 +373,21 @@ class Review(APIView):
         )
 
         for comment in payload['desktopComments']:
-            Comment.objects.get_or_create(
-                    comment=comment.get('comments'),
-                    event_status=comment.get('eventStatus'),
-                    event_start=comment.get('eventStart'),
-                    event_finish=comment.get('eventFinish'),
-                    duration=comment.get('duration'),
-                    exam=exam
-            )
+            try:
+                Comment.objects.get(
+                        comment=comment.get('comments'),
+                        event_status=comment.get('eventStatus'),
+                        exam=exam
+                )
+            except Comment.DoesNotExist:
+                Comment.objects.get_or_create(
+                        comment=comment.get('comments'),
+                        event_status=comment.get('eventStatus'),
+                        event_start=comment.get('eventStart'),
+                        event_finish=comment.get('eventFinish'),
+                        duration=comment.get('duration'),
+                        exam=exam
+                )
 
         response = send_review_request(payload)
         if response.status_code in [200, 201]:
