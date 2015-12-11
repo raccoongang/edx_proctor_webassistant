@@ -27,9 +27,6 @@
                 // get student exams from session
                 if (students !== undefined){
                     angular.forEach(students.data, function(val, key){
-                        val.status = val.attempt_status;
-                        $scope.ws_data.push(val);
-                        Polling.add_item(val.examCode); // first item starts cyclic update
                         Api.get_comments(val.examCode).then(function(data){
                             var comments = data.data.results;
                             val.comments = [];
@@ -41,6 +38,9 @@
                                 };
                                 val.comments.push(item);
                             });
+                            val.status = val.attempt_status;
+                            $scope.ws_data.push(val);
+                            Polling.add_item(val.examCode); // first item starts cyclic update
                         });
                     });
                 }
@@ -152,7 +152,7 @@
                 // When proctor adds any comment for single student's exam attempt
                 $scope.attempt_review_callback = function(attempt, data){
                     attempt.comments.push(data);
-                    Api.save_comment(
+                    Api.save_comment(attempt.examCode,
                         {
                             "comments": data.comment,
                             "duration": 1,

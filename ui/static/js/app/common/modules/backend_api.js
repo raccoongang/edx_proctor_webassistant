@@ -99,11 +99,14 @@
             });
         };
 
-        this.save_comment = function(comment){
+        this.save_comment = function(code, comment){
             return generic_api_call({
                 'url': get_url('comment'),
                 'method': 'POST',
-                'data': JSON.stringify({comment: comment})
+                'data': JSON.stringify({
+                    comment: comment,
+                    examCode: code
+                })
             });
         };
 
