@@ -695,7 +695,14 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 event__status=EventSession.ARCHIVED).order_by('-pk').all()
         if self.request.user.permission_set.filter(
                 role=Permission.ROLE_PROCTOR).exists():
-            queryset = queryset.filter(
+            is_super_proctor = False
+            for permission in self.request.user.permission_set.filter(
+                    role=Permission.ROLE_PROCTOR).all():
+                if permission.object_id == "*":
+                    is_super_proctor = True
+                    break
+            if not is_super_proctor:
+                queryset = queryset.filter(
                     event__proctor=self.request.user)
 
         for field, value in self.request.query_params.items():
