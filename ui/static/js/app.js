@@ -89,13 +89,16 @@
                                         JSON.parse(window.sessionStorage['proctoring'])
                                     );
                                 }
-                                if (!TestSession.getSession()) {
+                                var session = TestSession.getSession();
+                                if (!session) {
                                     $location.path('/session');
+                                    return true;
                                 }
                                 else {
                                     var ret = Api.restore_session();
                                     if (ret == undefined) {
                                         $location.path('/session');
+                                        return true;
                                     }
                                     else
                                         return ret;
