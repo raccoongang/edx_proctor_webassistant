@@ -473,7 +473,7 @@ def get_exams_proctored(request):
             ret.append(result)
     return Response(
             status=response.status_code,
-            data=ret
+            data={"results": ret}
     )
 
 
