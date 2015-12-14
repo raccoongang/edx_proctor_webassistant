@@ -26,7 +26,7 @@
             <div class="col-xs-8">
                 <select class="form-control"
                         ng-model="session.course"
-                        ng-options="item.id as item.name for item in courses | filter:{has_access:true}">
+                        ng-options="item.id as item.name for item in courses | hasaccess">
                 </select>
             </div>
             <div class="clearfix"></div>
