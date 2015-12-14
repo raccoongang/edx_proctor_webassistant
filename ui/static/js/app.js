@@ -40,7 +40,8 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
+            //current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
+            current: 'ru',
             supported: ['en', 'ru']
         };
 
@@ -56,7 +57,8 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        $translateProvider.preferredLanguage(app.language.current);
+        //$translateProvider.preferredLanguage(app.language.current);
+        $translateProvider.preferredLanguage('ru');
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
@@ -74,7 +76,7 @@
                 templateUrl: app.path + 'ui/home/view.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    deps: function (resolver, Auth, $q) {
+                    deps: function (resolver, Auth, $q, $location) {
                         var deferred = $q.defer();
                         Auth.is_proctor().then(function (is) {
                             if (is) {
@@ -93,7 +95,7 @@
                         });
                         return deferred.promise;
                     },
-                    students: function ($location, TestSession, Api) {
+                    students: function ($location, TestSession, Api, Auth) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
@@ -122,7 +124,8 @@
                 resolve: {
                     deps: function ($location, resolver, Auth) {
                         var ret = resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js'
+                            app.path + 'ui/sessions/rsController.js',
+                            app.path + 'ui/sessions/rsFilters.js'
                         ]);
                         return Auth.is_proctor().then(function (is) {
                             if (is) {
@@ -206,11 +209,11 @@
         };
 
         // Preload language files
-        angular.forEach(app.language.supported, function (val) {
-            if (val !== app.language.current) {
-                $translate.use(val);
-            }
-        });
+        //angular.forEach(app.language.supported, function (val) {
+        //    if (val !== app.language.current) {
+        //        $translate.use(val);
+        //    }
+        //});
     }]);
 
     app.factory('resolver', function ($rootScope, $q, $timeout, $location, Auth) {
@@ -269,7 +272,7 @@
                 return i18n.translate(text);
             };
 
-            $scope.changeLanguage();
+            //$scope.changeLanguage();
         }]);
 
     app.controller('HeaderController', ['$scope', '$location', function ($scope, $location) {

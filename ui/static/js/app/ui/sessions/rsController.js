@@ -15,7 +15,7 @@
         if (data.data.results !== undefined && data.data.results.length) {
             var c_list = [];
             angular.forEach(data.data.results, function (val, key) {
-                if (val.proctored_exams.length){
+                if (val.proctored_exams.length && val.has_access === true){
                     c_list.push({name: val.name, id: val.id});
                 }
             });

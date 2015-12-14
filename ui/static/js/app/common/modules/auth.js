@@ -18,7 +18,10 @@
         };
 
         this.get_token = function(){
-            return token;
+            if (token)
+                return token;
+            else
+                return $cookies.get('authenticated_token');
         };
 
         this.get_proctor = function(){

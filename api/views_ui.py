@@ -407,13 +407,15 @@ def get_exams_proctored(request):
     response = get_proctored_exams_request()
     content = json.loads(response.content)
     permissions = request.user.permission_set.all()
+    ret = []
     for result in content.get('results', []):
         if result['proctored_exams']:
             result['has_access'] = has_permisssion_to_course(
                     request.user, result.get('id'), permissions)
+            ret.append(result)
     return Response(
             status=response.status_code,
-            data=content
+            data={"results": ret}
     )
 
 
