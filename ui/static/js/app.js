@@ -95,7 +95,7 @@
                         });
                         return deferred.promise;
                     },
-                    students: function ($location, TestSession, Api) {
+                    students: function ($location, TestSession, Api, Auth) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
