@@ -82,7 +82,7 @@
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
                                     app.path + 'common/services/exam_polling.js'
-                                ]).success(function () {
+                                ], function(){
                                     deferred.resolve();
                                 });
                             }
