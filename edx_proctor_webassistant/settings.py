@@ -245,6 +245,10 @@ GRAPPELLI_ADMIN_TITLE = u"Открытое образование"
 
 EDX_API_KEY = "kjbdsf7y45unga94tm53he0n"
 
+SPA_CONFIG = {
+    "language": "ru"
+}
+
 try:
     from settings_local import *
 except ImportError:
