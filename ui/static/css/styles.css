@@ -1,3 +1,8 @@
+button{
+    min-width: 80px;
+    text-align: center;
+}
+
 .global-header {
     background: url('/static/img/body-bg-small.jpg');
 }
