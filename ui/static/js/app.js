@@ -40,7 +40,8 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
+            //current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
+            current: 'ru',
             supported: ['en', 'ru']
         };
 
