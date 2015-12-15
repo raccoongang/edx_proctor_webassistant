@@ -1,3 +1,6 @@
+"""
+Views for UI application
+"""
 # -*- coding: utf-8 -*-
 import json
 from datetime import datetime, timedelta
@@ -6,23 +9,22 @@ from django.shortcuts import redirect
 from rest_framework.decorators import api_view, authentication_classes, \
     permission_classes
 from rest_framework.generics import get_object_or_404
-from rest_framework.settings import api_settings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication
 from api.web_soket_methods import send_ws_msg
-from models import Exam, EventSession, ArchivedEventSession, Comment, \
+from api.models import Exam, EventSession, ArchivedEventSession, Comment, \
     Permission, InProgressEventSession, has_permisssion_to_course
-from serializers import (EventSessionSerializer, CommentSerializer,
-                         ArchivedEventSessionSerializer, JournalingSerializer,
-                         ArchivedExamSerializer, PermissionSerializer)
+from api.serializers import (EventSessionSerializer, CommentSerializer,
+                             ArchivedEventSessionSerializer,
+                             JournalingSerializer,
+                             ArchivedExamSerializer, PermissionSerializer)
 from journaling.models import Journaling
-from edx_api import (start_exam_request, stop_exam_request,
-                     poll_status_request,
-                     send_review_request, get_proctored_exams_request,
-                     bulk_start_exams_request)
+from api.edx_api import (start_exam_request, stop_exam_request,
+                         poll_status_request, send_review_request,
+                         get_proctored_exams_request, bulk_start_exams_request)
 from api.auth import (CsrfExemptSessionAuthentication, SsoTokenAuthentication,
                       IsProctor, IsProctorOrInstructor)
 from api.utils import catch_exception
@@ -37,8 +39,8 @@ def start_exam(request, attempt_code):
     Exam code sends in the end of URL
     """
     exam = get_object_or_404(
-            Exam.objects.by_user_perms(request.user),
-            exam_code=attempt_code
+        Exam.objects.by_user_perms(request.user),
+        exam_code=attempt_code
     )
     response = start_exam_request(exam.exam_code)
     if response.status_code == 200:
@@ -47,11 +49,11 @@ def start_exam(request, attempt_code):
         exam.attempt_status = "OK"
         exam.save()
         Journaling.objects.create(
-                type=Journaling.EXAM_STATUS_CHANGE,
-                event=exam.event,
-                exam=exam,
-                proctor=request.user,
-                note="%s -> %s" % (exam.NEW, exam.STARTED)
+            type=Journaling.EXAM_STATUS_CHANGE,
+            event=exam.event,
+            exam=exam,
+            proctor=request.user,
+            note="%s -> %s" % (exam.NEW, exam.STARTED)
         )
         data = {
             'hash': exam.generate_key(),
@@ -66,7 +68,7 @@ def start_exam(request, attempt_code):
 
 @api_view(['PUT'])
 @authentication_classes(
-        (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated, IsProctor))
 def stop_exam(request, attempt_code):
     """
@@ -82,8 +84,8 @@ def stop_exam(request, attempt_code):
     :return:
     """
     exam = get_object_or_404(
-            Exam.objects.by_user_perms(request.user),
-            exam_code=attempt_code
+        Exam.objects.by_user_perms(request.user),
+        exam_code=attempt_code
     )
     action = request.data.get('action')
     user_id = request.data.get('user_id')
@@ -101,9 +103,15 @@ def stop_exam(request, attempt_code):
 
 @api_view(['PUT'])
 @authentication_classes(
-        (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication)
+)
 @permission_classes((IsAuthenticated, IsProctor))
 def stop_exams(request):
+    """
+    Endpoint for exam stop
+    :param request:
+    :return:
+    """
     attempts = request.data.get('attempts')
     if isinstance(attempts, basestring):
         attempts = json.loads(attempts)
@@ -111,8 +119,8 @@ def stop_exams(request):
         status_list = []
         for attempt in attempts:
             exam = get_object_or_404(
-                    Exam.objects.by_user_perms(request.user),
-                    exam_code=attempt['attempt_code']
+                Exam.objects.by_user_perms(request.user),
+                exam_code=attempt['attempt_code']
             )
             user_id = attempt.get('user_id')
             action = attempt.get('action')
@@ -138,7 +146,7 @@ def stop_exams(request):
 
 @api_view(['POST'])
 @authentication_classes(
-        (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated, IsProctor))
 def poll_status(request):
     """
@@ -155,8 +163,8 @@ def poll_status(request):
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(
-                    Exam.objects.by_user_perms(request.user),
-                    exam_code=val['attempt_code']
+                Exam.objects.by_user_perms(request.user),
+                exam_code=val['attempt_code']
             )
             exam.attempt_status = val.get('status')
             exam.save()
@@ -203,7 +211,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         # so the proctor is able to connect to existing session
         data['status'] = EventSession.IN_PROGRESS
         sessions = InProgressEventSession.objects.filter(**data).order_by(
-                '-start_date')
+            '-start_date')
         if sessions:
             session = sessions[0]
             serializer = EventSessionSerializer(session)
@@ -216,9 +224,9 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         Journaling.objects.create(
-                type=Journaling.EVENT_SESSION_START,
-                event=serializer.instance,
-                proctor=request.user,
+            type=Journaling.EVENT_SESSION_START,
+            event=serializer.instance,
+            proctor=request.user,
         )
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
@@ -236,13 +244,13 @@ class EventSessionViewSet(mixins.ListModelMixin,
         for field in fields_for_update:
             data[field] = request.data.get(field)
         change_end_date = instance.status == EventSession.IN_PROGRESS and data.get(
-                'status') == EventSession.ARCHIVED
+            'status') == EventSession.ARCHIVED
         if instance.status != data.get('status'):
             Journaling.objects.create(
-                    type=Journaling.EVENT_SESSION_STATUS_CHANGE,
-                    event=instance,
-                    proctor=request.user,
-                    note=instance.status + " -> " + data.get('status')
+                type=Journaling.EVENT_SESSION_STATUS_CHANGE,
+                event=instance,
+                proctor=request.user,
+                note=instance.status + " -> " + data.get('status')
             )
         serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -299,15 +307,16 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
             if field == "start_date" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
-                        start_date__gte=query_date,
-                        start_date__lt=query_date + timedelta(days=1)
+                    start_date__gte=query_date,
+                    start_date__lt=query_date + timedelta(days=1)
                 )
             if field == "end_date" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
-                queryset = queryset.filter(end_date__gte=query_date,
-                                           end_date__lt=query_date + timedelta(
-                                                   days=1)
-                                           )
+                queryset = queryset.filter(
+                    end_date__gte=query_date,
+                    end_date__lt=query_date + timedelta(
+                        days=1)
+                )
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -362,32 +371,32 @@ class Review(APIView):
         if isinstance(payload['desktopComments'], basestring):
             payload['desktopComments'] = json.loads(payload['desktopComments'])
         exam = get_object_or_404(
-                Exam.objects.by_user_perms(request.user),
-                exam_code=payload['examMetaData'].get('examCode', '')
+            Exam.objects.by_user_perms(request.user),
+            exam_code=payload['examMetaData'].get('examCode', '')
         )
 
         payload['examMetaData'].update(
-                {
-                    "ssiRecordLocator": exam.generate_key(),
-                    "reviewerNotes": ""
-                }
+            {
+                "ssiRecordLocator": exam.generate_key(),
+                "reviewerNotes": ""
+            }
         )
 
         for comment in payload['desktopComments']:
             try:
                 Comment.objects.get(
-                        comment=comment.get('comments'),
-                        event_status=comment.get('eventStatus'),
-                        exam=exam
+                    comment=comment.get('comments'),
+                    event_status=comment.get('eventStatus'),
+                    exam=exam
                 )
             except Comment.DoesNotExist:
                 Comment.objects.get_or_create(
-                        comment=comment.get('comments'),
-                        event_status=comment.get('eventStatus'),
-                        event_start=comment.get('eventStart'),
-                        event_finish=comment.get('eventFinish'),
-                        duration=comment.get('duration'),
-                        exam=exam
+                    comment=comment.get('comments'),
+                    event_status=comment.get('eventStatus'),
+                    event_start=comment.get('eventStart'),
+                    event_finish=comment.get('eventFinish'),
+                    duration=comment.get('duration'),
+                    exam=exam
                 )
 
         response = send_review_request(payload)
@@ -396,7 +405,7 @@ class Review(APIView):
             exam.save()
 
         return Response(
-                status=response.status_code
+            status=response.status_code
         )
 
 
@@ -411,11 +420,11 @@ def get_exams_proctored(request):
     for result in content.get('results', []):
         if result['proctored_exams']:
             result['has_access'] = has_permisssion_to_course(
-                    request.user, result.get('id'), permissions)
+                request.user, result.get('id'), permissions)
             ret.append(result)
     return Response(
-            status=response.status_code,
-            data={"results": ret}
+        status=response.status_code,
+        data={"results": ret}
     )
 
 
@@ -445,9 +454,9 @@ def bulk_start_exams(request):
         }
         send_ws_msg(data, channel=exam.event.hash_key)
     Journaling.objects.create(
-            type=Journaling.BULK_EXAM_STATUS_CHANGE,
-            note="%s. %s -> %s" % (exam_codes, Exam.NEW, Exam.STARTED),
-            proctor=request.user,
+        type=Journaling.BULK_EXAM_STATUS_CHANGE,
+        note="%s. %s -> %s" % (exam_codes, Exam.NEW, Exam.STARTED),
+        proctor=request.user,
     )
     return Response(status=status.HTTP_200_OK)
 
@@ -461,7 +470,7 @@ def redirect_ui(request):
 
 @api_view(['POST'])
 @authentication_classes(
-        (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
+    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
 @permission_classes((IsAuthenticated, IsProctor))
 def comments_journaling(request):
     """
@@ -482,28 +491,29 @@ def comments_journaling(request):
     data = request.data
     if u'examCode' in data and u'comment' in data:
         exam = get_object_or_404(
-                Exam.objects.by_user_perms(request.user),
-                exam_code=data['examCode']
+            Exam.objects.by_user_perms(request.user),
+            exam_code=data['examCode']
         )
         comment = data['comment']
         Journaling.objects.create(
-                type=Journaling.EXAM_COMMENT,
-                event=exam.event,
-                exam=exam,
-                proctor=request.user,
-                note="""
+            type=Journaling.EXAM_COMMENT,
+            event=exam.event,
+            exam=exam,
+            proctor=request.user,
+            note="""
                 Duration: %s
                 Event start: %s
                 Event finish: %s
                 eventStatus": %s
                 Comment:
                 %s
-            """ % (comment.get('duration'),
-                   comment.get('eventStart'),
-                   comment.get('eventFinish'),
-                   comment.get('eventStatus'),
-                   comment.get('comments'),
-                   ),
+            """ % (
+                comment.get('duration'),
+                comment.get('eventStart'),
+                comment.get('eventFinish'),
+                comment.get('eventStatus'),
+                comment.get('comments'),
+            ),
         )
         return Response(status=status.HTTP_201_CREATED)
     else:
@@ -549,8 +559,8 @@ class JournalingViewSet(mixins.ListModelMixin,
             if field == "date" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
-                        datetime__gte=query_date,
-                        datetime__lt=query_date + timedelta(days=1)
+                    datetime__gte=query_date,
+                    datetime__lt=query_date + timedelta(days=1)
                 )
         return queryset
 
@@ -578,20 +588,19 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         Add filters for queryset
         :return: queryset
         """
-        queryset = Exam.objects.by_user_perms(
-                self.request.user).filter(
-                event__status=EventSession.ARCHIVED).order_by('-pk').all()
-        if self.request.user.permission_set.filter(
-                role=Permission.ROLE_PROCTOR).exists():
+        queryset = Exam.objects.by_user_perms(self.request.user).filter(
+            event__status=EventSession.ARCHIVED).order_by('-pk').all()
+        permissions = self.request.user.permission_set
+        if permissions.filter(role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
-            for permission in self.request.user.permission_set.filter(
-                    role=Permission.ROLE_PROCTOR).all():
+            for permission in self.permissions.filter(
+                role=Permission.ROLE_PROCTOR).all():
                 if permission.object_id == "*":
                     is_super_proctor = True
                     break
             if not is_super_proctor:
                 queryset = queryset.filter(
-                        event__proctor=self.request.user)
+                    event__proctor=self.request.user)
 
         for field, value in self.request.query_params.items():
             if field == "event_hash":
@@ -605,14 +614,14 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if field == "examStartDate" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
-                        exam_start_date__gte=query_date,
-                        exam_start_date__lt=query_date + timedelta(days=1)
+                    exam_start_date__gte=query_date,
+                    exam_start_date__lt=query_date + timedelta(days=1)
                 )
             if field == "examEndDate" and len(value.split("-")) == 3:
                 query_date = datetime.strptime(value, "%Y-%m-%d")
                 queryset = queryset.filter(
-                        exam_end_date__gte=query_date,
-                        exam_end_date__lt=query_date + timedelta(days=1)
+                    exam_end_date__gte=query_date,
+                    exam_end_date__lt=query_date + timedelta(days=1)
                 )
         return queryset
 
@@ -626,6 +635,22 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
 
     Add GET parameter in end of URL, for example:
     `?event_start=1449325446&event_status=Suspicious`
+
+
+
+    Request example for *adding* new comment for exam :
+
+        {
+            "examCode": "<exam_code>",
+            "comment": {
+                "comment": "comment text",
+                "event_status": "Suspicious",
+                "event_start": 123,
+                "event_finish": 321,
+                "duration": 198
+            }
+        }
+
     """
     serializer_class = CommentSerializer
     paginate_by = 25
@@ -650,25 +675,28 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
                 queryset = queryset.filter(exam__exam_code=value)
         return queryset
 
-    # TODO Delete this method. Use default create method. Resolve naming
     def create(self, request, *args, **kwargs):
-        comment = request.data.get('comment')
+        """
+        Add new comment. Check is exam exists
+        """
         exam = get_object_or_404(
-                Exam.objects.by_user_perms(request.user),
-                exam_code=request.data.get('examCode')
+            Exam.objects.by_user_perms(request.user),
+            exam_code=request.data.get('examCode')
         )
-        Comment.objects.create(
-                comment=comment.get('comments'),
-                event_status=comment.get('eventStatus'),
-                event_start=comment.get('eventStart'),
-                event_finish=comment.get('eventFinish'),
-                duration=comment.get('duration'),
-                exam=exam
-        )
-        return Response(status=status.HTTP_201_CREATED)
+        comment = request.data.get('comment')
+        comment['exam'] = exam.pk
+        serializer = self.get_serializer(data=comment)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 
 class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    Endpoint wich shows all permissions for current user
+    """
     serializer_class = PermissionSerializer
     queryset = Permission.objects.all()
     authentication_classes = (SsoTokenAuthentication,

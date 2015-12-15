@@ -200,8 +200,10 @@ class EventSession(models.Model):
                     role=Permission.ROLE_INSTRUCTOR).all():
                 q_objects = []
                 if permission.object_id != "*":
-                    q_objects.append(Q(**{"course_run__startswith":
-                                              permission.prepare_object_id()}))
+                    q_objects.append(Q(**{
+                        "course_run__startswith":
+                            permission.prepare_object_id()
+                    }))
             if len(q_objects):
                 queryset = queryset.filter(reduce(operator.or_, q_objects))
 

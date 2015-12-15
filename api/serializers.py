@@ -143,10 +143,10 @@ class ExamSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     exam_code = serializers.ReadOnlyField(source='exam.exam_code')
-
+    exam = serializers.PrimaryKeyRelatedField(queryset=Exam.objects.all(),write_only=True)
     class Meta:
         model = Comment
-        exclude = ("exam",)
+        # exclude = ("exam",)
 
 
 class ArchivedExamSerializer(ExamSerializer):
