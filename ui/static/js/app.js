@@ -71,8 +71,8 @@
             return $delegate;
         });
 
-        $provide.decorator('uibTooltipHtmlPopupDirective', function ($delegate) {
-            $delegate[0].templateUrl = app.path + 'ui/partials/tooltip/tooltip-html-popup.html';
+        $provide.decorator('uibTooltipDirective', function ($delegate) {
+            $delegate[0].templateUrl = app.path + 'ui/partials/tooltip/tooltip-popup.html';
             return $delegate;
         });
 
