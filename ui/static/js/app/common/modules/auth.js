@@ -30,7 +30,6 @@
         };
 
         this.is_proctor = function(){
-            console.log("Auth: check if user is proctor");
             var deferred = $q.defer();
             if (self.authenticate()) {
                 permissions.get().then(function(data){
