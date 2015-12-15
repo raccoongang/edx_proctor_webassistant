@@ -372,6 +372,10 @@
         $scope.get_date = function(){
             return DateTimeService.get_now_date();
         };
+
+        $scope.get_time = function(){
+            return DateTimeService.get_now_time();
+        };
     });
 
     angular.module('proctor').controller('CommentCtrl', function ($scope, $uibModalInstance, DateTimeService, i18n, exam) {
