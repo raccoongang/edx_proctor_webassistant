@@ -6,6 +6,7 @@
         var token = '';
         var username = $cookies.get('authenticated_user');
         var restrictions = null;
+        var self = this;
 
         this.authenticate = function(){
             var c = $cookies.get('authenticated_token');
@@ -18,10 +19,10 @@
         };
 
         this.get_token = function(){
-            if (token)
+            if (self.authenticate())
                 return token;
             else
-                return $cookies.get('authenticated_token');
+                return '';
         };
 
         this.get_proctor = function(){
@@ -31,13 +32,16 @@
         this.is_proctor = function(){
             console.log("Auth: check if user is proctor");
             var deferred = $q.defer();
-            if (token){
+            if (self.authenticate()) {
                 permissions.get().then(function(data){
                     restrictions = data.data;
                     deferred.resolve(restrictions.role == 'proctor');
                 }, function(){
                     deferred.resolve(false);
                 });
+            }
+            else{
+                deferred.resolve(false);
             }
             return deferred.promise;
         };
