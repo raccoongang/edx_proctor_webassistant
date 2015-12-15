@@ -7,32 +7,38 @@
             sortable="'course_name'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.course_name]}</a>
         </td>
-        <td title="i18n('EXAM_NAME')"
+        <td data-title="i18n('EXAM_NAME')"
+            uib-tooltip=""
             filter="{exam_name: 'text'}"
             sortable="'exam_name'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.exam_name]}</a>
         </td>
-        <td title="i18n('TESTING_CENTER')"
+        <td data-title="i18n('TESTING_CENTER')"
+            uib-tooltip=""
             filter="{testing_center: 'text'}"
             sortable="'testing_center'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.testing_center]}</a>
         </td>
-        <td title="i18n('EVENT_START_TIME')"
+        <td data-title="i18n('EVENT_START_TIME')"
+            uib-tooltip=""
             filter="{start_date: 'text'}"
             sortable="'start_date'">
             {[ event.start_date ]}
         </td>
-        <td title="i18n('EVENT_END_TIME')"
+        <td data-title="i18n('EVENT_END_TIME')"
+            uib-tooltip=""
             filter="{end_date: 'text'}"
             sortable="'end_date'">
             {[ event.end_date ]}
         </td>
-        <td title="i18n('PROCTOR')"
+        <td data-title="i18n('PROCTOR')"
+            uib-tooltip=""
             filter="{proctor: 'text'}"
             sortable="'proctor'">
             {[ event.proctor ]}
         </td>
-        <td title="i18n('COMMENT')">
+        <td data-title="i18n('COMMENT')"
+            uib-tooltip="">
             {[ event.comment ]}
         </td>
     </tr>
