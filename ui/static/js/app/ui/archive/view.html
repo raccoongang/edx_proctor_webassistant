@@ -2,7 +2,9 @@
 <table ng-table="tableParams" show-filter="true" class="table table-bordered table-striped">
     <tr ng-repeat="event in $data track by event.id">
         <td data-title="i18n('COURSE_NAME')"
-            title="{[ i18n('COURSE_NAME') ]}"
+            uib-tooltip-html="{[ i18n('COURSE_NAME') ]}"
+            tooltip-placement="top"
+            tooltip-trigger="mouseenter"
             filter="{course_name: 'text'}"
             sortable="'course_name'">
             <a href="/#/archive/{[ event.hash_key ]}">{[event.course_name]}</a>
