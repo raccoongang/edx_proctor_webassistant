@@ -30,9 +30,9 @@ class Journaling(models.Model):
         (API_REQUESTS, _("API Request from edX")),
     ]
     type = models.IntegerField(choices=TYPE_CHOICES, db_index=True)
-    event = models.ForeignKey("api.EventSession", blank=True, null=True,
+    event = models.ForeignKey("proctoring.EventSession", blank=True, null=True,
                               db_index=True)
-    exam = models.ForeignKey("api.Exam", blank=True, null=True, db_index=True)
+    exam = models.ForeignKey("proctoring.Exam", blank=True, null=True, db_index=True)
     proctor = models.ForeignKey(User, blank=True, null=True, db_index=True)
     note = models.TextField(blank=True, null=True)
     proctor_ip = models.GenericIPAddressField(blank=True, null=True)

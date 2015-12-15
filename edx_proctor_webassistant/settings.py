@@ -46,7 +46,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'social.apps.django_app.default',
 
-    'api',
+    'person',
+    'proctoring',
     'ui',
     'journaling',
 )
@@ -216,7 +217,7 @@ EDX_URL = "<EDX_URL>"
 
 # social auth settings
 AUTHENTICATION_BACKENDS = (
-    'api.social_auth_backends.NpoedBackend',
+    'edx_proctor_webassistant.social_auth_backends.NpoedBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_PIPELINE = (
@@ -228,9 +229,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
-    'api.pipeline.create_or_update_permissions',
+    'edx_proctor_webassistant.pipeline.create_or_update_permissions',
     'social.pipeline.user.user_details',
-    'api.pipeline.update_user_name'
+    'edx_proctor_webassistant.pipeline.update_user_name'
 )
 SSO_NPOED_URL = "http://sso.sandbox-m.raccoongang.com"
 SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '76ec51ced99df8b65070'
