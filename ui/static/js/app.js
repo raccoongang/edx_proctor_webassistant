@@ -77,6 +77,7 @@
                 controller: 'MainCtrl',
                 resolve: {
                     deps: function (resolver, Auth, $q, $location) {
+                        console.log("deps: entered");
                         var deferred = $q.defer();
                         Auth.is_proctor().then(function (is) {
                             if (is) {

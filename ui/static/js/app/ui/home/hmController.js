@@ -10,6 +10,7 @@
             function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
+                console.log("MainCtrl: init");
                 var session = TestSession.getSession();
 
                 if (session){

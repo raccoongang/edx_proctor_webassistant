@@ -29,6 +29,7 @@
         };
 
         this.is_proctor = function(){
+            console.log("Auth: check if user is proctor");
             var deferred = $q.defer();
             if (token){
                 permissions.get().then(function(data){
