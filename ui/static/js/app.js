@@ -71,6 +71,11 @@
             return $delegate;
         });
 
+        $provide.decorator('uibTooltipHtmlPopupDirective', function ($delegate) {
+            $delegate[0].templateUrl = app.path + 'ui/partials/tooltip/tooltip-html-popup.html';
+            return $delegate;
+        });
+
         $routeProvider
             .when('/', {
                 templateUrl: app.path + 'ui/home/view.html',
