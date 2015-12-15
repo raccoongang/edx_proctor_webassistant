@@ -80,40 +80,48 @@
                         var deferred = $q.defer();
                         Auth.is_proctor().then(function (is) {
                             if (is) {
+                                console.log("deps: is proctor");
                                 resolver.load_deps([
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
                                     app.path + 'common/services/exam_polling.js'
                                 ], function(){
+                                    console.log("deps: resolve");
                                     deferred.resolve();
                                 });
                             }
                             else {
+                                console.log("deps: redirect to archive");
                                 $location.path('/archive');
-                                return true;
+                                deferred.resolve();
                             }
                         });
                         return deferred.promise;
                     },
                     students: function ($location, TestSession, Api, Auth) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
+                            console.log("students: found existing session");
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
                             );
                         }
                         var session = TestSession.getSession();
                         if (!session) {
+                            console.log("students: redirect to session");
                             $location.path('/session');
                             return true;
                         }
                         else {
+                            console.log("students: restoring session from backend");
                             var ret = Api.restore_session();
                             if (ret == undefined) {
                                 $location.path('/session');
                                 return true;
                             }
-                            else
+                            else {
+                                console.log("students: return promise data");
                                 return ret;
+                            }
                         }
                     }
                 }
