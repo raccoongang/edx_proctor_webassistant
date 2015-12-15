@@ -8,7 +8,15 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.db.models import Q
 
 
-def has_permisssion_to_course(user, course_id, permissions=None):
+def has_permisssion_to_course(user, course_id, permissions=None, role=None):
+    """
+    Check is user has access to this course
+    :param user: User instance
+    :param course_id: str
+    :param permissions: list of all user's permissions
+    :param role: role of user
+    :return: bool
+    """
     course_data = {}
     try:
         edxorg, edxcourse, edxcourserun = Exam.get_course_data(course_id)
@@ -22,10 +30,12 @@ def has_permisssion_to_course(user, course_id, permissions=None):
         if user.is_superuser:
             return True
         permissions = permissions if permissions else user.permission_set.all()
+        if role:
+            permissions = permissions.filter(role=role)
         for permission in permissions:
             if permission.object_id != "*":
                 if course_data.get(
-                        permission.object_type
+                    permission.object_type
                 ) == permission.prepare_object_id():
                     return True
             else:
@@ -34,7 +44,16 @@ def has_permisssion_to_course(user, course_id, permissions=None):
 
 
 class ExamsByUserPermsManager(models.Manager):
+    """
+    Manager for getting list of exams consider permissions
+    """
+
     def by_user_perms(self, user):
+        """
+        Update queryset consider permissions
+        :param user: User instance
+        :return: queryset
+        """
         qs = super(ExamsByUserPermsManager, self).get_queryset()
         q_objects = []
         if not isinstance(user, AnonymousUser):
@@ -53,6 +72,9 @@ class ExamsByUserPermsManager(models.Manager):
 
 
 class Exam(models.Model):
+    """
+    Exam model
+    """
     NEW = 'new'
     STARTED = 'started'
     FINISHED = 'finished'
@@ -127,6 +149,11 @@ class Exam(models.Model):
 
     @classmethod
     def get_course_data(cls, course_id):
+        """
+        Check course format and return list using separator
+        :param course_id: str
+        :return: list
+        """
         sp = course_id.split(':')
         if len(sp) == 2:
             return sp[-1].split('+')
@@ -138,6 +165,10 @@ class Exam(models.Model):
 
 
 class InProgressEventSessionManager(models.Manager):
+    """
+    Manager for getting all active Event Sessions
+    """
+
     def get_queryset(self):
         return super(InProgressEventSessionManager,
                      self).get_queryset().exclude(
@@ -145,12 +176,19 @@ class InProgressEventSessionManager(models.Manager):
 
 
 class ArchivedEventSessionManager(models.Manager):
+    """
+    Manager for getting all finished Event Sessions
+    """
+
     def get_queryset(self):
         return super(ArchivedEventSessionManager, self).get_queryset().filter(
             status=EventSession.ARCHIVED)
 
 
 class EventSession(models.Model):
+    """
+    Event session model
+    """
     IN_PROGRESS = 'in_progress'
     ARCHIVED = 'archived'
 
@@ -183,19 +221,25 @@ class EventSession(models.Model):
 
     @staticmethod
     def update_queryset_with_permissions(queryset, user):
+        """
+        Update queryset consider permissions
+        :param queryset: queryset
+        :param user: User instance
+        :return: queryset
+        """
         if user.permission_set.filter(
-                role=Permission.ROLE_PROCTOR).exists():
+            role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
             for permission in user.permission_set.filter(
-                    role=Permission.ROLE_PROCTOR).all():
+                role=Permission.ROLE_PROCTOR).all():
                 if permission.object_id == "*":
                     is_super_proctor = True
                     break
             if not is_super_proctor:
                 queryset = queryset.filter(
                     proctor=user)
-        elif user.permission_set.filter(
-                role=Permission.ROLE_INSTRUCTOR).exists():
+        elif user.permission_set.filter(role=Permission.ROLE_INSTRUCTOR
+                                        ).exists():
             for permission in user.permission_set.filter(
                     role=Permission.ROLE_INSTRUCTOR).all():
                 q_objects = []
@@ -211,6 +255,15 @@ class EventSession(models.Model):
 
     @staticmethod
     def post_save(sender, instance, created, **kwargs):
+        """
+        Method for post save signal.
+        Add hash key, add slashseparated course_run
+        :param sender:
+        :param instance:
+        :param created:
+        :param kwargs:
+        :return:
+        """
         if created and not instance.hash_key:
             instance.hash_key = hashlib.md5(
                 unicode(instance.testing_center).encode('utf-8') + str(
@@ -230,6 +283,9 @@ class EventSession(models.Model):
 
 
 class InProgressEventSession(EventSession):
+    """
+    Proxy model for active event sessions
+    """
     class Meta:
         proxy = True
 
@@ -237,10 +293,14 @@ class InProgressEventSession(EventSession):
 
 
 class ArchivedEventSession(EventSession):
+    """
+    Proxy model for finished event sessions
+    """
     class Meta:
         proxy = True
 
     objects = ArchivedEventSessionManager()
+
 
 post_save.connect(ArchivedEventSession.post_save, ArchivedEventSession,
                   dispatch_uid='add_hash')
@@ -249,6 +309,9 @@ post_save.connect(InProgressEventSession.post_save, InProgressEventSession,
 
 
 class Permission(models.Model):
+    """
+    User permissions model
+    """
     TYPE_ORG = 'edxorg'
     TYPE_COURSE = 'edxcourse'
     TYPE_COURSERUN = 'edxcourserun'
@@ -275,6 +338,10 @@ class Permission(models.Model):
                             default=ROLE_PROCTOR)
 
     def _get_exam_field_by_type(self):
+        """
+        return field name by object type
+        :return: str
+        """
         fields = {
             self.TYPE_ORG: "course_organization",
             self.TYPE_COURSE: "course_identify",
@@ -283,12 +350,21 @@ class Permission(models.Model):
         return fields[self.object_type]
 
     def prepare_object_id(self):
+        """
+        Delete courserun from object_id if object type is course id
+        :return: str
+        """
         return self.object_id if \
             self.object_type != Permission.TYPE_COURSE else \
             Permission._course_run_to_course(self.object_id)
 
     @classmethod
     def _course_run_to_course(cls, courserun):
+        """
+        Delete courserun from string
+        :param courserun: str
+        :return: str
+        """
         try:
             edxorg, edxcourse, edxcourserun = Exam.get_course_data(courserun)
             return "/".join((edxorg, edxcourse))
@@ -297,6 +373,9 @@ class Permission(models.Model):
 
 
 class Student(models.Model):
+    """
+    Student model
+    """
     sso_id = models.IntegerField()
     email = models.EmailField()
     first_name = models.CharField(max_length=60, blank=True, null=True)
@@ -304,6 +383,9 @@ class Student(models.Model):
 
 
 class Comment(models.Model):
+    """
+    Comment model
+    """
     comment = models.TextField()
     event_status = models.CharField(max_length=60)
     event_start = models.IntegerField()

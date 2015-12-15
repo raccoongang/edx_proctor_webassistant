@@ -8,6 +8,11 @@ from journaling.models import Journaling
 
 
 def start_exam_request(attempt_code):
+    """
+    Call edX callback on exam start
+    :param attempt_code:
+    :return: Response
+    """
     return _journaling_request(
         'get',
         "api/edx_proctoring/proctoring_launch_callback/start_exam/" + attempt_code
@@ -15,6 +20,13 @@ def start_exam_request(attempt_code):
 
 
 def stop_exam_request(_id, action, user_id):
+    """
+    Call edX stop exam endpoint
+    :param _id: str
+    :param action: str
+    :param user_id: str
+    :return: Response
+    """
     return _journaling_request(
         'put',
         "api/edx_proctoring/v1/proctored_exam/attempt/" + _id,
@@ -24,6 +36,11 @@ def stop_exam_request(_id, action, user_id):
 
 
 def poll_status_request(codes):
+    """
+    Get list of exam statuses from edX
+    :param codes: list
+    :return: List of Responses
+    """
     if isinstance(codes, list):
         res = []
         for code in codes:
@@ -41,6 +58,11 @@ def poll_status_request(codes):
 
 
 def send_review_request(payload):
+    """
+    Send review to edX after exam finished
+    :param payload: dict
+    :return: Response
+    """
     return _journaling_request(
         'post',
         "api/edx_proctoring/proctoring_review_callback/",
@@ -49,6 +71,10 @@ def send_review_request(payload):
 
 
 def get_proctored_exams_request():
+    """
+    Get list of courses wich contains proctored exams
+    :return: Response
+    """
     return _journaling_request(
         'get',
         "api/extended/courses/proctored",
@@ -57,17 +83,27 @@ def get_proctored_exams_request():
 
 
 def bulk_start_exams_request(exam_list):
+    """
+    Endpoint for start list of exams
+    :param exam_list: list
+    :return: List of Responses
+    """
     result = []
+    url = "api/edx_proctoring/proctoring_launch_callback/start_exam/%s"
     for exam in exam_list:
         response = _journaling_request(
-            'get',
-            "api/edx_proctoring/proctoring_launch_callback/start_exam/" + exam.exam_code,
+            'get', url % str(exam.exam_code),
         )
         result.append(exam) if response.status_code == 200 else None
     return result
 
 
 def bulk_send_review_request(payload_list):
+    """
+    Endpoint for send reviews for list of exams
+    :param payload_list: list
+    :return: List of Responses
+    """
     result = {}
     for payload in payload_list:
         response = _journaling_request(
@@ -81,6 +117,14 @@ def bulk_send_review_request(payload_list):
 
 
 def _journaling_request(request_type, url, data=None, headers=None):
+    """
+    Method wich journaling all requests and responses for edX
+    :param request_type: get, post or put
+    :param url: str
+    :param data: dict
+    :param headers: dict
+    :return:
+    """
     if request_type == "post":
         response = requests.post(
             settings.EDX_URL + url,
@@ -122,7 +166,11 @@ def _journaling_request(request_type, url, data=None, headers=None):
             Response status: %s
             Response content: %s
             """ % (
-                url, unicode(data).encode('utf-8'), str(response.status_code), str(result))
+                url,
+                unicode(data).encode('utf-8'),
+                str(response.status_code),
+                str(result)
+            )
         )
     except:
         pass

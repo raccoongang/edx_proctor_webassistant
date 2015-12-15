@@ -20,11 +20,11 @@ class NpoedBackend(BaseOAuth2):
     skip_email_verification = True
 
     def auth_url(self):
-        '''
+        """
         This function add "auth_entry" get attribute.
-        "auth_entry" can be login or register, for correct redirect to login or register form
-        on sso-provider.
-        '''
+        "auth_entry" can be login or register, for correct redirect to login
+        or register form on sso-provider.
+        """
         return '{}&auth_entry={}'.format(
             super(NpoedBackend, self).auth_url(),
             self.data.get('auth_entry', 'login')
@@ -32,7 +32,7 @@ class NpoedBackend(BaseOAuth2):
 
     @handle_http_errors
     def auth_complete(self, *args, **kwargs):
-        """Completes loging process, must return user instance"""
+        """Completes loging process, must return user instance. """
         self.strategy.session.setdefault('{}_state'.format(self.name),
                                          self.data.get('state'))
         next_url = getattr(settings, 'SOCIAL_NEXT_URL', '/home')
@@ -52,7 +52,7 @@ class NpoedBackend(BaseOAuth2):
         )
 
     def do_auth(self, access_token, *args, **kwargs):
-        """Finish the auth process once the access_token was retrieved"""
+        """ Finish the auth process once the access_token was retrieved. """
         data = self.user_data(access_token)
         data['access_token'] = access_token
         kwargs.update(data)

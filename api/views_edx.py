@@ -12,7 +12,7 @@ from models import Exam, EventSession, InProgressEventSession
 
 
 class APIRoot(APIView):
-    """API Root for accounts module"""
+    """API Root with list of available endpoints"""
 
     def get(self, request):
         result = {
@@ -62,20 +62,21 @@ class ExamViewSet(mixins.ListModelMixin,
                   mixins.RetrieveModelMixin,
                   viewsets.GenericViewSet):
     """
-    This viewset register edx's exam on proctoring service and return generated code
+    This viewset register edx's exam on proctoring service and return
+    generated code
+
     Required parameters:
-    ```
-    examCode,
-    organization,
-    duration,
-    reviewedExam,
-    reviewerNotes,
-    examPassword,
-    examSponsor,
-    examName,
-    ssiProduct,
-    orgExtra
-    ```
+
+        `examCode`,
+        `organization`,
+        `duration`,
+        `reviewedExam`,
+        `reviewerNotes`,
+        `examPassword`,
+        `examSponsor`,
+        `examName`,
+        `ssiProduct`,
+        `orgExtra`
 
     orgExtra contain json like this:
 
@@ -117,6 +118,10 @@ class ExamViewSet(mixins.ListModelMixin,
             return []
 
     def create(self, request, *args, **kwargs):
+        """
+        Create new exam, on exam attempt.
+        Find Event Session for this exam.
+        """
         data = request.data
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
@@ -151,18 +156,12 @@ class ExamViewSet(mixins.ListModelMixin,
             headers=headers
         )
 
-    def perform_create(self, serializer):
-        serializer.save()
-
-    def get_success_headers(self, data):
-        try:
-            return {'Location': data[api_settings.URL_FIELD_NAME]}
-        except (TypeError, KeyError):
-            return {}
-
 
 def _send_journaling_response(request, data, result, status_code,
                               headers=None):
+    """
+    Journaling all requests and responses from edX
+    """
     Journaling.objects.create(
         type=Journaling.API_REQUESTS,
         note="""

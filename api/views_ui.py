@@ -353,7 +353,6 @@ class Review(APIView):
                               BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
 
-    @catch_exception
     def post(self, request):
         """
         Passing review statuses:  `Clean`, `Rules Violation`

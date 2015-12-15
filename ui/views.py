@@ -7,9 +7,15 @@ from django.shortcuts import redirect
 
 
 class Index(View):
+    """
+    Main site view
+    """
     template_name = 'index.html'
 
     def get(self, request):
+        """
+        Main view
+        """
         user_has_access = request.user and request.user.is_authenticated() \
                           and request.user.permission_set.exists()
         return render(

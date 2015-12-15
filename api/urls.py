@@ -40,8 +40,6 @@ urlpatterns = patterns(
         name='proctor_exams'),
     url(r'comments_journaling/$', views_ui.comments_journaling,
         name='comments_journaling'),
-    # url(r'bulk_review/$', views_ui.BulkReview.as_view(),
-    #     name='bulk_review'),
     (r'^', include(router.urls)),
 
 )

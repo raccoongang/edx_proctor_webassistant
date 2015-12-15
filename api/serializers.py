@@ -3,21 +3,11 @@ import json
 from dateutil import parser
 from collections import OrderedDict
 from rest_framework import serializers
-from rest_framework.fields import SkipField
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
-from rest_framework.response import Response
-from models import Exam, EventSession, ArchivedEventSession, Comment, \
+from models import Exam, ArchivedEventSession, Comment, \
     Permission, has_permisssion_to_course, InProgressEventSession
 from journaling.models import Journaling
-
-
-class HashField(serializers.Field):
-    def to_representation(self, instance):
-        """
-        Field value -> String.
-        """
-        return instance.generate_key()
 
 
 class JSONSerializerField(serializers.Field):
@@ -36,6 +26,11 @@ class JSONSerializerField(serializers.Field):
     ]
 
     def to_internal_value(self, data):
+        """
+        Validate orgExtra data
+        :param data: dict
+        :return: dict
+        """
         json_data = {}
         if isinstance(data, basestring):
             data = json.loads(data)
@@ -45,26 +40,28 @@ class JSONSerializerField(serializers.Field):
                     json_data[field_name] = data[field_name]
                 else:
                     raise serializers.ValidationError(
-                            _(
-                                    "orgExtra fields list incorrect. Missed %s" % field_name))
+                        _("orgExtra fields list incorrect. Missed %s" % field_name))
         except ValueError:
             raise serializers.ValidationError(
-                    _("orgExtra field value error. Must be json"))
+                _("orgExtra field value error. Must be json"))
         return json_data
 
     def to_representation(self, instance):
         """
-        Field value -> String.
+        Get org extra data from Exam model and make dict.
         """
         result = {}
         for field in self.FIELD_LIST:
             result[field] = getattr(
-                    instance, re.sub('([A-Z]+)', r'_\1', field).lower()
+                instance, re.sub('([A-Z]+)', r'_\1', field).lower()
             )
         return result
 
 
 class ExamSerializer(serializers.ModelSerializer):
+    """
+    Exam serializer
+    """
     class Meta:
         model = Exam
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
@@ -81,11 +78,19 @@ class ExamSerializer(serializers.ModelSerializer):
     examName = serializers.CharField(source='exam_name', max_length=60)
     ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
     attempt_status = serializers.CharField(read_only=True)
-    hash = HashField(read_only=True)
+    hash = serializers.SerializerMethodField()
 
     orgExtra = JSONSerializerField(
-            style={'base_template': 'textarea.html'},
+        style={'base_template': 'textarea.html'},
     )
+
+    def get_hash(self, obj):
+        """
+        get hash key for exam
+        :param obj: Exam instance
+        :return: str
+        """
+        return obj.generate_key()
 
     def to_representation(self, instance):
         """
@@ -97,10 +102,6 @@ class ExamSerializer(serializers.ModelSerializer):
         for field in fields:
             try:
                 attribute = field.get_attribute(instance)
-            except SkipField:
-                if isinstance(field, HashField):
-                    ret[field.field_name] = field.to_representation(instance)
-                continue
             except AttributeError:
                 if isinstance(field, JSONSerializerField):
                     ret[field.field_name] = field.to_representation(instance)
@@ -114,18 +115,17 @@ class ExamSerializer(serializers.ModelSerializer):
         return ret
 
     def validate(self, data):
-        '''
-        Data validation
+        """
+        Move fields from orgExtra to data and rename fieldname from camelCase
+        to underscore
         :param data: data from post/put request
         :return: clean data
-        '''
-        # move fields from orgExtra to data and rename fieldname from camelCase
-        # to underscore
+        """
         for key, value in data['orgExtra'].items():
             data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
         try:
             course_org, course_id, course_run = Exam.get_course_data(
-                    data['course_id'])
+                data['course_id'])
         except ValueError as e:
             raise serializers.ValidationError("Wrong courseId data")
         data['course_organization'] = course_org
@@ -142,14 +142,21 @@ class ExamSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """
+    Comment serializer
+    """
     exam_code = serializers.ReadOnlyField(source='exam.exam_code')
-    exam = serializers.PrimaryKeyRelatedField(queryset=Exam.objects.all(),write_only=True)
+    exam = serializers.PrimaryKeyRelatedField(queryset=Exam.objects.all(),
+                                              write_only=True)
+
     class Meta:
         model = Comment
-        # exclude = ("exam",)
 
 
 class ArchivedExamSerializer(ExamSerializer):
+    """
+    Exam archive serializer
+    """
     comments = CommentSerializer(source='comment_set', many=True)
 
     class Meta:
@@ -164,6 +171,9 @@ class ArchivedExamSerializer(ExamSerializer):
 
 
 class EventSessionSerializer(serializers.ModelSerializer):
+    """
+    Event session serializer
+    """
     hash_key = serializers.CharField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
     end_date = serializers.DateTimeField(read_only=True)
@@ -179,14 +189,17 @@ class EventSessionSerializer(serializers.ModelSerializer):
         '''
 
         if not self.instance and not has_permisssion_to_course(
-                data.get('proctor'),
-                data.get('course_id', '')):
+            data.get('proctor'),
+            data.get('course_id', '')):
             raise serializers.ValidationError(
-                    "You have not permissions to create event for this course")
+                "You have not permissions to create event for this course")
         return super(EventSessionSerializer, self).validate(data)
 
 
 class ArchivedEventSessionSerializer(serializers.ModelSerializer):
+    """
+    Event session archive serializer
+    """
     proctor = serializers.SerializerMethodField()
     serializers.ReadOnlyField(source='proctor.username')
 
@@ -204,6 +217,9 @@ class ArchivedEventSessionSerializer(serializers.ModelSerializer):
 
 
 class JournalingSerializer(serializers.ModelSerializer):
+    """
+    Journaling serializer
+    """
     proctor = serializers.ReadOnlyField(source='proctor.username')
     event = serializers.ReadOnlyField(source='event.hash_key')
     exam_code = serializers.ReadOnlyField(source='exam.exam_code')
@@ -211,9 +227,19 @@ class JournalingSerializer(serializers.ModelSerializer):
     student = serializers.SerializerMethodField()
 
     def get_student(self, obj):
+        """
+        Get student data
+        :param obj: Journaling instance
+        :return: str
+        """
         return obj.get_student()
 
     def get_type_name(self, obj):
+        """
+        Get userfriendly type name
+        :param obj:
+        :return:
+        """
         return obj.get_type_display()
 
     class Meta:
@@ -225,6 +251,11 @@ class PermissionSerializer(serializers.ModelSerializer):
     object_id = serializers.SerializerMethodField()
 
     def get_object_id(self, obj):
+        """
+        Delete course run
+        :param obj:
+        :return:
+        """
         return obj.prepare_object_id()
 
     class Meta:

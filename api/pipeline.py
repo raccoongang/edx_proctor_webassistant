@@ -41,6 +41,10 @@ def set_roles_for_edx_users(user, permissions):
 
 @partial.partial
 def create_or_update_permissions(backend, user, response, *args, **kwargs):
+    """
+    Create or update permissions from SSO on every auth
+    :return: Response
+    """
     permissions = response.get('permissions')
     if permissions is not None:
         try:

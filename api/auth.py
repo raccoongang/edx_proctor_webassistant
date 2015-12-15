@@ -1,4 +1,3 @@
-import json
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
 from social.apps.django_app.default.models import UserSocialAuth
@@ -9,11 +8,17 @@ from api.models import Permission
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    Disable CSRF validation in API requests
+    """
     def enforce_csrf(self, request):
         return
 
 
 class SsoTokenAuthentication(TokenAuthentication):
+    """
+    Authentication between frontend and backend using access_token
+    """
     model = UserSocialAuth
 
     def authenticate_credentials(self, key):
@@ -31,6 +36,9 @@ class SsoTokenAuthentication(TokenAuthentication):
 
 
 class PermissionMixin(object):
+    """
+    Mixin for permissions wich checks is user proctor or instructor or student
+    """
     ROLE = None
 
     def has_permission(self, request, view):
