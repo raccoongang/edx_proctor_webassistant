@@ -277,7 +277,7 @@
                     angular.forEach($scope.exams.checked, function (val, key) {
                         var item = $scope.ws_data.filterBy({examCode: val});
                         if (item.length) {
-                            if (!['verified', 'rejected'].in_array(item.status)) {
+                            if (!['verified', 'rejected', 'submitted'].in_array(item.status)) {
                                 list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
                             }
                         }
@@ -290,13 +290,22 @@
                         var list = get_items_to_stop();
                         Api.stop_all_exam_attempts(list).then(function () {
                             $scope.add_review({}, 'common').then(function (data) {
-                                data.status = "Comment";
+                                data.status = i18n.translate('COMMENT').toString();
                                 angular.forEach(list, function (val, key) {
                                     var res = $scope.ws_data.filterBy({examCode: val.attempt_code})[0];
                                     if (res.comments == undefined) {
                                         res.comments = [];
                                     }
                                     res.comments.push(data);
+                                    Api.save_comment(val.attempt_code,
+                                        {
+                                            "comments": data.comment,
+                                            "duration": 1,
+                                            "eventFinish": data.timestamp,
+                                            "eventStart": data.timestamp,
+                                            "eventStatus": data.status
+                                        }
+                                    );
                                 });
                             });
                         }, function () {
