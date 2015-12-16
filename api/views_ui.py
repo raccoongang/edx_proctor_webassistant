@@ -155,7 +155,16 @@ def poll_status(request):
                 Exam.objects.by_user_perms(request.user),
                 exam_code=val['attempt_code']
             )
-            exam.attempt_status = val.get('status')
+            new_status = val['status']
+            if (exam.attempt_status == 'ready_to_start'
+                    and new_status == 'started'):
+                exam.actual_start_date = datetime.now()
+            if (exam.attempt_status == 'started'
+                    and new_status == 'submitted')\
+                or (exam.attempt_status == 'ready_to_submit'
+                    and new_status == 'submitted'):
+                exam.actual_end_date = datetime.now()
+            exam.attempt_status = new_status
             exam.save()
             data = {
                 'hash': exam.generate_key(),

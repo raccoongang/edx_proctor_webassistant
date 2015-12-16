@@ -70,7 +70,7 @@ class ExamSerializer(serializers.ModelSerializer):
         fields = ('examCode', 'organization', 'duration', 'reviewedExam',
                   'reviewerNotes', 'examPassword', 'examSponsor',
                   'examName', 'ssiProduct', 'orgExtra', 'attempt_status',
-                  'hash')
+                  'hash', 'actual_start_date')
 
     examCode = serializers.CharField(source='exam_code', max_length=60)
     reviewedExam = serializers.CharField(source='reviewed_exam', max_length=60)
@@ -80,6 +80,7 @@ class ExamSerializer(serializers.ModelSerializer):
     examSponsor = serializers.CharField(source='exam_sponsor', max_length=60)
     examName = serializers.CharField(source='exam_name', max_length=60)
     ssiProduct = serializers.CharField(source='ssi_product', max_length=60)
+    actual_start_date = serializers.DateTimeField(read_only=True)
     attempt_status = serializers.CharField(read_only=True)
     hash = HashField(read_only=True)
 
@@ -158,7 +159,7 @@ class ArchivedExamSerializer(ExamSerializer):
             'exam_code', 'reviewed_exam', 'reviewer_notes', 'exam_password',
             'exam_sponsor', 'exam_name', 'ssi_product',
             'course_id', 'email', 'exam_end_date', 'exam_id',
-            'exam_start_date',
+            'exam_start_date', 'actual_start_date', 'actual_end_date',
             'first_name', 'last_name', 'no_of_students', 'user_id', 'username',
             'course_organization', 'course_identify', 'course_run')
 

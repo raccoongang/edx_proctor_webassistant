@@ -31,6 +31,7 @@
                          $translateProvider,
                          $translateLocalStorageProvider,
                          $interpolateProvider) {
+
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;

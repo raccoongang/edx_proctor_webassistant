@@ -63,7 +63,7 @@
             });
         };
 
-        this.restore_session = function(){
+        this.restore_session = function(session_hash){
             if (window.sessionStorage['proctoring'] !== undefined){
                 var session = TestSession.getSession();
                 if (session) {

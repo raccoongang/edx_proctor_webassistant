@@ -73,7 +73,14 @@
         };
 
         this.get_now_time = function(){
+            // Returns localized time based on `time_options`
+            // Example: 3:45:07 PM
             return localDate(window.localStorage['NG_TRANSLATE_LANG_KEY'], time_options);
+        };
+
+        this.get_now_timestamp = function(){
+            var d = new Date();
+            return d.getTime();
         };
 
         this.get_localized_date_from_string = function(string){

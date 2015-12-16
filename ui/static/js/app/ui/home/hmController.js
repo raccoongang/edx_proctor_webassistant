@@ -80,6 +80,7 @@
                             var item = $scope.ws_data.filterBy({hash: msg.hash});
                             item = item.length ? item[0] : null;
                             if (msg.status == 'started' && item && item.status == 'ready_to_start') {
+                                // variable to display in view
                                 item.started_at = DateTimeService.get_now_time();
                             }
                             update_status(msg['hash'], msg['status']);
@@ -176,7 +177,7 @@
                             payload.desktopComments.push(
                                 {
                                     "comments": val.comment,
-                                    "duration": 88,
+                                    "duration": 1,
                                     "eventFinish": val.timestamp,
                                     "eventStart": val.timestamp,
                                     "eventStatus": val.status
@@ -200,6 +201,7 @@
                     }
                 };
 
+                // Update table with students attempts on next new attempt
                 $scope.$watch('ws_data', function (newValue, oldValue) {
                     if (newValue != oldValue) {
                         $scope.tableParams.reload();
@@ -208,7 +210,7 @@
 
                 $scope.check_all_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function (val, key) {
+                    angular.forEach($scope.ws_data, function (val) {
                         if (!list.in_array(val.examCode)) {
                             list.push(val.examCode);
                         }
