@@ -9,6 +9,8 @@
             <div ng-repeat="comment in comments" class="fc-margin-item">
                 <div class="col-xs-4">
                     {[ get_date(comment.timestamp) ]}
+                    <br>
+                    {[ comment.event_status ]}
                 </div>
                 <div class="col-xs-8">
                     {[ comment.comment ]}
