@@ -130,7 +130,7 @@ class ExamViewSet(mixins.ListModelMixin,
         serializer.instance.event = event
         serializer.instance.save()
         Journaling.objects.create(
-            type=Journaling.EXAM_ATTEMPT,
+            journaling_type=Journaling.EXAM_ATTEMPT,
             event=event,
             exam=serializer.instance,
         )
@@ -149,7 +149,7 @@ def _send_journaling_response(request, data, result, status_code,
     Journaling all requests and responses from edX
     """
     Journaling.objects.create(
-        type=Journaling.API_REQUESTS,
+        journaling_type=Journaling.API_REQUESTS,
         note="""
             Requested url:%s
             Sent data: %s

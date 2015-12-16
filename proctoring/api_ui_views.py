@@ -51,7 +51,7 @@ def start_exam(request, attempt_code):
         exam.attempt_status = "OK"
         exam.save()
         Journaling.objects.create(
-            type=Journaling.EXAM_STATUS_CHANGE,
+            journaling_type=Journaling.EXAM_STATUS_CHANGE,
             event=exam.event,
             exam=exam,
             proctor=request.user,
@@ -237,7 +237,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         serializer.is_valid(raise_exception=True)
         serializer.save()
         Journaling.objects.create(
-            type=Journaling.EVENT_SESSION_START,
+            journaling_type=Journaling.EVENT_SESSION_START,
             event=serializer.instance,
             proctor=request.user,
         )
@@ -261,7 +261,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
             'status') == models.EventSession.ARCHIVED
         if str(instance.status) != data.get('status', ''):
             Journaling.objects.create(
-                type=Journaling.EVENT_SESSION_STATUS_CHANGE,
+                journaling_type=Journaling.EVENT_SESSION_STATUS_CHANGE,
                 event=instance,
                 proctor=request.user,
                 note="%s -> %s" % (instance.status, data.get('status', ''))
@@ -501,7 +501,7 @@ def bulk_start_exams(request):
         }
         send_ws_msg(data, channel=exam.event.hash_key)
     Journaling.objects.create(
-        type=Journaling.BULK_EXAM_STATUS_CHANGE,
+        journaling_type=Journaling.BULK_EXAM_STATUS_CHANGE,
         note="%s. %s -> %s" % (
             exam_codes, models.Exam.NEW, models.Exam.STARTED
         ),
@@ -646,7 +646,7 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         headers = self.get_success_headers(serializer.data)
         # comment journaling
         Journaling.objects.create(
-            type=Journaling.EXAM_COMMENT,
+            journaling_type=Journaling.EXAM_COMMENT,
             event=exam.event,
             exam=exam,
             proctor=request.user,

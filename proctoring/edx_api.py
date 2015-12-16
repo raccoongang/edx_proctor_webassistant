@@ -166,7 +166,7 @@ def _journaling_request(request_type, url, data=None, headers=None):
             result = response.content
     try:
         Journaling.objects.create(
-            type=Journaling.EDX_API_CALL,
+            journaling_type=Journaling.EDX_API_CALL,
             note="""
             Call url:%s
             Sent data: %s

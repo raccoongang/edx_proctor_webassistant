@@ -29,7 +29,7 @@ class Journaling(models.Model):
         (EDX_API_CALL, _("Call to edX API")),
         (API_REQUESTS, _("API Request from edX")),
     ]
-    type = models.IntegerField(choices=TYPE_CHOICES, db_index=True)
+    journaling_type = models.IntegerField(choices=TYPE_CHOICES, db_index=True)
     event = models.ForeignKey("proctoring.EventSession", blank=True, null=True,
                               db_index=True)
     exam = models.ForeignKey("proctoring.Exam", blank=True, null=True, db_index=True)
@@ -47,14 +47,14 @@ class Journaling(models.Model):
 
 def login_journaling(sender, user, request, **kwargs):
     Journaling.objects.create(
-        type=Journaling.PROCTOR_ENTER,
+        journaling_type=Journaling.PROCTOR_ENTER,
         proctor=user
     )
 
 
 def logout_journaling(sender, user, request, **kwargs):
     Journaling.objects.create(
-        type=Journaling.PROCTOR_EXIT,
+        journaling_type=Journaling.PROCTOR_EXIT,
         proctor=user
     )
 
