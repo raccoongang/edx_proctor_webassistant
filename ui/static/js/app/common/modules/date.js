@@ -59,13 +59,18 @@
             var diff = null;
             var d1 = Date.parse(date_str1)/1000;
             var d2 = Date.parse(date_str2)/1000;
-            if (d1 > d2){
-                diff = parseInt(d1 - d2);
+            if (date_str1 && date_str2){
+                if (d1 > d2){
+                    diff = parseInt(d1 - d2);
+                }
+                else{
+                    diff = parseInt(d2 - d1);
+                }
+                return ("" + diff).toHHMMSS();
             }
             else{
-                diff = parseInt(d2 - d1);
+                return '';
             }
-            return ("" + diff).toHHMMSS();
         };
 
         this.get_now_date = function(){
