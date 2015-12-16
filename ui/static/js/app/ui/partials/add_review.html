@@ -41,7 +41,7 @@
                     {[ i18n('DATE') ]}
                 </div>
                 <div class="col-xs-8">
-                    {[ get_date() ]}
+                    {[ get_date() ]} {[ get_time() ]}
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -62,15 +62,23 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                <textarea rows="5"
-                          style="resize: none; width: 100%;"
-                          ng-model="comment.message">
-                </textarea>
+                <form name="review_form" novalidate>
+                    <textarea rows="5"
+                              style="resize: none; width: 100%;"
+                              ng-model="comment.message"
+                              required>
+                    </textarea>
+                </form>
             </div>
             <div class="clearfix"></div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">{[ i18n('SAVE') ]}</button>
+            <button class="btn btn-primary"
+                    type="button"
+                    ng-click="ok()"
+                    ng-disabled="!review_form.$valid">
+                {[ i18n('SAVE') ]}
+            </button>
             <button class="btn btn-warning" type="button" ng-click="cancel()">{[ i18n('CANCEL') ]}</button>
         </div>
     </script>

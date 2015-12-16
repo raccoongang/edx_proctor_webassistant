@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import viewsets, status, mixins
+from rest_framework.authentication import BasicAuthentication
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
+from edx_proctor_webassistant.auth import CsrfExemptSessionAuthentication
 from edx_proctor_webassistant.web_soket_methods import send_ws_msg
 from journaling.models import Journaling
-from models import Exam, InProgressEventSession
+from models import Exam, InProgressEventSession, Course
 from serializers import ExamSerializer
 
 
@@ -17,41 +19,23 @@ class APIRoot(APIView):
     def get(self, request):
         result = {
             "exam_register": reverse('exam-register-list', request=request),
-            "bulk_start_exams": reverse(
-                'bulk_start_exams',
-                request=request
-            ),
-            "start_exam": reverse(
-                'start_exam',
-                request=request, args=('-attempt_code-',)
-            ),
-            "poll_status": reverse(
-                'poll_status',
-                request=request
-            ),
-            "review": reverse(
-                'review',
-                request=request
-            ),
-            "proctored_exams": reverse(
-                'proctor_exams',
-                request=request
-            ),
-            "journaling": reverse(
-                'journaling-list',
-                request=request
-            ),
-            "comments_journaling": reverse(
-                'comments_journaling',
-                request=request
-            ),
+            "bulk_start_exams": reverse('bulk_start_exams', request=request),
+            "start_exam": reverse('start_exam', request=request,
+                                   args=('-attempt_code-',)),
+            "stop_exam": reverse('stop_exam', request=request,
+                                   args=('-attempt_code-',)),
+            "bulk_start_exams": reverse('bulk_start_exams', request=request),
+            "stop_exams": reverse('stop_exams', request=request),
+            "poll_status": reverse('poll_status', request=request),
+            "review": reverse('review', request=request),
+            "proctored_exams": reverse('proctor_exams', request=request),
+            "journaling": reverse('journaling-list', request=request),
             "event_session": reverse('event-session-list', request=request),
             "archived_event_session": reverse('archived-event-session-list',
-                                              request=request),
-            "archived_exam": reverse('archived-exam-list',
-                                     request=request),
-            "permission": reverse('permission-list',
-                                  request=request),
+                                               request=request),
+            "archived_exam": reverse('archived-exam-list', request=request),
+            "permission": reverse('permission-list', request=request),
+            "comment": reverse('comment-list', request=request),
 
         }
         return Response(result)
@@ -94,7 +78,8 @@ class ExamViewSet(mixins.ListModelMixin,
         }
 
     """
-
+    authentication_classes = (CsrfExemptSessionAuthentication,
+                              BasicAuthentication)
     serializer_class = ExamSerializer
     queryset = Exam.objects.all()
 
@@ -126,7 +111,7 @@ class ExamViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         event = InProgressEventSession.objects.filter(
-            course_id=serializer.validated_data.get('course_id'),
+            course=serializer.validated_data.get('course'),
             course_event_id=serializer.validated_data.get('exam_id'),
         ).order_by('-start_date')
         if not event:

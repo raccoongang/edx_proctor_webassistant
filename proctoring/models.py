@@ -14,6 +14,29 @@ class Course(models.Model):
     course_org = models.CharField(max_length=60)
     course_id = models.CharField(max_length=60)
     course_run = models.CharField(max_length=60)
+    display_name = models.CharField(max_length=60)
+
+    def get_full_course(self):
+        return "/".join((self.course_org, self.course_id, self.course_run))
+
+    @classmethod
+    def get_by_course_run(cls, course_run):
+        course_org, course_id, course_run = Course.get_course_data(course_run)
+        return Course.objects.get(
+            course_org=course_org,
+            course_id=course_id,
+            course_run=course_run
+        )
+
+    @classmethod
+    def create_by_course_run(cls, name):
+        course_org, course_id, course_run = Course.get_course_data(name)
+        return cls.objects.get_or_create(
+            course_org=course_org,
+            course_id=course_id,
+            course_run=course_run,
+            display_name=name
+        )[0]
 
     @classmethod
     def get_course_data(cls, course_id):
@@ -28,6 +51,8 @@ class Course(models.Model):
         else:
             return course_id.split('/')
 
+    def __unicode__(self):
+        return self.display_name
 
 def has_permisssion_to_course(user, course_id, permissions=None, role=None):
     """

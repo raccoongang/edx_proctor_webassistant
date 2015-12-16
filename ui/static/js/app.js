@@ -71,6 +71,11 @@
             return $delegate;
         });
 
+        $provide.decorator('uibTooltipPopupDirective', function ($delegate) {
+            $delegate[0].templateUrl = app.path + 'ui/partials/tooltip/tooltip-popup.html';
+            return $delegate;
+        });
+
         $routeProvider
             .when('/', {
                 templateUrl: app.path + 'ui/home/view.html',
@@ -90,12 +95,12 @@
                             }
                             else {
                                 $location.path('/archive');
-                                return true;
+                                deferred.resolve();
                             }
                         });
                         return deferred.promise;
                     },
-                    students: function ($location, TestSession, Api, Auth) {
+                    students: function ($location, TestSession, Api) {
                         if (window.sessionStorage['proctoring'] !== undefined) {
                             TestSession.setSession(
                                 JSON.parse(window.sessionStorage['proctoring'])
@@ -112,8 +117,9 @@
                                 $location.path('/session');
                                 return true;
                             }
-                            else
+                            else {
                                 return ret;
+                            }
                         }
                     }
                 }
@@ -124,8 +130,7 @@
                 resolve: {
                     deps: function ($location, resolver, Auth) {
                         var ret = resolver.load_deps([
-                            app.path + 'ui/sessions/rsController.js',
-                            app.path + 'ui/sessions/rsFilters.js'
+                            app.path + 'ui/sessions/rsController.js'
                         ]);
                         return Auth.is_proctor().then(function (is) {
                             if (is) {

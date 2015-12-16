@@ -6,8 +6,8 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from models import (Exam, ArchivedEventSession, Comment,
-                    has_permisssion_to_course, InProgressEventSession)
-from person.models import Permission
+                    has_permisssion_to_course, InProgressEventSession, Course)
+from person.models import Permission, Student
 
 
 class JSONSerializerField(serializers.Field):
@@ -137,17 +137,23 @@ class ExamSerializer(serializers.ModelSerializer):
         :return: clean data
         """
         for key, value in data['orgExtra'].items():
-            data[re.sub('([A-Z]+)', r'_\1', key).lower()] = value
+            data[JSONSerializerField.get_fieldname(key)] = value
         try:
-            course_org, course_id, course_run = Course.get_course_data(
-                data['course_id'])
+            course = Course.get_by_course_run(data['course_identify'])
+            data['course'] = course
         except ValueError:
             raise serializers.ValidationError("Wrong courseId data")
-        data['course_organization'] = course_org
-        data['course_identify'] = "/".join((course_org, course_id))
-        data['course_run'] = "/".join((course_org, course_id, course_run))
+        except Course.DoesNotExist:
+            raise serializers.ValidationError("Course didn't found")
         data['exam_end_date'] = parser.parse(data['exam_end_date'])
         data['exam_start_date'] = parser.parse(data['exam_start_date'])
+        student = Student.objects.get_or_create(
+            sso_id=data['user_id'],
+            email=data['email'],
+            first_name=data['first_name'],
+            last_name=data['last_name']
+        )[0]
+        data['student'] = student
         del (data['orgExtra'])
         try:
             Exam(**data).full_clean()
@@ -172,6 +178,7 @@ class ArchivedExamSerializer(ExamSerializer):
     """
     Exam archive serializer
     """
+    course_id = serializers.CharField(source='course.display_name')
     comments = CommentSerializer(source='comment_set', many=True)
 
     class Meta:
@@ -181,8 +188,7 @@ class ArchivedExamSerializer(ExamSerializer):
             'exam_sponsor', 'exam_name', 'ssi_product',
             'course_id', 'email', 'exam_end_date', 'exam_id',
             'exam_start_date',
-            'first_name', 'last_name', 'no_of_students', 'user_id', 'username',
-            'course_organization', 'course_identify', 'course_run')
+            'first_name', 'last_name', 'no_of_students', 'user_id', 'username')
 
 
 class EventSessionSerializer(serializers.ModelSerializer):
@@ -192,6 +198,10 @@ class EventSessionSerializer(serializers.ModelSerializer):
     hash_key = serializers.CharField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
     end_date = serializers.DateTimeField(read_only=True)
+    course_id = serializers.SerializerMethodField()
+
+    def get_course_id(self, obj):
+        return obj.course.display_name
 
     class Meta:
         model = InProgressEventSession
@@ -202,13 +212,13 @@ class EventSessionSerializer(serializers.ModelSerializer):
         :param data: data from post/put request
         :return: clean data
         """
-
-        if not self.instance and not has_permisssion_to_course(
-            data.get('proctor'),
-            data.get('course_id', '')
-        ):
-            raise serializers.ValidationError(
-                "You have not permissions to create event for this course")
+        if not self.partial:
+            if not self.instance and not has_permisssion_to_course(
+                data.get('proctor'),
+                data.get('course').get_full_course()
+            ):
+                raise serializers.ValidationError(
+                    "You have not permissions to create event for this course")
         return super(EventSessionSerializer, self).validate(data)
 
 
@@ -216,8 +226,12 @@ class ArchivedEventSessionSerializer(serializers.ModelSerializer):
     """
     Event session archive serializer
     """
+    course_id = serializers.SerializerMethodField()
     proctor = serializers.SerializerMethodField()
     serializers.ReadOnlyField(source='proctor.username')
+
+    def get_course_id(self, obj):
+        return obj.course.display_name
 
     def get_proctor(self, obj):
         proctor = obj.proctor

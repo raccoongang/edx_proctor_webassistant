@@ -10,15 +10,15 @@ from edx_proctor_webassistant.auth import (CsrfExemptSessionAuthentication,
                                            IsProctor, IsProctorOrInstructor)
 from person.models import Permission
 from proctoring import models
-from proctoring.models import has_permisssion_to_course
+from proctoring.models import has_permisssion_to_course, Course
 from proctoring.serializers import (EventSessionSerializer, CommentSerializer,
                                     ArchivedEventSessionSerializer,
                                     ArchivedExamSerializer)
 from django.shortcuts import redirect
 from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import api_view, authentication_classes, \
-    permission_classes
+from rest_framework.decorators import (api_view, authentication_classes,
+                                       permission_classes)
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -180,10 +180,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
                           mixins.UpdateModelMixin,
                           viewsets.GenericViewSet):
     """
-    Event managment API
+    Event managwment API
 
     For **create** send `testing_center`,`course_id`,`course_event_id`
-    Other fields filling automaticaly
+    Other fields filling automatically
 
     You can **update** only `status` and `notify` fields
     """
@@ -201,13 +201,21 @@ class EventSessionViewSet(mixins.ListModelMixin,
         """
         fields_for_create = ['testing_center', 'course_id', 'course_event_id']
         data = {}
+
         for field in fields_for_create:
-            data[field] = request.data.get(field)
-        # Return existing session if match test_center, ourse_id and exam_id
+            if field == 'course_id':
+                course = Course.create_by_course_run(request.data.get(field))
+                data['course'] = course.pk
+            else:
+                data[field] = request.data.get(field)
+        # Return existing session if match test_center, course_id and exam_id
         # so the proctor is able to connect to existing session
         data['status'] = models.EventSession.IN_PROGRESS
         sessions = models.InProgressEventSession.objects.filter(
-            **data).order_by('-start_date')
+            course_event_id=data.get('course_event_id'),
+            course=course.pk,
+            testing_center=data.get('testing_center')
+        ).order_by('-start_date')
         if sessions:
             session = sessions[0]
             serializer = EventSessionSerializer(session)
@@ -242,12 +250,12 @@ class EventSessionViewSet(mixins.ListModelMixin,
         change_end_date = instance.status == models.EventSession.IN_PROGRESS \
                           and data.get(
             'status') == models.EventSession.ARCHIVED
-        if instance.status != data.get('status'):
+        if str(instance.status) != data.get('status', ''):
             Journaling.objects.create(
                 type=Journaling.EVENT_SESSION_STATUS_CHANGE,
                 event=instance,
                 proctor=request.user,
-                note=instance.status + " -> " + data.get('status')
+                note="%s -> %s" % (instance.status, data.get('status', ''))
             )
         serializer = self.get_serializer(instance, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -409,8 +417,7 @@ class Review(APIView):
 
 
 @api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated, IsProctorOrInstructor))
+# @authentication_classes((SsoTokenAuthentication,))
 def get_exams_proctored(request):
     response = get_proctored_exams_request()
     content = json.loads(response.content)
@@ -434,6 +441,13 @@ def get_exams_proctored(request):
 def bulk_start_exams(request):
     """
     Start list of exams by exam codes.
+
+    Request example
+
+        {
+            "list":['<exam_id_1>','<exam_id_2>']
+        }
+
     """
     exam_codes = request.data.get('list', [])
     exam_list = models.Exam.objects.filter(exam_code__in=exam_codes)
@@ -465,61 +479,9 @@ def redirect_ui(request):
     return redirect('/#{}'.format(request.path))
 
 
-@api_view(['POST'])
-@authentication_classes(
-    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctor))
-def comments_journaling(request):
-    """
-    Add proctor comments to journal
-    Request example:
-
-        {
-            "examCode" : "C27DE6D1-39D6-4147-8BE0-9E9440D4A971",
-            "comment" : {
-                            "comments": "Browsing other websites",
-                            "duration": 88,
-                            "eventFinish": 88,
-                            "eventStart": 12,
-                            "eventStatus": "Suspicious"
-                        }
-        }
-    """
-    data = request.data
-    if u'examCode' in data and u'comment' in data:
-        exam = get_object_or_404(
-            models.Exam.objects.by_user_perms(request.user),
-            exam_code=data['examCode']
-        )
-        comment = data['comment']
-        Journaling.objects.create(
-            type=Journaling.EXAM_COMMENT,
-            event=exam.event,
-            exam=exam,
-            proctor=request.user,
-            note="""
-                Duration: %s
-                Event start: %s
-                Event finish: %s
-                eventStatus": %s
-                Comment:
-                %s
-            """ % (
-                comment.get('duration'),
-                comment.get('eventStart'),
-                comment.get('eventFinish'),
-                comment.get('eventStatus'),
-                comment.get('comments'),
-            ),
-        )
-        return Response(status=status.HTTP_201_CREATED)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
 class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
-    Return list of Archived Exams with pagiantion.
+    Return list of Archived Exams with pagination.
 
     You can filter results by `event_hash`, `courseID`, `examStartDate`,
     `examEndDate`, `username`, `email`
@@ -561,7 +523,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             if field == "event_hash":
                 queryset = queryset.filter(event__hash_key=value)
             if field == "courseID":
-                queryset = queryset.filter(course_id=value)
+                queryset = queryset.filter(course__display_name=value)
             if field == "username":
                 queryset = queryset.filter(username=value)
             if field == "email":
@@ -584,7 +546,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
                      viewsets.GenericViewSet):
     """
-    Return list of Archived Exams with pagiantion.
+    Return list of Archived Exams with pagination.
 
     You can filter results by `exam_code`, `event_start` and `event_status`
 
@@ -644,7 +606,26 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+        # comment journaling
+        Journaling.objects.create(
+            type=Journaling.EXAM_COMMENT,
+            event=exam.event,
+            exam=exam,
+            proctor=request.user,
+            note="""
+                Duration: %s
+                Event start: %s
+                Event finish: %s
+                eventStatus": %s
+                Comment:
+                %s
+            """ % (
+                serializer.data.get('duration'),
+                serializer.data.get('event_start'),
+                serializer.data.get('event_finish'),
+                serializer.data.get('event_status'),
+                serializer.data.get('comment'),
+            ),
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
-
-

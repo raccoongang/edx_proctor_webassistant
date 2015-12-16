@@ -5,7 +5,7 @@ urlpatterns = patterns(
     '',
     url(r'start_exam/(?P<attempt_code>[-\w]+)$', api_ui_views.start_exam,
         name='start_exam'),
-    url(r'stop_exam/(?P<attempt_code>[\dA-Z\-]+)$', api_ui_views.stop_exam,
+    url(r'stop_exam/(?P<attempt_code>[-\w]+)$', api_ui_views.stop_exam,
         name='stop_exam'),
     url(r'stop_exams/$', api_ui_views.stop_exams,
         name='stop_exams'),
@@ -17,7 +17,4 @@ urlpatterns = patterns(
         name='review'),
     url(r'proctored_exams/$', api_ui_views.get_exams_proctored,
         name='proctor_exams'),
-    url(r'comments_journaling/$', api_ui_views.comments_journaling,
-        name='comments_journaling'),
-
 )

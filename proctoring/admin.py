@@ -13,12 +13,12 @@ class ExamAdmin(admin.ModelAdmin):
     """
     Exam admin class
     """
-    list_display = ('exam_code', 'organization', 'exam_id', 'course_id',
+    list_display = ('exam_code', 'organization', 'exam_id','course',
                     'first_name', 'last_name', 'exam_status',
                     'username', 'exam_start_date', 'exam_end_date')
-    list_filter = ('exam_status',)
+    list_filter = ('exam_status','course')
     search_fields = ['exam_code', 'exam_id', 'first_name', 'last_name',
-                     'course_id', 'user_id', 'username', 'email']
+                     'user_id', 'username', 'email']
     fieldsets = (
         (None, {
             'fields': (
@@ -29,13 +29,13 @@ class ExamAdmin(admin.ModelAdmin):
         ('Org Extra', {
             'fields': (
                 'exam_start_date', 'exam_end_date', 'no_of_students',
-                'exam_id', 'course_id', 'user_id', 'first_name', 'last_name',
+                'exam_id', 'user_id', 'first_name', 'last_name',
                 'username', 'email')
         }),
         ('Additional', {
             'fields': (
-                'event', 'course_organization', 'course_identify',
-                'course_run',
+                'event',
+                'course',
                 'exam_status')
         }),
     )
@@ -59,4 +59,3 @@ class EventSessionAdmin(admin.ModelAdmin):
 admin.site.register(models.Exam, ExamAdmin)
 admin.site.register(models.InProgressEventSession, EventSessionAdmin)
 admin.site.register(models.ArchivedEventSession, EventSessionAdmin)
-
