@@ -389,8 +389,8 @@
             return i18n.translate(text);
         };
 
-        $scope.get_date = function(){
-            return DateTimeService.get_now_date();
+        $scope.get_date = function(timestamp){
+            return DateTimeService.get_localized_date_from_timestamp(timestamp);
         };
     });
 })();
