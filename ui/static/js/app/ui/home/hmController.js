@@ -10,7 +10,6 @@
             function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
-                console.log("MainCtrl: init");
                 var session = TestSession.getSession();
 
                 if (session){
@@ -23,21 +22,22 @@
 
                 // get student exams from session
                 if (students !== undefined){
-                    angular.forEach(students.data, function(val, key){
-                        Api.get_comments(val.examCode).then(function(data){
+                    angular.forEach(students.data, function(attempt){
+                        // restore attempt comments
+                        Api.get_comments(attempt.examCode).then(function(data){
                             var comments = data.data.results;
-                            val.comments = [];
-                            angular.forEach(comments, function(v, k){
+                            attempt.comments = [];
+                            angular.forEach(comments, function(comment){
                                 var item = {
-                                    comment: v.comment,
-                                    timestamp: v.event_start,
-                                    status: v.event_status
+                                    comment: comment.comment,
+                                    timestamp: comment.event_start,
+                                    status: comment.event_status
                                 };
-                                val.comments.push(item);
+                                attempt.comments.push(item);
                             });
-                            val.status = val.attempt_status;
-                            $scope.ws_data.push(val);
-                            Polling.add_item(val.examCode); // first item starts cyclic update
+                            attempt.status = attempt.attempt_status;
+                            $scope.ws_data.push(attempt);
+                            Polling.add_item(attempt.examCode); // first item starts cyclic update
                         });
                     });
                 }
@@ -71,8 +71,7 @@
 
                 $scope.websocket_callback = function (msg) {
                     if (msg){
-                        if (msg['examCode']) {
-                            msg.finished = false;
+                        if (msg.examCode) {
                             $scope.ws_data.push(angular.copy(msg));
                             $scope.$apply();
                             return;

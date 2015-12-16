@@ -134,6 +134,7 @@ class ExamViewSet(mixins.ListModelMixin,
         event = event[0]
         self.perform_create(serializer)
         data['hash'] = serializer.instance.generate_key()
+        data['status'] = 'created'
         send_ws_msg(data, channel=event.hash_key)
         headers = self.get_success_headers(serializer.data)
         serializer.instance.event = event
