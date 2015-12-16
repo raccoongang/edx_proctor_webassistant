@@ -22,6 +22,7 @@
   "ACTUAL_EVENT_END_TIME": "Actual end Time",
   "PROCTOR": "Proctor",
   "DURATION": "Duration",
+  "ACTUAL_DURATION": "Actual Duration",
   "MIN": "min",
   "BACK": "Back",
   "ENDED_WITH_STATUS": "Ended with Status",

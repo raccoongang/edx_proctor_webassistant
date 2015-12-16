@@ -43,7 +43,7 @@
                 <b>{[ i18n('ACTUAL_EVENT_END_TIME') ]}</b>: {[ session.actual_end_date | date_localize ]}
             </div>
             <div>
-                <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
+                <b>{[ i18n('ACTUAL_DURATION') ]}</b>: {[ get_diff_time(session.actual_start_date, session.actual_end_date) ]} {[ i18n('MIN') ]}
             </div>
 
             <div>
