@@ -288,29 +288,31 @@
                 $scope.end_all_attempts = function () {
                     if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true) {
                         var list = get_items_to_stop();
-                        Api.stop_all_exam_attempts(list).then(function () {
-                            $scope.add_review({}, 'common').then(function (data) {
-                                data.status = i18n.translate('COMMENT').toString();
-                                angular.forEach(list, function (val, key) {
-                                    var res = $scope.ws_data.filterBy({examCode: val.attempt_code})[0];
-                                    if (res.comments == undefined) {
-                                        res.comments = [];
-                                    }
-                                    res.comments.push(data);
-                                    Api.save_comment(val.attempt_code,
-                                        {
-                                            "comments": data.comment,
-                                            "duration": 1,
-                                            "eventFinish": data.timestamp,
-                                            "eventStart": data.timestamp,
-                                            "eventStatus": data.status
+                        if (list.length){
+                            Api.stop_all_exam_attempts(list).then(function () {
+                                $scope.add_review({}, 'common').then(function (data) {
+                                    data.status = i18n.translate('COMMENT').toString();
+                                    angular.forEach(list, function (val, key) {
+                                        var res = $scope.ws_data.filterBy({examCode: val.attempt_code})[0];
+                                        if (res.comments == undefined) {
+                                            res.comments = [];
                                         }
-                                    );
+                                        res.comments.push(data);
+                                        Api.save_comment(val.attempt_code,
+                                            {
+                                                "comments": data.comment,
+                                                "duration": 1,
+                                                "eventFinish": data.timestamp,
+                                                "eventStart": data.timestamp,
+                                                "eventStatus": data.status
+                                            }
+                                        );
+                                    });
                                 });
+                            }, function () {
+                                alert(i18n.translate('STOP_EXAMS_FAILED'));
                             });
-                        }, function () {
-                            alert(i18n.translate('STOP_EXAMS_FAILED'));
-                        });
+                        }
                     }
                 };
 
