@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+There are requests to edX API
+See https://github.com/edx/edx-proctoring/blob/master/edx_proctoring/api.py
+"""
 import json
 
 import requests
@@ -80,6 +84,8 @@ def send_review_request(payload):
 def get_proctored_exams_request():
     """
     Get list of courses wich contains proctored exams
+    Api extension must be installed for you OpenEDX
+    See https://github.com/raccoongang/open_edx_api_extension
     :return: Response
     """
     return _journaling_request(
@@ -130,7 +136,7 @@ def _journaling_request(request_type, url, data=None, headers=None):
     :param url: str
     :param data: dict
     :param headers: dict
-    :return:
+    :return: Response
     """
     if request_type == "post":
         response = requests.post(

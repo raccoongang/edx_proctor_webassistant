@@ -44,7 +44,7 @@
             }
             return deferred.promise;
         };
-
+        /* TODO Get SSO url from Django settings.SSO_PWA_URL  */
         this.get_profile = function(){
             if (token){
                 $http({

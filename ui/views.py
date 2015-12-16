@@ -44,7 +44,7 @@ def logout(request, next_page=None,
 
     lgt(request)
 
-    response = redirect('%s?%s=%s' % (settings.SSO_NPOED_URL + "/logout",
+    response = redirect('%s?%s=%s' % (settings.SSO_PWA_URL + "/logout",
                                       redirect_field_name, next_page))
     response.set_cookie('authenticated', False, domain=domain)
     response.set_cookie('authenticated_user', 'Anonymous', domain=domain)

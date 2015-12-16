@@ -20,8 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '92s%@1n2ebtk=wn)nrn+4s+drfvkextock5i41p%v860=vb0!f'
+SECRET_KEY = '<ADD_YOUR_SECRET_KEY_IN_LOCAL_SETTINGS>'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -112,7 +111,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/login/sso_npoed-oauth2'
+LOGIN_URL = '/login/sso_pwa-oauth2'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -131,7 +130,6 @@ STATICFILES_DIRS = (
 # Bower settings
 # https://github.com/nvbn/django-bower
 BOWER_COMPONENTS_ROOT = BASE_DIR + '/components/'
-BOWER_PATH = '/usr/local/bin/bower'
 
 BOWER_INSTALLED_APPS = (
     'angular',
@@ -213,11 +211,9 @@ WS4REDIS_ALLOWED_CHANNELS = (
 )
 WS4REDIS_HEARTBEAT = '--heartbeat--'
 
-EDX_URL = "<EDX_URL>"
-
 # social auth settings
 AUTHENTICATION_BACKENDS = (
-    'edx_proctor_webassistant.social_auth_backends.NpoedBackend',
+    'edx_proctor_webassistant.social_auth_backends.PWABackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_PIPELINE = (
@@ -233,18 +229,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.user_details',
     'edx_proctor_webassistant.pipeline.update_user_name'
 )
-SSO_NPOED_URL = "http://sso.sandbox-m.raccoongang.com"
-SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '76ec51ced99df8b65070'
-SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = 'c0f4186cbb06b08b8ca997e0ff233d711f1a209a'
+
 SOCIAL_NEXT_URL = '/'
-
-AUTH_SESSION_COOKIE_DOMAIN = ".localhost"
-
-COURSE_ID_SLASH_SEPARATED = True
-
-GRAPPELLI_ADMIN_TITLE = u"Открытое образование"
-
-EDX_API_KEY = "kjbdsf7y45unga94tm53he0n"
 
 SPA_CONFIG = {
     "language": "ru"
@@ -253,5 +239,7 @@ SPA_CONFIG = {
 try:
     from settings_local import *
 except ImportError:
-    print ('Local settings import error')
+    print "CRITICAL: You must specify settings_local.py"
+    exit()
+
 

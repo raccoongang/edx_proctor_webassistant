@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = '<SECRET_KEY>'
+
+# Path to bower
+BOWER_PATH = '/usr/local/bin/bower'
+
+# Credatials for authorization using SSO
+SSO_PWA_URL = "http://sso.example.com"
+SOCIAL_AUTH_SSO_PWA_OAUTH2_KEY = '<OAUTH_KEY>'
+SOCIAL_AUTH_SSO_PWA_OAUTH2_SECRET = '<OAUTH_SECRET>'
+
+# URL to OpenEDX
+EDX_URL = "http://edx.example.com"
+
+# KEY for OpenEDX API
+EDX_API_KEY = "<EDX_API_KEY>"
+
+# Domain for auth cookie (without subdomain)
+AUTH_SESSION_COOKIE_DOMAIN = ".example.com"
+
+# Title in Grapelli admin panel
+GRAPPELLI_ADMIN_TITLE = "<PROJECT_TITLE>"

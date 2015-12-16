@@ -1,5 +1,10 @@
 # Instalation guide
 
+## Requirements
+
+Api extension must be installed for you OpenEDX
+See https://github.com/raccoongang/open_edx_api_extension
+
 ## Proctor web assistant installation
 
 Create venv and activate it
@@ -44,8 +49,6 @@ BOWER_PATH = '/usr/local/bin/bower'
 
 Also set `EDX_URL` in settings
 
-By default webassistant supports slash separated course id (for example `org/course/course_run`). If course id pattern in EDX looks like `foo:org+course+course_run` set `COURSE_ID_SLASH_SEPARATED = False` into your local_settings
-
 Then run commands
 ```
 python manage.py bower install
@@ -55,16 +58,16 @@ python manage.py collectstatic
 
 ## SSO authorization setup
 
-- Create new client in SSO admin panel. Set redirect uri as `http://<domain>/complete/sso_npoed-oauth2/`
+- Create new client in SSO admin panel. Set redirect uri as `http://<domain>/complete/sso_pwa-oauth2/`
 - Enter client's KEY and SECRET in web assistant's settings:
 ```
-    SOCIAL_AUTH_SSO_NPOED_OAUTH2_KEY = '<KEY>'
-    SOCIAL_AUTH_SSO_NPOED_OAUTH2_SECRET = '<SECRET>'
+    SOCIAL_AUTH_SSO_PWA_OAUTH2_KEY = '<KEY>'
+    SOCIAL_AUTH_SSO_PWA_OAUTH2_SECRET = '<SECRET>'
 ```
 
 - Enter SSO application's url in web assistant's settings:
 ```
-    SSO_NPOED_URL = "http://<SSO url>"
+    SSO_PWA_URL = "http://<SSO url>"
 ```
 - Set up an `AUTH_SESSION_COOKIE_DOMAIN`. It must be proctor domain address without subdomain. For example `.yourdomain.com` for `proctor.yourdomain.com`
 
