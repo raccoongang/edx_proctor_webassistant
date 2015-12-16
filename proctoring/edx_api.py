@@ -46,10 +46,7 @@ def poll_status_request(codes):
     if isinstance(codes, list):
         res = []
         for code in codes:
-            ret = _journaling_request(
-                'get',
-                "api/edx_proctoring/proctoring_poll_status/" + code
-            )
+            ret = poll_status(code)
             if ret.status_code == 200:
                 payload = ret.json()
                 payload['attempt_code'] = code
@@ -57,6 +54,14 @@ def poll_status_request(codes):
         return res
     else:
         return []
+
+
+def poll_status(code):
+    ret = _journaling_request(
+        'get',
+        "api/edx_proctoring/proctoring_poll_status/" + code
+    )
+    return ret
 
 
 def send_review_request(payload):

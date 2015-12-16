@@ -3,13 +3,12 @@
 (function(){
     var module = angular.module('tokenAuth', []);
     module.service('Auth', ['$cookies', '$q', '$http', 'permissions', function($cookies, $q, $http, permissions){
-        var token = '9cc3b8dee63b05cbfc0e17b34be3fa9942bef537';
+        var token = '';
         var username = $cookies.get('authenticated_user');
         var restrictions = null;
         var self = this;
 
         this.authenticate = function(){
-            return true;
             var c = $cookies.get('authenticated_token');
             if (c !== undefined && c){
                 token = c;

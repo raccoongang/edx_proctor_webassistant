@@ -145,6 +145,8 @@ class Exam(models.Model):
     # org extra
     exam_start_date = models.DateTimeField(blank=True, null=True)
     exam_end_date = models.DateTimeField(blank=True, null=True)
+    actual_start_date = models.DateTimeField(blank=True, null=True)
+    actual_end_date = models.DateTimeField(blank=True, null=True)
     no_of_students = models.IntegerField(blank=True, null=True)
     exam_id = models.CharField(max_length=64, blank=True, null=True)
     course_identify = models.CharField(max_length=64, blank=True, null=True)

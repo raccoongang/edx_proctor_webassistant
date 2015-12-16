@@ -31,6 +31,7 @@ class Migration(migrations.Migration):
                 ('course_org', models.CharField(max_length=60)),
                 ('course_id', models.CharField(max_length=60)),
                 ('course_run', models.CharField(max_length=60)),
+                ('display_name', models.CharField(max_length=60)),
             ],
         ),
         migrations.CreateModel(
@@ -64,6 +65,8 @@ class Migration(migrations.Migration):
                 ('ssi_product', models.CharField(max_length=60)),
                 ('exam_start_date', models.DateTimeField(null=True, blank=True)),
                 ('exam_end_date', models.DateTimeField(null=True, blank=True)),
+                ('actual_start_date', models.DateTimeField(null=True, blank=True)),
+                ('actual_end_date', models.DateTimeField(null=True, blank=True)),
                 ('no_of_students', models.IntegerField(null=True, blank=True)),
                 ('exam_id', models.CharField(max_length=64, null=True, blank=True)),
                 ('course_identify', models.CharField(max_length=64, null=True, blank=True)),

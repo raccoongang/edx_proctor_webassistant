@@ -159,10 +159,19 @@ def poll_status(request):
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(
-                models.Exam.objects.by_user_perms(request.user),
+                Exam.objects.by_user_perms(request.user),
                 exam_code=val['attempt_code']
             )
-            exam.attempt_status = val.get('status')
+            new_status = val['status']
+            if (exam.attempt_status == 'ready_to_start'
+                    and new_status == 'started'):
+                exam.actual_start_date = datetime.now()
+            if (exam.attempt_status == 'started'
+                    and new_status == 'submitted')\
+                or (exam.attempt_status == 'ready_to_submit'
+                    and new_status == 'submitted'):
+                exam.actual_end_date = datetime.now()
+            exam.attempt_status = new_status
             exam.save()
             data = {
                 'hash': exam.generate_key(),
@@ -361,6 +370,11 @@ class Review(APIView):
                               BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
 
+    # EDX can ignore review post save procedure
+    # that will result in `Pending` status for student
+    # so we need to send review few times
+    max_resend_attempts = 3
+
     def post(self, request):
         """
         Passing review statuses:  `Clean`, `Rules Violation`
@@ -406,14 +420,38 @@ class Review(APIView):
                     exam=exam
                 )
 
-        response = send_review_request(payload)
-        if response.status_code in [200, 201]:
-            exam.attempt_status = 'finished'
-            exam.save()
+        response, current_status = self.send_review(payload)
+        exam.attempt_status = current_status
+        exam.save()
 
         return Response(
             status=response.status_code
         )
+
+    @staticmethod
+    def _sent(_status):
+        return _status in ['verified', 'rejected']
+
+    @staticmethod
+    def _get_status(code):
+        try:
+            res = poll_status(code)
+            ret_data = res.json()
+            return ret_data['status']
+        except:
+            pass
+
+    def send_review(self, payload):
+        attempt = 0
+        code = payload['examMetaData']['examCode']
+        response = send_review_request(payload)
+        current_status = self._get_status(code)
+        while attempt < self.max_resend_attempts \
+            and not self._sent(current_status):
+            response = send_review_request(payload)
+            current_status = self._get_status(code)
+            attempt += 1
+        return response, current_status
 
 
 @api_view(['GET'])
