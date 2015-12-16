@@ -18,6 +18,8 @@
   "TESTING_CENTER": "Testing Center",
   "EVENT_START_TIME": "Started at",
   "EVENT_END_TIME": "Ended at",
+  "ACTUAL_EVENT_START_TIME": "Actual start Time",
+  "ACTUAL_EVENT_END_TIME": "Actual end Time",
   "PROCTOR": "Proctor",
   "DURATION": "Duration",
   "MIN": "min",

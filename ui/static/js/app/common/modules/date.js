@@ -115,13 +115,13 @@
 
     app.filter('date_localize', function(DateTimeService) {
         return function(input) {
-            return DateTimeService.get_localized_date_from_string(input);
+            return input?DateTimeService.get_localized_date_from_string(input):'';
         };
     });
 
     app.filter('date_localize_timestamp', function(DateTimeService) {
         return function(input) {
-            return DateTimeService.get_localized_date_from_timestamp(input);
+            return input?DateTimeService.get_localized_date_from_timestamp(input):'';
         };
     });
 })();

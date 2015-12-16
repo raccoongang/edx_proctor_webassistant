@@ -18,6 +18,8 @@
   "TESTING_CENTER": "Центр тестирования",
   "EVENT_START_TIME": "Начало",
   "EVENT_END_TIME": "Окончание",
+  "ACTUAL_EVENT_START_TIME": "Фактическое начало",
+  "ACTUAL_EVENT_END_TIME": "Фактическое окончание",
   "PROCTOR": "Проктор",
   "DURATION": "Длительность",
   "MIN": "мин",
