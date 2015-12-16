@@ -288,6 +288,7 @@
                 $scope.end_all_attempts = function () {
                     if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true) {
                         var list = get_items_to_stop();
+                        console.log(list);
                         if (list.length){
                             Api.stop_all_exam_attempts(list).then(function () {
                                 $scope.add_review({}, 'common').then(function (data) {
