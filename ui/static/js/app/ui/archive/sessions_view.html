@@ -36,6 +36,16 @@
             <div>
                 <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
             </div>
+
+            <div>
+                <b>{[ i18n('ACTUAL_EVENT_START_TIME') ]}</b>: {[ session.actual_start_date | date_localize ]}
+                <br>
+                <b>{[ i18n('ACTUAL_EVENT_END_TIME') ]}</b>: {[ session.actual_end_date | date_localize ]}
+            </div>
+            <div>
+                <b>{[ i18n('DURATION') ]}</b>: {[ session.duration ]} {[ i18n('MIN') ]}
+            </div>
+
             <div>
                 <b>{[ i18n('ENDED_WITH_STATUS') ]}</b>: {[ session.attempt_status ]}
             </div>
