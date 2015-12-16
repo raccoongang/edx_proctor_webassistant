@@ -3,17 +3,17 @@
 (function () {
     angular.module('proctor').controller(
         'MainCtrl', ['$scope', '$interval', '$location',
-                     '$q', 'WS', 'Api', 'Auth', 'i18n',
-                     'NgTableParams', '$uibModal',
-                     'TestSession', 'Polling',
-                     'DateTimeService', 'students',
+            '$q', 'WS', 'Api', 'Auth', 'i18n',
+            'NgTableParams', '$uibModal',
+            'TestSession', 'Polling',
+            'DateTimeService', 'students',
             function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
 
-                if (session){
-                    $interval(function(){
+                if (session) {
+                    $interval(function () {
                         $scope.session_duration = TestSession.getSessionDuration();
                     }, 1000);
                 }
@@ -21,13 +21,13 @@
                 $scope.ws_data = [];
 
                 // get student exams from session
-                if (students !== undefined){
-                    angular.forEach(students.data, function(attempt){
+                if (students !== undefined) {
+                    angular.forEach(students.data, function (attempt) {
                         // restore attempt comments
-                        Api.get_comments(attempt.examCode).then(function(data){
+                        Api.get_comments(attempt.examCode).then(function (data) {
                             var comments = data.data.results;
                             attempt.comments = [];
-                            angular.forEach(comments, function(comment){
+                            angular.forEach(comments, function (comment) {
                                 var item = {
                                     comment: comment.comment,
                                     timestamp: comment.event_start,
@@ -57,7 +57,7 @@
                     data: $scope.ws_data
                 });
 
-                var attempt_end = function(hash){
+                var attempt_end = function (hash) {
                     Polling.stop(hash);
                 };
 
@@ -70,16 +70,16 @@
                 };
 
                 $scope.websocket_callback = function (msg) {
-                    if (msg){
+                    if (msg) {
                         if (msg.examCode) {
                             $scope.ws_data.push(angular.copy(msg));
                             $scope.$apply();
                             return;
                         }
-                        if (msg['hash'] && msg['status']){
+                        if (msg['hash'] && msg['status']) {
                             var item = $scope.ws_data.filterBy({hash: msg.hash});
-                            item = item.length?item[0]:null;
-                            if (msg.status == 'started' && item && item.status == 'ready_to_start'){
+                            item = item.length ? item[0] : null;
+                            if (msg.status == 'started' && item && item.status == 'ready_to_start') {
                                 item.started_at = DateTimeService.get_now_time();
                             }
                             update_status(msg['hash'], msg['status']);
@@ -90,10 +90,11 @@
                     }
                 };
 
+                // Start websocket connection
                 WS.init(session.hash_key, $scope.websocket_callback, true);
 
                 $scope.accept_exam_attempt = function (exam) {
-                    if (exam.accepted){
+                    if (exam.accepted) {
                         Api.accept_exam_attempt(exam.examCode)
                             .success(function (data) {
                                 if (data['status'] == 'OK') {
@@ -146,7 +147,7 @@
                 };
 
                 // When proctor adds any comment for single student's exam attempt
-                $scope.attempt_review_callback = function(attempt, data){
+                $scope.attempt_review_callback = function (attempt, data) {
                     attempt.comments.push(data);
                     Api.save_comment(attempt.examCode,
                         {
@@ -160,7 +161,7 @@
                 };
 
                 $scope.send_review = function (exam, status) {
-                    if (exam.status == 'submitted' && exam.review_sent !== true){
+                    if (exam.status == 'submitted' && exam.review_sent !== true) {
                         var payload = {
                             "examMetaData": {
                                 "examCode": exam.examCode,
@@ -171,7 +172,7 @@
                             "videoReviewLink": "",
                             "desktopComments": []
                         };
-                        angular.forEach(exam.comments, function(val, key){
+                        angular.forEach(exam.comments, function (val, key) {
                             payload.desktopComments.push(
                                 {
                                     "comments": val.comment,
@@ -182,7 +183,7 @@
                                 }
                             );
                         });
-                        Api.send_review(payload).success(function(){
+                        Api.send_review(payload).success(function () {
                             var idx = 0;
                             while ($scope.ws_data[idx].examCode !== exam.examCode) {
                                 idx++;
@@ -193,35 +194,35 @@
                                 $scope.ws_data[idx].status = 'rejected';
                             exam.review_sent = true;
                             attempt_end(exam.hash);
-                        }).error(function(){
+                        }).error(function () {
                             alert(i18n.translate('REVIEW_SEND_FAILED') + " " + exam.examCode);
                         });
                     }
                 };
 
-                $scope.$watch('ws_data', function(newValue, oldValue) {
-                    if (newValue!=oldValue){
+                $scope.$watch('ws_data', function (newValue, oldValue) {
+                    if (newValue != oldValue) {
                         $scope.tableParams.reload();
                     }
                 }, true);
 
-                $scope.check_all_attempts = function() {
+                $scope.check_all_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function(val, key){
-                        if (!list.in_array(val.examCode)){
+                    angular.forEach($scope.ws_data, function (val, key) {
+                        if (!list.in_array(val.examCode)) {
                             list.push(val.examCode);
                         }
                     });
                     $scope.exams.checked = angular.copy(list);
                 };
 
-                $scope.uncheck_all_attempts = function() {
+                $scope.uncheck_all_attempts = function () {
                     $scope.exams.checked = [];
                 };
 
-                var there_are_not_reviewed_attempts = function(){
+                var there_are_not_reviewed_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function(val, key){
+                    angular.forEach($scope.ws_data, function (val, key) {
                         if (!['verified', 'rejected'].in_array(val.status)) {
                             list.push(val.hash);
                         }
@@ -229,27 +230,28 @@
                     return list.length > 0;
                 };
 
-                $scope.end_session = function(){
-                    if (!there_are_not_reviewed_attempts()){
-                        $scope.add_review({}, 'session').then(function(data){
-                            TestSession.endSession(data.comment).then(function(){
+                $scope.end_session = function () {
+                    if (!there_are_not_reviewed_attempts()) {
+                        $scope.add_review({}, 'session').then(function (data) {
+                            TestSession.endSession(data.comment).then(function () {
                                 delete window.sessionStorage['proctoring'];
                                 Polling.stop_all();
                                 $location.path('/session');
-                            }, function(){});
-                        }, function(){
+                            }, function () {
+                            });
+                        }, function () {
                             alert(i18n.translate('EVENT_COMMENT_ERROR'));
                         });
                     }
-                    else{
+                    else {
                         alert(i18n.translate('NOT_REVIEWED_SESSIONS'));
                     }
                 };
 
-                var get_not_started_attempts = function(){
+                var get_not_started_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function(val, key){
-                        if (val.status == undefined || !val.status || val.status == 'created'){
+                    angular.forEach($scope.ws_data, function (val, key) {
+                        if (val.status == undefined || !val.status || val.status == 'created') {
                             if ($scope.exams.checked.in_array(val.examCode)) {
                                 list.push(val.examCode);
                             }
@@ -258,22 +260,22 @@
                     return list;
                 };
 
-                $scope.start_all_attempts = function(){
-                    if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true){
-                        Api.start_all_exams(get_not_started_attempts()).then(function(){
-                            angular.forEach($scope.exams.checked, function(val, key){
+                $scope.start_all_attempts = function () {
+                    if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true) {
+                        Api.start_all_exams(get_not_started_attempts()).then(function () {
+                            angular.forEach($scope.exams.checked, function (val, key) {
                                 Polling.add_item(val);
                             });
                         });
                     }
                 };
 
-                var get_items_to_stop = function(){
+                var get_items_to_stop = function () {
                     var list = [];
-                    angular.forEach($scope.exams.checked, function(val, key){
+                    angular.forEach($scope.exams.checked, function (val, key) {
                         var item = $scope.ws_data.filterBy({examCode: val});
-                        if (item.length){
-                            if (!['verified', 'rejected'].in_array(item.status)){
+                        if (item.length) {
+                            if (!['verified', 'rejected'].in_array(item.status)) {
                                 list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
                             }
                         }
@@ -281,32 +283,32 @@
                     return list;
                 };
 
-                $scope.end_all_attempts = function(){
-                    if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true){
+                $scope.end_all_attempts = function () {
+                    if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true) {
                         var list = get_items_to_stop();
-                        Api.stop_all_exam_attempts(list).then(function(){
-                            $scope.add_review({}, 'common').then(function(data){
+                        Api.stop_all_exam_attempts(list).then(function () {
+                            $scope.add_review({}, 'common').then(function (data) {
                                 data.status = "Comment";
-                                angular.forEach(list, function(val, key){
+                                angular.forEach(list, function (val, key) {
                                     var res = $scope.ws_data.filterBy({examCode: val.attempt_code})[0];
-                                    if (res.comments == undefined){
+                                    if (res.comments == undefined) {
                                         res.comments = [];
                                     }
                                     res.comments.push(data);
                                 });
                             });
-                        }, function(){
+                        }, function () {
                             alert(i18n.translate('STOP_EXAMS_FAILED'));
                         });
                     }
                 };
 
-                $scope.accept_student = function(exam){
+                $scope.accept_student = function (exam) {
                     exam.accepted = true;
                 };
 
-                $scope.show_comments = function(exam){
-                    if (exam.comments.length){
+                $scope.show_comments = function (exam) {
+                    if (exam.comments.length) {
                         var deferred = $q.defer();
 
                         var modalInstance = $uibModal.open({
@@ -334,19 +336,19 @@
         $scope.exam.course_name = session.course_name;
         $scope.exam.exam_name = session.exam_name;
         $scope.available_statuses = [];
-        if (exam.review_type == 'common'){
+        if (exam.review_type == 'common') {
             $scope.available_statuses = [
                 i18n.translate('COMMENT')
             ];
         }
-        else if (exam.review_type == 'personal'){
+        else if (exam.review_type == 'personal') {
             $scope.available_statuses = [
                 i18n.translate('COMMENT').toString(),
                 i18n.translate('SUSPICIOUS').toString()
             ];
         }
         $scope.comment = {
-            status: $scope.available_statuses.length?$scope.available_statuses[0]:'',
+            status: $scope.available_statuses.length ? $scope.available_statuses[0] : '',
             message: ""
         };
 
@@ -364,15 +366,15 @@
             $uibModalInstance.dismiss('cancel');
         };
 
-        $scope.i18n = function(text){
+        $scope.i18n = function (text) {
             return i18n.translate(text);
         };
 
-        $scope.get_date = function(){
+        $scope.get_date = function () {
             return DateTimeService.get_now_date();
         };
 
-        $scope.get_time = function(){
+        $scope.get_time = function () {
             return DateTimeService.get_now_time();
         };
     });
@@ -384,11 +386,11 @@
             $uibModalInstance.close();
         };
 
-        $scope.i18n = function(text){
+        $scope.i18n = function (text) {
             return i18n.translate(text);
         };
 
-        $scope.get_date = function(timestamp){
+        $scope.get_date = function (timestamp) {
             return DateTimeService.get_localized_date_from_timestamp(timestamp);
         };
     });
