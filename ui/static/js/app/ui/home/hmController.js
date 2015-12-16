@@ -277,7 +277,7 @@
                     angular.forEach($scope.exams.checked, function (val, key) {
                         var item = $scope.ws_data.filterBy({examCode: val});
                         if (item.length) {
-                            if (!['verified', 'rejected', 'submitted'].in_array(item.status)) {
+                            if (!['verified', 'rejected', 'submitted'].in_array(item[0].status)) {
                                 list.push({user_id: item[0].orgExtra.userID, attempt_code: val});
                             }
                         }
@@ -288,7 +288,6 @@
                 $scope.end_all_attempts = function () {
                     if (confirm(i18n.translate('STOP_ALL_ATTEMPTS')) === true) {
                         var list = get_items_to_stop();
-                        console.log(list);
                         if (list.length){
                             Api.stop_all_exam_attempts(list).then(function () {
                                 $scope.add_review({}, 'common').then(function (data) {
