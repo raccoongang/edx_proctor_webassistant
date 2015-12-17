@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import logout as lgt
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.shortcuts import redirect
+from edx_proctor_webassistant.social_auth_backends import PWABackend
 
 
 class Index(View):
@@ -18,10 +19,12 @@ class Index(View):
         """
         user_has_access = request.user and request.user.is_authenticated() \
                           and request.user.permission_set.exists()
+
         return render(
             request,
             self.template_name,
-            {'user_has_access': user_has_access}
+            {'user_has_access': user_has_access,
+             'profile_url': PWABackend.PROFILE_URL}
         )
 
 
