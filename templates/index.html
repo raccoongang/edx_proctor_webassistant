@@ -17,7 +17,8 @@
             rootPath: "{% static 'js/app/' %}",
             logoutUrl: "{% url 'logout' %}",
             loginUrl: "{% url 'social:begin' 'sso_pwa-oauth2' %}",
-            profileUrl: "{{ profile_url }}"
+            profileUrl: "{{ profile_url }}",
+            spaConfig: {{ spa_config|safe }}
         }
     </script>
 </head>

@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 from django.views.generic import View
 from django.conf import settings
@@ -24,7 +26,9 @@ class Index(View):
             request,
             self.template_name,
             {'user_has_access': user_has_access,
-             'profile_url': PWABackend.PROFILE_URL}
+             'profile_url': PWABackend.PROFILE_URL,
+             'spa_config': json.dumps(settings.SPA_CONFIG)}
+
         )
 
 
@@ -34,7 +38,7 @@ def logout(request, next_page=None,
     This view needed for correct redirect to sso-logout page
     """
     if (redirect_field_name in request.POST or
-            redirect_field_name in request.GET):
+                redirect_field_name in request.GET):
         next_page = request.POST.get(redirect_field_name,
                                      request.GET.get(redirect_field_name))
 

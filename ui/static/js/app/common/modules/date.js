@@ -3,7 +3,7 @@
     app.service('DateTimeService', function($rootScope, $interval){
         var ticker = null;
         var self = this;
-        var default_lng = 'ru';
+        var default_lng = window.app.spaConfig['language'];
 
         String.prototype.toHHMMSS = function () {
             var sec_num = parseInt(this, 10); // don't forget the second param

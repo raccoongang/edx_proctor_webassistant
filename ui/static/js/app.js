@@ -40,9 +40,8 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            //current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'ru',
-            current: 'ru',
-            supported: ['en', 'ru']
+            current: window.app.spaConfig['language'],
+            supported: window.app.spaConfig['supported_languages']
         };
 
         $locationProvider.html5Mode(true);
@@ -58,7 +57,7 @@
             suffix: '.json'
         });
         //$translateProvider.preferredLanguage(app.language.current);
-        $translateProvider.preferredLanguage('ru');
+        $translateProvider.preferredLanguage(app.language.current);
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
@@ -89,7 +88,7 @@
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
                                     app.path + 'common/services/exam_polling.js'
-                                ], function(){
+                                ], function () {
                                     deferred.resolve();
                                 });
                             }
@@ -264,6 +263,7 @@
                     app.language.current = langKey;
                 }
             };
+            $scope.allow_language_change = window.app.spaConfig['allow_language_change'];
 
             $scope.sso_auth = function () {
                 window.location = window.app.loginUrl;

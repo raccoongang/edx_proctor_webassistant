@@ -233,7 +233,9 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_NEXT_URL = '/'
 
 SPA_CONFIG = {
-    "language": "ru"
+    "language": "ru",
+    "allow_language_change": False,
+    "supported_languages": ['en', 'ru']
 }
 
 try:
