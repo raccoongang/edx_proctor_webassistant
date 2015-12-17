@@ -32,6 +32,15 @@ from proctoring.edx_api import (start_exam_request, stop_exam_request,
                                 bulk_start_exams_request)
 
 
+def _get_status(code):
+    try:
+        res = poll_status(code)
+        ret_data = res.json()
+        return ret_data['status']
+    except:
+        pass
+
+
 @api_view(['GET'])
 @authentication_classes((SsoTokenAuthentication,))
 @permission_classes((IsAuthenticated, IsProctor))
@@ -68,6 +77,18 @@ def start_exam(request, attempt_code):
     return Response(data=data, status=response.status_code)
 
 
+def _stop_attempt(code, action, user_id):
+    max_retries = 3
+    attempt = 0
+    response = stop_exam_request(code, action, user_id)
+    current_status = _get_status(code)
+    while attempt < max_retries and current_status != 'submitted':
+        response = stop_exam_request(code, action, user_id)
+        current_status = _get_status(code)
+        attempt += 1
+    return response, current_status
+
+
 @api_view(['PUT'])
 @authentication_classes(
     (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
@@ -88,10 +109,10 @@ def stop_exam(request, attempt_code):
     action = request.data.get('action')
     user_id = request.data.get('user_id')
     if action and user_id:
-        response = stop_exam_request(attempt_code, action, user_id)
+        response, current_status = _stop_attempt(attempt_code, action, user_id)
         data = {
             'hash': exam.generate_key(),
-            'status': "submitted"
+            'status': current_status
         }
         send_ws_msg(data, channel=exam.event.hash_key)
         return Response(status=response.status_code, data=data)
@@ -121,14 +142,15 @@ def stop_exams(request):
             user_id = attempt.get('user_id')
             action = attempt.get('action')
             if action and user_id:
-                response = stop_exam_request(attempt['attempt_code'], action,
-                                             user_id)
+                response, current_status = _stop_attempt(
+                    attempt['attempt_code'], action, user_id
+                )
                 if response.status_code != 200:
                     status_list.append(response.status_code)
                 else:
                     data = {
                         'hash': exam.generate_key(),
-                        'status': "submitted"
+                        'status': current_status
                     }
                     send_ws_msg(data, channel=exam.event.hash_key)
             else:
@@ -159,15 +181,15 @@ def poll_status(request):
         response = poll_status_request(data['list'])
         for val in response:
             exam = get_object_or_404(
-                Exam.objects.by_user_perms(request.user),
+                models.Exam.objects.by_user_perms(request.user),
                 exam_code=val['attempt_code']
             )
             new_status = val['status']
             if (exam.attempt_status == 'ready_to_start'
-                    and new_status == 'started'):
+                and new_status == 'started'):
                 exam.actual_start_date = datetime.now()
             if (exam.attempt_status == 'started'
-                    and new_status == 'submitted')\
+                and new_status == 'submitted') \
                 or (exam.attempt_status == 'ready_to_submit'
                     and new_status == 'submitted'):
                 exam.actual_end_date = datetime.now()
@@ -432,24 +454,15 @@ class Review(APIView):
     def _sent(_status):
         return _status in ['verified', 'rejected']
 
-    @staticmethod
-    def _get_status(code):
-        try:
-            res = poll_status(code)
-            ret_data = res.json()
-            return ret_data['status']
-        except:
-            pass
-
     def send_review(self, payload):
         attempt = 0
         code = payload['examMetaData']['examCode']
         response = send_review_request(payload)
-        current_status = self._get_status(code)
+        current_status = _get_status(code)
         while attempt < self.max_resend_attempts \
             and not self._sent(current_status):
             response = send_review_request(payload)
-            current_status = self._get_status(code)
+            current_status = _get_status(code)
             attempt += 1
         return response, current_status
 
