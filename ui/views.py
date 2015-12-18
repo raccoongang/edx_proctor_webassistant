@@ -26,6 +26,7 @@ class Index(View):
             request,
             self.template_name,
             {'user_has_access': user_has_access,
+             'sso_enabled': settings.SSO_ENABLED,
              'profile_url': PWABackend.PROFILE_URL,
              'spa_config': json.dumps(settings.SPA_CONFIG)}
 

@@ -16,7 +16,7 @@
         window.app = {
             rootPath: "{% static 'js/app/' %}",
             logoutUrl: "{% url 'logout' %}",
-            loginUrl: "{% url 'social:begin' 'sso_pwa-oauth2' %}",
+{#            loginUrl: "{% url 'social:begin' 'sso_pwa-oauth2' %}",#}
             profileUrl: "{{ profile_url }}",
             spaConfig: {{ spa_config|safe }}
         }
@@ -41,12 +41,16 @@
     </div>
 {% else %}
     <div class="container text-center">
+    {%  if sso_enabled %}
         <h1>
             <button class="btn btn-default"
                     ng-click="sso_auth()"
                     translate="AUTHORIZE">
             </button>
         </h1>
+    {% else %}
+        {% include "registration/login.html" %}
+    {% endif %}
     </div>
 {% endif %}
 

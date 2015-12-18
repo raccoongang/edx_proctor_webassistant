@@ -1,0 +1,25 @@
+{% block main %}
+    <div class="container">
+        <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3
+         col-lg-4 col-lg-offset-4 ng-scope">
+            <h3 translate="LOGIN"></h3>
+            <form class="form-signin" action="{% url 'login' %}" method="post"
+                  id="login-form">{% csrf_token %}
+                <h2 class="form-signin-heading">{{ message }}</h2>
+                <label for="id_username" class="sr-only"
+                       translate="EMAIL_ADDRESS"></label>
+                <input type="text" name="username" id="id_username"
+                       class="form-control"
+                       placeholder="{[ USER_NAME | translate ]}" required
+                       autofocus>
+                <label for="id_password" class="sr-only">Password</label>
+                <input type="password" name="password" id="id_password"
+                       class="form-control"
+                       placeholder="{[ PASSWORD | translate ]}" required>
+                <button class="btn btn-lg btn-primary btn-block" type="submit"
+                        translate="SIGN_IN"></button>
+            </form>
+        </div>
+    </div> <!-- /container -->
+{% endblock %}
+

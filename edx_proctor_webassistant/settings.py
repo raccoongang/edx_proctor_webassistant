@@ -16,7 +16,6 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = '<ADD_YOUR_SECRET_KEY_IN_LOCAL_SETTINGS>'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -43,7 +41,6 @@ INSTALLED_APPS = (
     'pipeline',
     'ws4redis',
     'rest_framework',
-    'social.apps.django_app.default',
 
     'person',
     'proctoring',
@@ -76,8 +73,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ws4redis.context_processors.default',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
                 "django.core.context_processors.request",
             ],
         },
@@ -97,7 +92,6 @@ DATABASES = {
     }
 }
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
@@ -111,7 +105,20 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/login/sso_pwa-oauth2'
+SSO_ENABLED = False
+
+if SSO_ENABLED:
+    INSTALLED_APPS += ('social.apps.django_app.default',)
+    TEMPLATES[0]['OPTIONS']['context_processors'] += [
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
+    ]
+    try:
+        from social_auth_settings import *
+    except ImportError:
+        print "CRITICAL: Social auth enabled."
+        "But  social_auth_settings.py didn't specified"
+        exit()
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
@@ -124,7 +131,8 @@ STATICFILES_FINDERS = ('django.contrib.staticfiles.finders.FileSystemFinder',
                        'djangobower.finders.BowerFinder',
                        'pipeline.finders.PipelineFinder',)
 STATICFILES_DIRS = (
-    os.path.join(os.path.dirname(__file__), '..', 'components/bower_components'),
+    os.path.join(os.path.dirname(__file__), '..',
+                 'components/bower_components'),
 )
 
 # Bower settings
@@ -191,7 +199,6 @@ PIPELINE_JS = {
     }
 }
 
-
 # Websocket settings
 # http://django-websocket-redis.readthedocs.org/en/latest/installation.html
 #
@@ -211,28 +218,8 @@ WS4REDIS_ALLOWED_CHANNELS = (
 )
 WS4REDIS_HEARTBEAT = '--heartbeat--'
 
-# social auth settings
-AUTHENTICATION_BACKENDS = (
-    'edx_proctor_webassistant.social_auth_backends.PWABackend',
-    'django.contrib.auth.backends.ModelBackend',
-)
-SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    'social.pipeline.user.create_user',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'edx_proctor_webassistant.pipeline.create_or_update_permissions',
-    'social.pipeline.user.user_details',
-    'edx_proctor_webassistant.pipeline.update_user_name'
-)
-
-SOCIAL_NEXT_URL = '/'
-
 SPA_CONFIG = {
+    "sso_enabled": SSO_ENABLED,
     "language": "ru",
     "allow_language_change": False,
     "supported_languages": ['en', 'ru']
@@ -243,5 +230,3 @@ try:
 except ImportError:
     print "CRITICAL: You must specify settings_local.py"
     exit()
-
-

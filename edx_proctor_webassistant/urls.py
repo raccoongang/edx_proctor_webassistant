@@ -15,12 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import include, url, patterns
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
 from ui.views import Index, logout
-from social.utils import setting_name
-from social.apps.django_app.views import complete
 from edx_proctor_webassistant.decorators import set_token_cookie
 from rest_framework.routers import DefaultRouter
 from proctoring import api_edx_views, api_ui_views
@@ -44,8 +43,6 @@ router.register(r'comment', api_ui_views.CommentViewSet,
 router.register(r'permission', PermissionViewSet,
                 base_name="permission")
 
-extra = getattr(settings, setting_name('TRAILING_SLASH'), True) and '/' or ''
-
 urlpatterns = patterns(
     '',
     url(r'^$', Index.as_view(), name="index"),
@@ -58,13 +55,24 @@ urlpatterns = patterns(
     url(r'^session/', api_ui_views.redirect_ui),
     url(r'^archive/', api_ui_views.redirect_ui),
 
-    url(r'^complete/(?P<backend>[^/]+){0}$'.format(extra),
-        set_token_cookie(complete),
-        name='complete'),
-    url('', include('social.apps.django_app.urls', namespace='social')),
-    url(
-        r'^logout/$',
-        logout,
-        name='logout'
-    ),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if not settings.SSO_ENABLED:
+    urlpatterns.append(url('^', include('django.contrib.auth.urls')))
+    # urlpatterns += [
+    #     url(r'^login/$', auth_views.login),
+    #     url(r'^logout/$', auth_views.logout),
+    # ]
+else:
+    from social.utils import setting_name
+    from social.apps.django_app.views import complete
+
+    extra = getattr(settings, setting_name('TRAILING_SLASH'),
+                    True) and '/' or ''
+    urlpatterns += patterns(
+        url(r'^complete/(?P<backend>[^/]+){0}$'.format(extra),
+            set_token_cookie(complete), name='complete'),
+        url('', include('social.apps.django_app.urls', namespace='social')),
+        url(r'^logout/$', logout, name='logout'),
+    )
+print '*'

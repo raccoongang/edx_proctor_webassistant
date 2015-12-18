@@ -65,7 +65,7 @@
 
   "SUSPICIOUS": "Suspicious",
   "COMMENT": "Comment",
-  "COMMENT": "Comments",
+  "COMMENTS": "Comments",
 
   "APPROVE_ALL_STUDENTS": "Do You really want to activate all sessions?",
   "STOP_ALL_ATTEMPTS": "Do You really want to stop all selected sessions?",
@@ -77,5 +77,12 @@
   "STOP_EXAM_FAILED": "Failed to stop exam attempt",
   "STOP_EXAMS_FAILED": "Failed to stop selected attempts",
   "ONLY_PROCTORS_INSTRUCTORS_ALLOWED": "Only proctor or instructor has an access to this service",
-  "EVENT_COMMENT_ERROR": "Failed to add session review"
+  "EVENT_COMMENT_ERROR": "Failed to add session review",
+
+
+  "LOGIN": "Login",
+  "EMAIL_ADDRESS": "Email address",
+  "USER_NAME": "User Name",
+  "PASSWORD": "Password",
+  "SIGN_IN": "Sign in"
 }
