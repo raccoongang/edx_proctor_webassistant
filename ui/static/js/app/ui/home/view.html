@@ -67,28 +67,34 @@
             <td>
                 <input type="checkbox" checklist-model="exams.checked" checklist-value="attempt.examCode">
             </td>
-            <td title="i18n('FULL_NAME')"
+            <td data-title="i18n('FULL_NAME')"
+                uib-tooltip=""
                 sortable="'orgExtra.firstName'">
                 <a href="" ng-click="show_comments(attempt)">
                     {[attempt.orgExtra.firstName]} {[attempt.orgExtra.lastName]}
                 </a>
             </td>
-            <td title="'E-mail'"
+            <td data-title="'E-mail'"
+                uib-tooltip=""
                 sortable="'orgExtra.email'">
                 {[attempt.orgExtra.email]}
             </td>
-            <td title="i18n('EXAM_START_TIME')">
+            <td data-title="i18n('EXAM_START_TIME')"
+                uib-tooltip="">
                 {[ attempt.started_at ]}
             </td>
-            <td title="i18n('EXAM_CODE')"
+            <td data-title="i18n('EXAM_CODE')"
+                uib-tooltip=""
                 sortable="'examCode'">
                 {[attempt.examCode]}
             </td>
-            <td title="i18n('COURSE_NAME')"
+            <td data-title="i18n('COURSE_NAME')"
+                uib-tooltip=""
                 sortable="'orgExtra.courseID'">
                 {[ attempt.orgExtra.courseID ]}
             </td>
-            <td title="i18n('STATUS')"
+            <td data-title="i18n('STATUS')"
+                uib-tooltip=""
                 sortable="'status'">
                 {[ attempt.status ]}
             </td>
