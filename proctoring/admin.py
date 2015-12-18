@@ -2,6 +2,15 @@ from django.contrib import admin
 from proctoring import models
 
 
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ('display_name',)
+    list_filter = ('course_org',)
+    search_fields = ('display_name',)
+
+    def has_add_permission(self, request):
+        return False
+
+
 class CommentInline(admin.TabularInline):
     """
     Comment inline class
@@ -13,10 +22,10 @@ class ExamAdmin(admin.ModelAdmin):
     """
     Exam admin class
     """
-    list_display = ('exam_code', 'organization', 'exam_id','course',
+    list_display = ('exam_code', 'organization', 'exam_id', 'course',
                     'first_name', 'last_name', 'exam_status',
                     'username', 'exam_start_date', 'exam_end_date')
-    list_filter = ('exam_status','course')
+    list_filter = ('exam_status', 'course')
     search_fields = ['exam_code', 'exam_id', 'first_name', 'last_name',
                      'user_id', 'username', 'email']
     fieldsets = (
@@ -56,6 +65,7 @@ class EventSessionAdmin(admin.ModelAdmin):
     readonly_fields = ('hash_key', 'start_date', 'end_date')
 
 
+admin.site.register(models.Course, CourseAdmin)
 admin.site.register(models.Exam, ExamAdmin)
 admin.site.register(models.InProgressEventSession, EventSessionAdmin)
 admin.site.register(models.ArchivedEventSession, EventSessionAdmin)

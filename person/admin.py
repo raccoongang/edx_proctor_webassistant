@@ -7,9 +7,10 @@ class PermissionAdmin(admin.ModelAdmin):
     """
     Permission admin class
     """
-    list_display = ('user', 'object_id', 'object_type', 'role')
+    list_display = ('user', 'object_type', 'object_id', 'role')
     list_filter = ('user', 'object_type', 'role')
-    search_fields = ['user', 'object_id', 'object_type', 'role']
+    search_fields = []
+    fields = ('user', 'object_type', 'object_id', 'role')
 
 
 class StudentAdmin(admin.ModelAdmin):
