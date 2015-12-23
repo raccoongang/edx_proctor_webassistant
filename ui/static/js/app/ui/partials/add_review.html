@@ -66,6 +66,9 @@
                     <textarea rows="5"
                               style="resize: none; width: 100%;"
                               ng-model="comment.message"
+                              ng-maxlength="150"
+                              maxlength="150"
+                              placeholder="150 {[ i18n('CHARS') ]}"
                               required>
                     </textarea>
                 </form>
