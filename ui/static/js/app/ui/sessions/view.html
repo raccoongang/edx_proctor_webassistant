@@ -1,63 +1,76 @@
-<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+<div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-8 col-lg-offset-2">
 
     <h3 ng-init="start_date_timer()">
         {[ i18n('TODAY') ]} {[ date ]}
     </h3>
     <br>
-
-    <form name="session_form" novalidate>
-        <div id="test-center-name" class="fc-margin-item">
-            <div class="col-xs-4">
-                <label>
-                    {[ i18n('TESTING_CENTRE') ]}
-                </label>
+    <div class="row">
+        <div class="col-sm-6">
+            <form name="session_form" novalidate>
+                <div id="test-center-name" class="fc-margin-item">
+                    <div class="col-xs-4">
+                        <label>
+                            {[ i18n('TESTING_CENTRE') ]}
+                        </label>
+                    </div>
+                    <div class="col-xs-8">
+                        <input type="text" class="form-control" ng-model="session.testing_centre" required>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="course" class="fc-margin-item">
+                    <div class="col-xs-4">
+                        <label>
+                            {[ i18n('SESSION_COURSE') ]}
+                        </label>
+                    </div>
+                    <div class="col-xs-8">
+                        <select class="form-control"
+                                ng-model="session.course"
+                                ng-options="item.id as item.name for item in courses">
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div id="exam" class="fc-margin-item">
+                    <div class="col-xs-4">
+                        <label>
+                            {[ i18n('SESSION_EXAM') ]}
+                        </label>
+                    </div>
+                    <div class="col-xs-8">
+                        <select class="form-control"
+                                ng-model="session.exam"
+                                ng-options="item.id as item.exam_name for item in exams"
+                                required>
+                        </select>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+            <div class="text-right col-xs-12">
+                <button
+                        class="btn btn-success"
+                        style="min-width: 170px;"
+                        ng-disabled="!session_form.$valid"
+                        ng-click="start_session() && session_form.$valid">
+                    {[ i18n('START_SESSION') ]}
+                </button>
+                <br>
+                <h5><a href="/#/archive">{[ i18n('SESSION_HISTORY') ]}</a></h5>
             </div>
-            <div class="col-xs-8">
-                <input type="text" class="form-control" ng-model="session.testing_centre" required>
-            </div>
-            <div class="clearfix"></div>
         </div>
-        <div id="course" class="fc-margin-item">
-            <div class="col-xs-4">
-                <label>
-                    {[ i18n('SESSION_COURSE') ]}
-                </label>
-            </div>
-            <div class="col-xs-8">
-                <select class="form-control"
-                        ng-model="session.course"
-                        ng-options="item.id as item.name for item in courses">
-                </select>
-            </div>
-            <div class="clearfix"></div>
+        <div class="col-sm-6">
+            <p>
+            В поле <b>Центр тестирования</b> ведите условное обозначение для вашего центра и сессии прокторинга.<br/>
+            Старайтесь соблюдать единый формат, это поможет вам быстро найти нужную сессию в списке.<br/>
+            Рекомендуемый формат:<br/>
+            <b>ВашЦентрТестирования, Аудитория, ФамилияПроктора, Дата(ГГ-ММ-ДД), Время(ЧЧ:ММ)</b><br/>
+            Пример:<br/>
+            <b>МФТИ-КПМ, АУД.12, Иванов, 2015-12-20, 09:00</b>
+            </p>
         </div>
-        <div id="exam" class="fc-margin-item">
-            <div class="col-xs-4">
-                <label>
-                    {[ i18n('SESSION_EXAM') ]}
-                </label>
-            </div>
-            <div class="col-xs-8">
-                <select class="form-control"
-                        ng-model="session.exam"
-                        ng-options="item.id as item.exam_name for item in exams"
-                        required>
-                </select>
-            </div>
-            <div class="clearfix"></div>
-        </div>
-    </form>
-
-    <div class="text-right col-xs-12">
-        <button
-                class="btn btn-success"
-                style="min-width: 170px;"
-                ng-disabled="!session_form.$valid"
-                ng-click="start_session() && session_form.$valid">
-            {[ i18n('START_SESSION') ]}
-        </button>
-        <br>
-        <h5><a href="/#/archive">{[ i18n('SESSION_HISTORY') ]}</a></h5>
     </div>
+
 </div>
 
