@@ -5,6 +5,8 @@
   "LOGOUT": "Выйти",
   "AUTHORIZE": "Авторизоваться",
 
+  "CHARS": "символов",
+
   "STUDENT_SESSIONS": "Сессии студентов",
   "END_STUDENT_SESSIONS": "Завершить сессии",
   "FULL_NAME": "Имя, Фамилия",

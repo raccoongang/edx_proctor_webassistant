@@ -417,7 +417,8 @@ class Review(APIView):
                 Comment.objects.get(
                     comment=comment.get('comments'),
                     event_status=comment.get('eventStatus'),
-                    exam=exam
+                    exam=exam,
+                    event_start=comment.get('eventStart')
                 )
             except Comment.DoesNotExist:
                 Comment.objects.get_or_create(
