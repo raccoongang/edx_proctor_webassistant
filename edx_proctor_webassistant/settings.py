@@ -46,12 +46,14 @@ INSTALLED_APPS = (
     'proctoring',
     'ui',
     'journaling',
+    'social.apps.django_app.default',
+    'django_extensions'
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -105,10 +107,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-SSO_ENABLED = False
+
+LOGIN_URL = LOGIN_REDIRECT_URL = LOGOUT_REDIRECT_URL = "/"
+AUTH_BACKEND_NAME = 'sso_pwa-oauth2'
+SSO_ENABLED = True
 
 if SSO_ENABLED:
-    INSTALLED_APPS += ('social.apps.django_app.default',)
     TEMPLATES[0]['OPTIONS']['context_processors'] += [
         'social.apps.django_app.context_processors.backends',
         'social.apps.django_app.context_processors.login_redirect',

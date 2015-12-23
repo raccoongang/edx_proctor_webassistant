@@ -560,7 +560,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         permissions = self.request.user.permission_set
         if permissions.filter(role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
-            for permission in self.permissions.filter(
+            for permission in permissions.filter(
                 role=Permission.ROLE_PROCTOR
             ).all():
                 if permission.object_id == "*":

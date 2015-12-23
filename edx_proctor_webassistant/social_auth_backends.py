@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 class PWABackend(BaseOAuth2):
-    name = 'sso_pwa-oauth2'
+    name = settings.AUTH_BACKEND_NAME
     ID_KEY = 'username'
     AUTHORIZATION_URL = '{}/oauth2/authorize'.format(settings.SSO_PWA_URL)
     ACCESS_TOKEN_URL = '{}/oauth2/access_token'.format(settings.SSO_PWA_URL)
