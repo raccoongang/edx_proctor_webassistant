@@ -1,21 +1,21 @@
 import json
 
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import logout as lgt, login as auth_login, \
+    REDIRECT_FIELD_NAME
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.shortcuts import render, resolve_url
 from django.utils.http import is_safe_url
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View
-from django.conf import settings
-from django.contrib.auth import logout as lgt, login as auth_login, \
-    REDIRECT_FIELD_NAME
-from django.shortcuts import redirect
-from edx_proctor_webassistant.social_auth_backends import PWABackend
-from django.utils.translation import ugettext_lazy as _
+
+from sso_auth.social_auth_backends import PWABackend
 
 
 class Index(View):

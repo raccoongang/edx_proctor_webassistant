@@ -13,21 +13,20 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from social.utils import setting_name
-from social.apps.django_app.views import complete
-from ui.views import Index, logout,login as login_view
-from rest_framework.routers import DefaultRouter
-
+from django.conf import settings
 from django.conf.urls import include, url, patterns
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.conf import settings
-from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
+from social.apps.django_app.views import complete
+from social.utils import setting_name
 
-from edx_proctor_webassistant.decorators import set_token_cookie
-from proctoring import api_edx_views, api_ui_views
 from journaling.api_views import JournalingViewSet
 from person.api_views import PermissionViewSet
+from proctoring import api_edx_views, api_ui_views
+from sso_auth.decorators import set_token_cookie
+from ui.views import Index, logout,login as login_view
 
 router = DefaultRouter()
 router.register(r'exam_register', api_edx_views.ExamViewSet,

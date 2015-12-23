@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'ui',
     'journaling',
     'social.apps.django_app.default',
+    'sso_auth',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -117,7 +118,7 @@ if SSO_ENABLED:
         'social.apps.django_app.context_processors.login_redirect',
     ]
     try:
-        from social_auth_settings import *
+        from sso_auth.social_auth_settings import *
     except ImportError:
         print "CRITICAL: Social auth enabled."
         "But  social_auth_settings.py didn't specified"

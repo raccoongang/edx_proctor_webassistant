@@ -2,7 +2,7 @@
 
 LOGIN_URL = '/login/sso_pwa-oauth2'
 AUTHENTICATION_BACKENDS = (
-    'edx_proctor_webassistant.social_auth_backends.PWABackend',
+    'sso_auth.social_auth_backends.PWABackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 SOCIAL_AUTH_PIPELINE = (
@@ -14,9 +14,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.user.create_user',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
-    'edx_proctor_webassistant.pipeline.create_or_update_permissions',
+    'sso_auth.pipeline.create_or_update_permissions',
     'social.pipeline.user.user_details',
-    'edx_proctor_webassistant.pipeline.update_user_name'
+    'sso_auth.pipeline.update_user_name'
 )
 
 SOCIAL_NEXT_URL = '/'

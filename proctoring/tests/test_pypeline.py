@@ -1,9 +1,9 @@
-from person.models import Permission
 from django.contrib.auth.models import User
 from django.test import TestCase
 from mock import patch
 
-from edx_proctor_webassistant.pipeline import set_roles_for_edx_users, create_or_update_permissions
+from person.models import Permission
+from sso_auth.pipeline import set_roles_for_edx_users, create_or_update_permissions
 
 
 class PipelineTestCase(TestCase):
