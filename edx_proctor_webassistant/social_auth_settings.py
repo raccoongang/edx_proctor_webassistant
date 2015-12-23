@@ -1,4 +1,5 @@
 # social auth settings
+
 LOGIN_URL = '/login/sso_pwa-oauth2'
 AUTHENTICATION_BACKENDS = (
     'edx_proctor_webassistant.social_auth_backends.PWABackend',

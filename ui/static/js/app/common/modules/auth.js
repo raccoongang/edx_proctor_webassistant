@@ -12,7 +12,6 @@
             var c = $cookies.get('authenticated_token');
             if (c !== undefined && c){
                 token = c;
-                $cookies.put('authenticated_token', undefined);
                 return true;
             }
             return false;

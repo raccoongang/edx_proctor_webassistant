@@ -1,14 +1,10 @@
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
+from social.apps.django_app.default.models import UserSocialAuth
 from rest_framework import exceptions
 from rest_framework.permissions import BasePermission
 from django.utils.translation import ugettext_lazy as _
 from person.models import Permission
-from django.conf import settings
-from rest_framework.authtoken.models import Token
-
-if settings.SSO_ENABLED:
-    from social.apps.django_app.default.models import UserSocialAuth
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -23,11 +19,9 @@ class SsoTokenAuthentication(TokenAuthentication):
     """
     Authentication between frontend and backend using access_token
     """
-    model = UserSocialAuth if settings.SSO_ENABLED else Token
+    model = UserSocialAuth
 
     def authenticate_credentials(self, key):
-        if not settings.SSO_ENABLED:
-            return super(SsoTokenAuthentication, self).authenticate_credentials(key)
         try:
             token = self.model.objects.select_related('user').get(
                 extra_data={"access_token": key})
