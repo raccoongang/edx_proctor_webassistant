@@ -224,8 +224,8 @@
 
                 var there_are_not_reviewed_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function (val, key) {
-                        if (!['verified', 'rejected'].in_array(val.status)) {
+                    angular.forEach($scope.ws_data, function (val) {
+                        if (!['verified', 'rejected', 'error'].in_array(val.status)) {
                             list.push(val.hash);
                         }
                     });
