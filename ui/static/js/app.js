@@ -247,7 +247,7 @@
 
     // MAIN CONTROLLER
     app.controller('MainController', ['$scope', '$translate', '$http', 'i18n',
-        function ($scope, $translate, $http, i18n) {
+        function ($scope, $translate, $http, i18n, TestSession) {
 
             var lng_is_supported = function (val) {
                 return app.language.supported.indexOf(val) >= 0 ? true : false;
@@ -271,6 +271,7 @@
             };
 
             $scope.logout = function () {
+                TestSession.flush();
                 window.location = window.app.logoutUrl;
             };
 

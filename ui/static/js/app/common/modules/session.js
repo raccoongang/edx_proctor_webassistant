@@ -58,5 +58,9 @@
                     return DateTimeService.get_now_diff_from_string(Session.start_date);
                 }
             };
+
+            this.flush = function(){
+                delete window.sessionStorage['proctoring'];
+            };
         });
 })();
