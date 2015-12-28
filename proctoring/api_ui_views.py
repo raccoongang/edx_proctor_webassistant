@@ -88,6 +88,7 @@ def _stop_attempt(code, action, user_id):
         attempt += 1
     return response, current_status
 
+
 # def _stop_exam()
 
 @api_view(['PUT'])
@@ -236,7 +237,11 @@ class EventSessionViewSet(mixins.ListModelMixin,
 
         for field in fields_for_create:
             if field == 'course_id':
-                course = Course.create_by_course_run(request.data.get(field))
+                if request.data.get('course'):
+                    course = Course.objects.get(pk=request.data.get('course'))
+                else:
+                    course = Course.create_by_course_run(
+                        request.data.get(field))
                 data['course'] = course.pk
             else:
                 data[field] = request.data.get(field)
