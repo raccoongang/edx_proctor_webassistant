@@ -43,7 +43,7 @@ class JournalingViewSet(mixins.ListModelMixin,
         if "exam_code" in params:
             queryset = queryset.filter(exam__exam_code=params["exam_code"])
         if "type" in params:
-            queryset = queryset.filter(type=params["type"])
+            queryset = queryset.filter(journaling_type=params["type"])
         if "event_hash" in params:
             queryset = queryset.filter(event__hash_key=params["event_hash"])
         if "date" in params:
