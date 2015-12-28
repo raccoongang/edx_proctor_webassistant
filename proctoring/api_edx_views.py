@@ -151,10 +151,10 @@ def _send_journaling_response(request, data, result, status_code,
     Journaling.objects.create(
         journaling_type=Journaling.API_REQUESTS,
         note="""
-            Requested url:%s
-            Sent data: %s
-            Response status: %s
-            Response content: %s
+Requested url:%s
+Sent data: %s
+Response status: %s
+Response content: %s
             """ % (
             reverse('exam-register-list', request=request),
             str(data), status_code, str(result))

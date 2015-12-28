@@ -1,5 +1,5 @@
-from django.conf.urls import include, url, patterns
-from proctoring import  api_edx_views,api_ui_views
+from django.conf.urls import url, patterns
+from proctoring import api_ui_views
 
 urlpatterns = patterns(
     '',

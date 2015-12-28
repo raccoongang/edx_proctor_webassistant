@@ -61,11 +61,9 @@ def poll_status_request(codes):
 
 
 def poll_status(code):
-    ret = _journaling_request(
-        'get',
-        "api/edx_proctoring/proctoring_poll_status/" + code
+    return requests.get(
+        settings.EDX_URL + "api/edx_proctoring/proctoring_poll_status/" + code,
     )
-    return ret
 
 
 def send_review_request(payload):
@@ -174,10 +172,10 @@ def _journaling_request(request_type, url, data=None, headers=None):
         Journaling.objects.create(
             journaling_type=Journaling.EDX_API_CALL,
             note="""
-            Call url:%s
-            Sent data: %s
-            Response status: %s
-            Response content: %s
+Call url:%s
+Sent data: %s
+Response status: %s
+Response content: %s
             """ % (
                 url,
                 unicode(data).encode('utf-8'),
