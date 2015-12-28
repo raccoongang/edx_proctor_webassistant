@@ -1,4 +1,4 @@
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, viewsets, status
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -48,4 +48,4 @@ class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 "object_type": row['object_type'],
                 "object_id": row['object_id'],
             })
-        return Response(result)
+        return Response(result, status=status.HTTP_200_OK)
