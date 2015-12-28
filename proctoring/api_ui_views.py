@@ -27,7 +27,8 @@ from rest_framework.views import APIView
 from edx_proctor_webassistant.web_soket_methods import send_ws_msg
 from journaling.models import Journaling
 from proctoring.edx_api import (start_exam_request, stop_exam_request,
-                                poll_status_request, send_review_request,
+                                poll_status_request, poll_status,
+                                send_review_request,
                                 get_proctored_exams_request,
                                 bulk_start_exams_request)
 
@@ -41,40 +42,41 @@ def _get_status(code):
         pass
 
 
-@api_view(['GET'])
-@authentication_classes((SsoTokenAuthentication,))
-@permission_classes((IsAuthenticated, IsProctor))
-def start_exam(request, attempt_code):
-    """
-    Endpoint for exam start
-    Exam code sends in the end of URL
-    """
-    exam = get_object_or_404(
-        models.Exam.objects.by_user_perms(request.user),
-        exam_code=attempt_code
-    )
-    response = start_exam_request(exam.exam_code)
-    if response.status_code == 200:
-        exam.exam_status = exam.STARTED
-        exam.proctor = request.user
-        exam.attempt_status = "OK"
-        exam.save()
-        Journaling.objects.create(
-            journaling_type=Journaling.EXAM_STATUS_CHANGE,
-            event=exam.event,
-            exam=exam,
-            proctor=request.user,
-            note="%s -> %s" % (exam.NEW, exam.STARTED)
+class StartExam(APIView):
+    authentication_classes = (SsoTokenAuthentication,)
+    permission_classes = (IsAuthenticated, IsProctor)
+
+    def get(self, request, attempt_code):
+        """
+        Endpoint for exam start
+        Exam code sends in the end of URL
+        """
+        exam = get_object_or_404(
+            models.Exam.objects.by_user_perms(request.user),
+            exam_code=attempt_code
         )
-        data = {
-            'hash': exam.generate_key(),
-            'proctor': exam.proctor.username,
-            'status': "OK"
-        }
-        send_ws_msg(data, channel=exam.event.hash_key)
-    else:
-        data = {'error': 'Edx response error. See logs'}
-    return Response(data=data, status=response.status_code)
+        response = start_exam_request(exam.exam_code)
+        if response.status_code == 200:
+            exam.exam_status = exam.STARTED
+            exam.proctor = request.user
+            exam.attempt_status = "OK"
+            exam.save()
+            Journaling.objects.create(
+                journaling_type=Journaling.EXAM_STATUS_CHANGE,
+                event=exam.event,
+                exam=exam,
+                proctor=request.user,
+                note="%s -> %s" % (exam.NEW, exam.STARTED)
+            )
+            data = {
+                'hash': exam.generate_key(),
+                'proctor': exam.proctor.username,
+                'status': "OK"
+            }
+            send_ws_msg(data, channel=exam.event.hash_key)
+        else:
+            data = {'error': 'Edx response error. See logs'}
+        return Response(data=data, status=response.status_code)
 
 
 def _stop_attempt(code, action, user_id):
@@ -89,122 +91,123 @@ def _stop_attempt(code, action, user_id):
     return response, current_status
 
 
-# def _stop_exam()
+class StopExam(APIView):
+    authentication_classes = (SsoTokenAuthentication,
+                              CsrfExemptSessionAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
-@api_view(['PUT'])
-@authentication_classes(
-    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctor))
-def stop_exam(request, attempt_code):
-    """
-    Endpoint for exam stops. Attempt code sends in url.
-    POST parameters:
-        {
-            'hash': "hash_key",
-            'status': "submitted"
-        }
-    """
-    exam = get_object_or_404(
-        models.Exam.objects.by_user_perms(request.user),
-        exam_code=attempt_code
-    )
-    action = request.data.get('action')
-    user_id = request.data.get('user_id')
-    if action and user_id:
-        response, current_status = _stop_attempt(attempt_code, action, user_id)
-        data = {
-            'hash': exam.generate_key(),
-            'status': current_status
-        }
-        send_ws_msg(data, channel=exam.event.hash_key)
-        return Response(status=response.status_code, data=data)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['PUT'])
-@authentication_classes(
-    (SsoTokenAuthentication, CsrfExemptSessionAuthentication)
-)
-@permission_classes((IsAuthenticated, IsProctor))
-def stop_exams(request):
-    """
-    Endpoint for exam stop
-    """
-    attempts = request.data.get('attempts')
-    if isinstance(attempts, basestring):
-        attempts = json.loads(attempts)
-    if attempts:
-        status_list = []
-        for attempt in attempts:
-            exam = get_object_or_404(
-                models.Exam.objects.by_user_perms(request.user),
-                exam_code=attempt['attempt_code']
-            )
-            user_id = attempt.get('user_id')
-            action = attempt.get('action')
-            if action and user_id:
-                response, current_status = _stop_attempt(
-                    attempt['attempt_code'], action, user_id
-                )
-                if response.status_code != 200:
-                    status_list.append(response.status_code)
-                else:
-                    data = {
-                        'hash': exam.generate_key(),
-                        'status': current_status
-                    }
-                    send_ws_msg(data, channel=exam.event.hash_key)
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-        if status_list:
-            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-@authentication_classes(
-    (SsoTokenAuthentication, CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctor))
-def poll_status(request):
-    """
-    Get statuses for list of exams
-
-    Request example:
-
-    ```
-    {"list":["code1","code2"]}
-    ```
-    """
-    data = request.data
-    if u'list' in data:
-        response = poll_status_request(data['list'])
-        for val in response:
-            exam = get_object_or_404(
-                models.Exam.objects.by_user_perms(request.user),
-                exam_code=val['attempt_code']
-            )
-            new_status = val['status']
-            if (exam.attempt_status == 'ready_to_start'
-                and new_status == 'started'):
-                exam.actual_start_date = datetime.now()
-            if (exam.attempt_status == 'started'
-                and new_status == 'submitted') \
-                or (exam.attempt_status == 'ready_to_submit'
-                    and new_status == 'submitted'):
-                exam.actual_end_date = datetime.now()
-            exam.attempt_status = new_status
-            exam.save()
+    def put(self, request, attempt_code):
+        """
+        Endpoint for exam stops. Attempt code sends in url.
+        POST parameters:
+            {
+                'hash': "hash_key",
+                'status': "submitted"
+            }
+        """
+        exam = get_object_or_404(
+            models.Exam.objects.by_user_perms(request.user),
+            exam_code=attempt_code
+        )
+        action = request.data.get('action')
+        user_id = request.data.get('user_id')
+        if action and user_id:
+            response, current_status = _stop_attempt(attempt_code, action,
+                                                     user_id)
             data = {
                 'hash': exam.generate_key(),
-                'status': exam.attempt_status
+                'status': current_status
             }
             send_ws_msg(data, channel=exam.event.hash_key)
-        return Response(status=status.HTTP_200_OK)
-    else:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=response.status_code, data=data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class StopExams(APIView):
+    authentication_classes = (SsoTokenAuthentication,
+                              CsrfExemptSessionAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
+
+    def put(self, request):
+        """
+        Endpoint for exams stop
+        """
+        attempts = request.data.get('attempts')
+        if isinstance(attempts, basestring):
+            attempts = json.loads(attempts)
+        if attempts:
+            status_list = []
+            for attempt in attempts:
+                exam = get_object_or_404(
+                    models.Exam.objects.by_user_perms(request.user),
+                    exam_code=attempt['attempt_code']
+                )
+                user_id = attempt.get('user_id')
+                action = attempt.get('action')
+                if action and user_id:
+                    response, current_status = _stop_attempt(
+                        attempt['attempt_code'], action, user_id
+                    )
+                    if response.status_code != 200:
+                        status_list.append(response.status_code)
+                    else:
+                        data = {
+                            'hash': exam.generate_key(),
+                            'status': current_status
+                        }
+                        send_ws_msg(data, channel=exam.event.hash_key)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+            if status_list:
+                return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class PollStatus(APIView):
+    authentication_classes = (SsoTokenAuthentication,
+                              CsrfExemptSessionAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
+
+    def post(self, request):
+        """
+        Get statuses for list of exams
+
+        Request example:
+
+        ```
+        {"list":["code1","code2"]}
+        ```
+        """
+        data = request.data
+        if u'list' in data:
+            response = poll_status_request(data['list'])
+            for val in response:
+                exam = get_object_or_404(
+                    models.Exam.objects.by_user_perms(request.user),
+                    exam_code=val['attempt_code']
+                )
+                new_status = val['status']
+                if (exam.attempt_status == 'ready_to_start'
+                    and new_status == 'started'):
+                    exam.actual_start_date = datetime.now()
+                if (exam.attempt_status == 'started'
+                    and new_status == 'submitted') \
+                    or (exam.attempt_status == 'ready_to_submit'
+                        and new_status == 'submitted'):
+                    exam.actual_end_date = datetime.now()
+                exam.attempt_status = new_status
+                exam.save()
+                data = {
+                    'hash': exam.generate_key(),
+                    'status': exam.attempt_status
+                }
+                send_ws_msg(data, channel=exam.event.hash_key)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventSessionViewSet(mixins.ListModelMixin,
@@ -213,7 +216,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
                           mixins.UpdateModelMixin,
                           viewsets.GenericViewSet):
     """
-    Event managwment API
+    Event management API
 
     For **create** send `testing_center`,`course_id`,`course_event_id`
     Other fields filling automatically
@@ -479,60 +482,60 @@ class Review(APIView):
         return response, current_status
 
 
-@api_view(['GET'])
-# @authentication_classes((SsoTokenAuthentication,))
-def get_exams_proctored(request):
-    response = get_proctored_exams_request()
-    content = json.loads(response.content)
-    permissions = request.user.permission_set.all()
-    ret = []
-    for result in content.get('results', []):
-        if result['proctored_exams']:
-            result['has_access'] = has_permisssion_to_course(
-                request.user, result.get('id'), permissions)
-            ret.append(result)
-    return Response(
-        status=response.status_code,
-        data={"results": ret}
-    )
+class GetExamsProctored(APIView):
+    def get(self, request):
+        response = get_proctored_exams_request()
+        content = json.loads(response.content)
+        permissions = request.user.permission_set.all()
+        ret = []
+        for result in content.get('results', []):
+            if result['proctored_exams']:
+                result['has_access'] = has_permisssion_to_course(
+                    request.user, result.get('id'), permissions)
+                ret.append(result)
+        return Response(
+            status=response.status_code,
+            data={"results": ret}
+        )
 
 
-@api_view(['POST'])
-@authentication_classes((SsoTokenAuthentication,
-                         CsrfExemptSessionAuthentication))
-@permission_classes((IsAuthenticated, IsProctor))
-def bulk_start_exams(request):
-    """
-    Start list of exams by exam codes.
+class BulkStartExams(APIView):
+    authentication_classes = (SsoTokenAuthentication,
+                              CsrfExemptSessionAuthentication)
+    permission_classes = (IsAuthenticated, IsProctor)
 
-    Request example
+    def post(self, request):
+        """
+        Start list of exams by exam codes.
 
-        {
-            "list":['<exam_id_1>','<exam_id_2>']
-        }
+        Request example
 
-    """
-    exam_codes = request.data.get('list', [])
-    exam_list = models.Exam.objects.filter(exam_code__in=exam_codes)
-    items = bulk_start_exams_request(exam_list)
-    for exam in items:
-        exam.exam_status = exam.STARTED
-        exam.proctor = request.user
-        exam.save()
-        data = {
-            'hash': exam.generate_key(),
-            'proctor': exam.proctor.username,
-            'status': "OK"
-        }
-        send_ws_msg(data, channel=exam.event.hash_key)
-    Journaling.objects.create(
-        journaling_type=Journaling.BULK_EXAM_STATUS_CHANGE,
-        note="%s. %s -> %s" % (
-            exam_codes, models.Exam.NEW, models.Exam.STARTED
-        ),
-        proctor=request.user,
-    )
-    return Response(status=status.HTTP_200_OK)
+            {
+                "list":['<exam_id_1>','<exam_id_2>']
+            }
+
+        """
+        exam_codes = request.data.get('list', [])
+        exam_list = models.Exam.objects.filter(exam_code__in=exam_codes)
+        items = bulk_start_exams_request(exam_list)
+        for exam in items:
+            exam.exam_status = exam.STARTED
+            exam.proctor = request.user
+            exam.save()
+            data = {
+                'hash': exam.generate_key(),
+                'proctor': exam.proctor.username,
+                'status': "OK"
+            }
+            send_ws_msg(data, channel=exam.event.hash_key)
+        Journaling.objects.create(
+            journaling_type=Journaling.BULK_EXAM_STATUS_CHANGE,
+            note="%s. %s -> %s" % (
+                exam_codes, models.Exam.NEW, models.Exam.STARTED
+            ),
+            proctor=request.user,
+        )
+        return Response(status=status.HTTP_200_OK)
 
 
 def redirect_ui(request):
