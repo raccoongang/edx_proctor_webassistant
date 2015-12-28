@@ -88,6 +88,7 @@ def _stop_attempt(code, action, user_id):
         attempt += 1
     return response, current_status
 
+# def _stop_exam()
 
 @api_view(['PUT'])
 @authentication_classes(
@@ -312,7 +313,7 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     `?start_date=2015-12-04&proctor=proctor_username`
     """
     serializer_class = ArchivedEventSessionSerializer
-    queryset = models.ArchivedEventSession.objects.all()
+    queryset = models.ArchivedEventSession.objects.order_by('-pk')
     paginate_by = 25
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication,
@@ -320,42 +321,48 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
     def get_queryset(self):
-
-        queryset = models.ArchivedEventSession.objects.order_by('-pk').all()
+        queryset = super(ArchivedEventSessionViewSet, self).get_queryset()
         queryset = models.EventSession.update_queryset_with_permissions(
             queryset,
             self.request.user
         )
-
-        for field, value in self.request.query_params.items():
-            if field == "testing_center":
-                queryset = queryset.filter(testing_center=value)
-            if field == "proctor":
-                try:
-                    first_name, last_name = value.split(" ")
-                    queryset = queryset.filter(proctor__first_name=first_name,
-                                               proctor__last_name=last_name)
-                except ValueError:
-                    queryset = queryset.filter(proctor__username=value)
-            if field == "hash_key":
-                queryset = queryset.filter(hash_key=value)
-            if field == "course_id":
-                queryset = queryset.filter(course_id=value)
-            if field == "course_event_id":
-                queryset = queryset.filter(course_event_id=value)
-            if field == "start_date" and len(value.split("-")) == 3:
-                query_date = datetime.strptime(value, "%Y-%m-%d")
+        params = self.request.query_params
+        if "testing_center" in params:
+            queryset = queryset.filter(testing_center=params["testing_center"])
+        if "proctor" in params:
+            try:
+                first_name, last_name = params["proctor"].split(" ")
+                queryset = queryset.filter(proctor__first_name=first_name,
+                                           proctor__last_name=last_name)
+            except ValueError:
+                queryset = queryset.filter(proctor__username=params["proctor"])
+        if "hash_key" in params:
+            queryset = queryset.filter(hash_key=params["hash_key"])
+        if "course_id" in params:
+            queryset = queryset.filter(course_id=params["course_id"])
+        if "course_event_id" in params:
+            queryset = queryset.filter(
+                course_event_id=params["course_event_id"])
+        if "start_date" in params:
+            try:
+                query_date = datetime.strptime(params["start_date"],
+                                               "%Y-%m-%d")
                 queryset = queryset.filter(
                     start_date__gte=query_date,
                     start_date__lt=query_date + timedelta(days=1)
                 )
-            if field == "end_date" and len(value.split("-")) == 3:
-                query_date = datetime.strptime(value, "%Y-%m-%d")
+            except ValueError:
+                pass
+        if "end_date" in params:
+            try:
+                query_date = datetime.strptime(params["end_date"], "%Y-%m-%d")
                 queryset = queryset.filter(
                     end_date__gte=query_date,
                     end_date__lt=query_date + timedelta(
                         days=1)
                 )
+            except ValueError:
+                pass
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -544,7 +551,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     paginate_by = 50
     queryset = models.Exam.objects.filter(
         event__status=models.EventSession.ARCHIVED
-    ).all()
+    ).order_by('-pk')
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication,
                               BasicAuthentication)
@@ -556,7 +563,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         :return: queryset
         """
         queryset = models.Exam.objects.by_user_perms(self.request.user).filter(
-            event__status=models.EventSession.ARCHIVED).order_by('-pk').all()
+            event__status=models.EventSession.ARCHIVED).order_by('-pk')
         permissions = self.request.user.permission_set
         if permissions.filter(role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
@@ -570,27 +577,38 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
                 queryset = queryset.filter(
                     event__proctor=self.request.user)
 
-        for field, value in self.request.query_params.items():
-            if field == "event_hash":
-                queryset = queryset.filter(event__hash_key=value)
-            if field == "courseID":
-                queryset = queryset.filter(course__display_name=value)
-            if field == "username":
-                queryset = queryset.filter(username=value)
-            if field == "email":
-                queryset = queryset.filter(email=value)
-            if field == "examStartDate" and len(value.split("-")) == 3:
-                query_date = datetime.strptime(value, "%Y-%m-%d")
+        params = self.request.query_params
+        if "event_hash" in params:
+            queryset = queryset.filter(event__hash_key=params["event_hash"])
+        if "courseID" in params:
+            queryset = queryset.filter(course__display_name=params["courseID"])
+        if "username" in params:
+            queryset = queryset.filter(username=params["username"])
+        if "email" in params:
+            queryset = queryset.filter(email=params["email"])
+        if "examStartDate" in params:
+            try:
+                query_date = datetime.strptime(
+                    params["examStartDate"], "%Y-%m-%d"
+                )
                 queryset = queryset.filter(
                     exam_start_date__gte=query_date,
                     exam_start_date__lt=query_date + timedelta(days=1)
                 )
-            if field == "examEndDate" and len(value.split("-")) == 3:
-                query_date = datetime.strptime(value, "%Y-%m-%d")
+            except ValueError:
+                pass
+        if "examEndDate" in params:
+            try:
+                query_date = datetime.strptime(
+                    params["examEndDate"], "%Y-%m-%d"
+                )
                 queryset = queryset.filter(
                     exam_end_date__gte=query_date,
                     exam_end_date__lt=query_date + timedelta(days=1)
                 )
+            except ValueError:
+                pass
+
         return queryset
 
 
@@ -622,7 +640,7 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     """
     serializer_class = CommentSerializer
     paginate_by = 25
-    queryset = models.Comment.objects.all()
+    queryset = models.Comment.objects.order_by('-pk')
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication,
                               BasicAuthentication)
@@ -633,14 +651,14 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
         Add filters for queryset
         :return: queryset
         """
-        queryset = models.Comment.objects.order_by('-pk').all()
-        for field, value in self.request.query_params.items():
-            if field == "event_status":
-                queryset = queryset.filter(event_status=value)
-            if field == "event_start":
-                queryset = queryset.filter(event_start=value)
-            if field == "exam_code":
-                queryset = queryset.filter(exam__exam_code=value)
+        queryset = super(CommentViewSet, self).get_queryset()
+        params = self.request.query_params
+        if "event_status" in params:
+            queryset = queryset.filter(event_status=params["event_status"])
+        if "event_start" in params:
+            queryset = queryset.filter(event_start=params["event_start"])
+        if "exam_code" in params:
+            queryset = queryset.filter(exam__exam_code=params["exam_code"])
         return queryset
 
     def create(self, request, *args, **kwargs):

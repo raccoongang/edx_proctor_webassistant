@@ -59,9 +59,11 @@ class Permission(models.Model):
         Delete courserun from object_id if object type is course id
         :return: str
         """
-        return self.object_id if \
-            self.object_type != Permission.TYPE_COURSE else \
-            Permission._course_run_to_course(self.object_id)
+        if self.object_type != Permission.TYPE_COURSE:
+            result = self.object_id
+        else:
+            result = Permission._course_run_to_course(self.object_id)
+        return result
 
     @classmethod
     def _course_run_to_course(cls, courserun):
@@ -71,7 +73,8 @@ class Permission(models.Model):
         :return: str
         """
         try:
-            edxorg, edxcourse, edxcourserun = Permission.get_course_data(courserun)
+            edxorg, edxcourse, edxcourserun = Permission.get_course_data(
+                courserun)
             return "/".join((edxorg, edxcourse))
         except:
             return courserun

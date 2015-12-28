@@ -110,7 +110,7 @@ USE_TZ = True
 
 LOGIN_URL = LOGIN_REDIRECT_URL = LOGOUT_REDIRECT_URL = "/"
 AUTH_BACKEND_NAME = 'sso_pwa-oauth2'
-SSO_ENABLED = True
+SSO_ENABLED = False
 
 if SSO_ENABLED:
     TEMPLATES[0]['OPTIONS']['context_processors'] += [

@@ -23,7 +23,7 @@ class JournalingViewSet(mixins.ListModelMixin,
 
     """
     serializer_class = JournalingSerializer
-    queryset = Journaling.objects.order_by('-pk').all()
+    queryset = Journaling.objects.order_by('-pk')
     paginate_by = 25
     authentication_classes = (
         SsoTokenAuthentication, CsrfExemptSessionAuthentication,
@@ -35,20 +35,25 @@ class JournalingViewSet(mixins.ListModelMixin,
         Add filters for queryset
         :return: queryset
         """
-        queryset = Journaling.objects.order_by('-pk').all()
-        for field, value in self.request.query_params.items():
-            if field == "proctor":
-                queryset = queryset.filter(proctor__username=value)
-            if field == "exam_code":
-                queryset = queryset.filter(exam__exam_code=value)
-            if field == "type":
-                queryset = queryset.filter(type=value)
-            if field == "event_hash":
-                queryset = queryset.filter(event__hash_key=value)
-            if field == "date" and len(value.split("-")) == 3:
-                query_date = datetime.strptime(value, "%Y-%m-%d")
+
+        queryset = super(JournalingViewSet, self).get_queryset()
+        params = self.request.query_params
+        if "proctor" in params:
+            queryset = queryset.filter(proctor__username=params["proctor"])
+        if "exam_code" in params:
+            queryset = queryset.filter(exam__exam_code=params["exam_code"])
+        if "type" in params:
+            queryset = queryset.filter(type=params["type"])
+        if "event_hash" in params:
+            queryset = queryset.filter(event__hash_key=params["event_hash"])
+        if "date" in params:
+            try:
+                query_date = datetime.strptime(params["date"], "%Y-%m-%d")
                 queryset = queryset.filter(
                     datetime__gte=query_date,
                     datetime__lt=query_date + timedelta(days=1)
                 )
+            except ValueError:
+                pass
+
         return queryset

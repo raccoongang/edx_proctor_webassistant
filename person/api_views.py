@@ -24,7 +24,8 @@ class PermissionViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         Return permissions only for current user
         :return: queryset
         """
-        return Permission.objects.filter(user=self.request.user).all()
+        queryset = super(PermissionViewSet, self).get_queryset()
+        return queryset.filter(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
         """

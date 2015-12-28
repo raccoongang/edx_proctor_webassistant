@@ -27,7 +27,7 @@ class JournalingSerializer(serializers.ModelSerializer):
         :param obj:
         :return:
         """
-        return obj.get_type_display()
+        return obj.get_journaling_type_display()
 
     class Meta:
         model = Journaling
