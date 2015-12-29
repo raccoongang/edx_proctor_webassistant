@@ -11,6 +11,28 @@ class HasPermissionToCourseTestCase(TestCase):
         )
 
 
+class CourseTestCase(TestCase):
+    def setUp(self):
+        self.course = Course.create_by_course_run("org/course/run")
+
+    def test_get_fill_course(self):
+        result = self.course.get_full_course()
+        self.assertEqual(result, "org/course/run")
+
+    def test_get_by_course_run(self):
+        course = Course.get_by_course_run("org/course/run")
+        self.assertEqual(course, self.course)
+
+    def test_get_course_data(self):
+        # slashseparated course_id
+        data = Course.get_course_data("org/course/run")
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), 3)
+        # plusseparated course_id
+        data = Course.get_course_data("test:org+course+run")
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), 3)
+
 class ExamByUserPermsManagerTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -31,7 +53,10 @@ class ExamByUserPermsManagerTestCase(TestCase):
         )
         exams = Exam.objects.by_user_perms(self.user)
         self.assertEqual(len(exams), 1)
-        self.assertEqual(exams[0].course_run, 'org2/course1/run1')
+        course_data = "/".join((exams[0].course.course_org,
+                                exams[0].course.course_id,
+                                exams[0].course.course_run))
+        self.assertEqual(course_data, 'org2/course1/run1')
         perm2 = Permission.objects.create(
             user=self.user,
             object_id='org1/course2/run1',
@@ -42,7 +67,7 @@ class ExamByUserPermsManagerTestCase(TestCase):
         perm1.delete()
         perm3 = Permission.objects.create(
             user=self.user,
-            object_id='org1/course2',
+            object_id='org1/course2/run1',
             object_type=Permission.TYPE_COURSE
         )
         exams = Exam.objects.by_user_perms(self.user)
@@ -68,7 +93,7 @@ class ExamByUserPermsManagerTestCase(TestCase):
 
 class ExamTestCase(TestCase):
     def setUp(self):
-        self.exam = _create_exam(1)
+        self.exam = _create_exam(1, 'org/course/run')
 
     def test_generate_key(self):
         result = self.exam.generate_key()

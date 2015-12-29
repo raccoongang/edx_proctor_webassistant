@@ -42,14 +42,14 @@ class Permission(models.Model):
     role = models.CharField(max_length=10, choices=ROLES_CHOICES,
                             default=ROLE_PROCTOR)
 
-    def _get_exam_field_by_type(self):
+    def _get_course_field_by_type(self):
         """
         return field name by object type
         :return: str
         """
         fields = {
-            self.TYPE_ORG: "course_organization",
-            self.TYPE_COURSE: "course_identify",
+            self.TYPE_ORG: "course_org",
+            self.TYPE_COURSE: "course_id",
             self.TYPE_COURSERUN: "course_run"
         }
         return fields.get(self.object_type)

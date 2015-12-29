@@ -54,6 +54,7 @@ class Course(models.Model):
     def __unicode__(self):
         return self.display_name
 
+
 def has_permisssion_to_course(user, course_id, permissions=None, role=None):
     """
     Check is user has access to this course
@@ -107,8 +108,26 @@ class ExamsByUserPermsManager(models.Manager):
                 return qs
             for permission in user.permission_set.all():
                 if permission.object_id != "*":
-                    q_objects.append(Q(**{permission._get_exam_field_by_type():
-                                              permission.prepare_object_id()}))
+                    if permission.object_type == Permission.TYPE_ORG:
+                        q_objects.append(Q(**{
+                            "course__course_org":
+                                permission.prepare_object_id()
+                        }))
+                    elif permission.object_type == Permission.TYPE_COURSE:
+                        course_org, course_id, course_run = Course.get_course_data(
+                            permission.object_id)
+                        q_objects.append(Q(**{
+                            "course__course_org": course_org,
+                            "course__course_id": course_id,
+                        }))
+                    else:
+                        course_org, course_id, course_run = Course.get_course_data(
+                            permission.object_id)
+                        q_objects.append(Q(**{
+                            "course__course_org": course_org,
+                            "course__course_id": course_id,
+                            "course__course_run": course_run,
+                        }))
                 else:
                     return qs
             if len(q_objects):

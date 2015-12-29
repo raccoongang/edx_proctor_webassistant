@@ -17,8 +17,8 @@ class PermissionTestCase(TestCase):
             role=Permission.ROLE_PROCTOR
         )
 
-    def test_get_exam_field_by_type(self):
-        result = self.permission._get_exam_field_by_type()
+    def test_get_course_field_by_type(self):
+        result = self.permission._get_course_field_by_type()
         self.assertEqual(type(result), str)
 
     def test_prepare_object_id(self):
