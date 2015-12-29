@@ -6,7 +6,7 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
 from models import (Exam, ArchivedEventSession, Comment,
-                    has_permisssion_to_course, InProgressEventSession, Course)
+                    has_permission_to_course, InProgressEventSession, Course)
 from person.models import Permission, Student
 
 
@@ -215,7 +215,7 @@ class EventSessionSerializer(serializers.ModelSerializer):
         :return: clean data
         """
         if not self.partial:
-            if not self.instance and not has_permisssion_to_course(
+            if not self.instance and not has_permission_to_course(
                 data.get('proctor'),
                 data.get('course').get_full_course()
             ):

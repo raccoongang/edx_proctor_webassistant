@@ -10,7 +10,7 @@ from edx_proctor_webassistant.auth import (CsrfExemptSessionAuthentication,
                                            IsProctor, IsProctorOrInstructor)
 from person.models import Permission
 from proctoring import models
-from proctoring.models import has_permisssion_to_course, Course
+from proctoring.models import has_permission_to_course, Course
 from proctoring.serializers import (EventSessionSerializer, CommentSerializer,
                                     ArchivedEventSessionSerializer,
                                     ArchivedExamSerializer)
@@ -490,7 +490,7 @@ class GetExamsProctored(APIView):
         ret = []
         for result in content.get('results', []):
             if result['proctored_exams']:
-                result['has_access'] = has_permisssion_to_course(
+                result['has_access'] = has_permission_to_course(
                     request.user, result.get('id'), permissions)
                 ret.append(result)
         return Response(

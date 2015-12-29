@@ -51,11 +51,36 @@ class Course(models.Model):
         else:
             return course_id.split('/')
 
+    @classmethod
+    def filter_courses_by_permission(cls, q_objects, permission):
+        if permission.object_type == Permission.TYPE_ORG:
+            q_objects.append(Q(**{
+                "course__course_org":
+                    permission.prepare_object_id()
+            }))
+        elif permission.object_type == Permission.TYPE_COURSE:
+            course_org, course_id, course_run = Course.get_course_data(
+                permission.object_id)
+            q_objects.append(Q(**{
+                "course__course_org": course_org,
+                "course__course_id": course_id,
+            }))
+        else:
+            course_org, course_id, course_run = Course.get_course_data(
+                permission.object_id)
+            q_objects.append(Q(**{
+                "course__course_org": course_org,
+                "course__course_id": course_id,
+                "course__course_run": course_run,
+            }))
+
+        return q_objects
+
     def __unicode__(self):
         return self.display_name
 
 
-def has_permisssion_to_course(user, course_id, permissions=None, role=None):
+def has_permission_to_course(user, course_id, permissions=None, role=None):
     """
     Check is user has access to this course
     :param user: User instance
@@ -108,26 +133,9 @@ class ExamsByUserPermsManager(models.Manager):
                 return qs
             for permission in user.permission_set.all():
                 if permission.object_id != "*":
-                    if permission.object_type == Permission.TYPE_ORG:
-                        q_objects.append(Q(**{
-                            "course__course_org":
-                                permission.prepare_object_id()
-                        }))
-                    elif permission.object_type == Permission.TYPE_COURSE:
-                        course_org, course_id, course_run = Course.get_course_data(
-                            permission.object_id)
-                        q_objects.append(Q(**{
-                            "course__course_org": course_org,
-                            "course__course_id": course_id,
-                        }))
-                    else:
-                        course_org, course_id, course_run = Course.get_course_data(
-                            permission.object_id)
-                        q_objects.append(Q(**{
-                            "course__course_org": course_org,
-                            "course__course_id": course_id,
-                            "course__course_run": course_run,
-                        }))
+                    q_objects = Course.filter_courses_by_permission(
+                        q_objects, permission
+                    )
                 else:
                     return qs
             if len(q_objects):
@@ -275,10 +283,9 @@ class EventSession(models.Model):
                 role=Permission.ROLE_INSTRUCTOR).all():
                 q_objects = []
                 if permission.object_id != "*":
-                    q_objects.append(Q(**{
-                        "course_run__startswith":
-                            permission.prepare_object_id()
-                    }))
+                    q_objects = Course.filter_courses_by_permission(
+                        q_objects, permission
+                    )
             if len(q_objects):
                 queryset = queryset.filter(reduce(operator.or_, q_objects))
 

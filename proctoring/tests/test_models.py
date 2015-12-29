@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from person.models import Permission
-from proctoring.models import Exam, Course
+from proctoring.models import Exam, Course, has_permission_to_course, \
+    EventSession, InProgressEventSession
 
 
 class HasPermissionToCourseTestCase(TestCase):
@@ -32,6 +33,59 @@ class CourseTestCase(TestCase):
         data = Course.get_course_data("test:org+course+run")
         self.assertEqual(type(data), list)
         self.assertEqual(len(data), 3)
+
+
+class HasPermissionTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'test1', 'test1@test.com', 'testpassword'
+        )
+        exam1 = _create_exam(1, 'org1/course1/run1')
+
+    def test_has_permission_to_course(self):
+        # wrong course_id
+        self.assertFalse(has_permission_to_course(
+            self.user,
+            'org1course1run1'))
+        # hasn't permissions
+        self.assertFalse(has_permission_to_course(
+            self.user,
+            'org1/course1/run1'))
+        # add permission
+        perm1 = Permission.objects.create(
+            user=self.user,
+            object_id='org1/course1/run1',
+            object_type=Permission.TYPE_COURSERUN,
+            role=Permission.ROLE_PROCTOR
+        )
+        self.assertTrue(has_permission_to_course(
+            self.user,
+            'org1/course1/run1'))
+        # instructor hasn't permissions
+        self.assertFalse(has_permission_to_course(
+            self.user,
+            'org1/course1/run1',
+            role=Permission.ROLE_INSTRUCTOR))
+
+        perm1.delete()
+        perm2 = Permission.objects.create(
+            user=self.user,
+            object_id='*',
+            object_type='*',
+            role=Permission.ROLE_PROCTOR
+        )
+        self.assertTrue(has_permission_to_course(
+            self.user,
+            'org1/course1/run1'))
+
+        perm2.delete()
+
+        self.user.is_superuser = True
+        self.user.save()
+        self.assertTrue(has_permission_to_course(
+            self.user,
+            'org1/course1/run1'))
+
 
 class ExamByUserPermsManagerTestCase(TestCase):
     def setUp(self):
@@ -90,6 +144,16 @@ class ExamByUserPermsManagerTestCase(TestCase):
         exams = Exam.objects.by_user_perms(self.user)
         self.assertEqual(len(exams), 4)
 
+        Permission.objects.filter(user=self.user).delete()
+        exams = Exam.objects.by_user_perms(self.user)
+        self.assertEqual(len(exams), 0)
+
+        self.user.is_superuser = True
+        self.user.save()
+
+        exams = Exam.objects.by_user_perms(self.user)
+        self.assertEqual(len(exams), Exam.objects.count())
+
 
 class ExamTestCase(TestCase):
     def setUp(self):
@@ -99,6 +163,65 @@ class ExamTestCase(TestCase):
         result = self.exam.generate_key()
         self.assertEqual(type(result), str)
         self.assertRegexpMatches(result, r"([a-fA-F\d]{32})")
+
+
+
+
+class EventSessionTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'test1', 'test1@test.com', 'testpassword'
+        )
+        exam1 = _create_exam(1, 'org1/course1/run1')
+
+    def test_post_save(self):
+        event = InProgressEventSession()
+        event.testing_center = "test center"
+        event.course = Course.create_by_course_run('org/course/run')
+        event.course_event_id = 'id'
+        event.proctor = self.user
+        event.save()
+        event = EventSession.objects.get(pk=event.pk)
+        self.assertEqual(type(event.hash_key), unicode)
+        self.assertRegexpMatches(event.hash_key, r"([a-fA-F\d]{32})")
+
+    def test_update_queryset_with_permissions(self):
+        perm1 = Permission.objects.create(
+            user=self.user,
+            object_id='org1/course1/run1',
+            object_type=Permission.TYPE_COURSERUN,
+            role=Permission.ROLE_PROCTOR
+        )
+        qs = EventSession.update_queryset_with_permissions(
+            EventSession.objects.all(), self.user
+        )
+        self.assertNotEqual(qs, EventSession.objects.all())
+
+        perm1.delete()
+
+        perm2 = Permission.objects.create(
+            user=self.user,
+            object_id='org1/course1/run1',
+            object_type=Permission.TYPE_COURSERUN,
+            role=Permission.ROLE_INSTRUCTOR
+        )
+        qs = EventSession.update_queryset_with_permissions(
+            EventSession.objects.all(), self.user
+        )
+        self.assertNotEqual(qs, EventSession.objects.all())
+
+        perm2.delete()
+
+        perm3 = Permission.objects.create(
+            user=self.user,
+            object_id='*',
+            object_type='*',
+            role=Permission.ROLE_PROCTOR
+        )
+        qs = EventSession.update_queryset_with_permissions(
+            EventSession.objects.all(), self.user
+        )
+        self.assertNotEqual(qs, EventSession.objects.filter(proctor=self.user))
 
 
 def _create_exam(id, course_id):
