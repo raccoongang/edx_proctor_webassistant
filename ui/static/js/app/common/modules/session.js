@@ -11,7 +11,9 @@
                     data: JSON.stringify({
                         testing_center: testing_center,
                         course_id: course_id,
-                        course_event_id: exam_id
+                        course_event_id: exam_id,
+                        course_name: course_name,
+                        exam_name: exam_name
                     })
                 }).then(function(data){
                     Session = data.data;
@@ -43,6 +45,18 @@
                 }
             };
 
+            this.fetchSession = function(hash_key){
+                return $http({
+                    url: $rootScope.apiConf.apiServer + '/event_session/',
+                    method: 'GET',
+                    headers: {Authorization: "Token " + Auth.get_token()},
+                    params: {'session': hash_key}
+                }).then(function(data){
+                    Session = data.data.length ? data.data[0]: null;
+                    window.sessionStorage['proctoring'] = JSON.stringify(Session);
+                });
+            };
+
             this.getSession = function(){
                 return angular.copy(Session);
             };
@@ -62,5 +76,10 @@
             this.flush = function(){
                 delete window.sessionStorage['proctoring'];
             };
+
+            this.is_owner = function(){
+                return Auth.get_proctor() == Session['username'];
+            };
+
         });
 })();

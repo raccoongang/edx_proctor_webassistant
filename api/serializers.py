@@ -169,6 +169,10 @@ class EventSessionSerializer(serializers.ModelSerializer):
     hash_key = serializers.CharField(read_only=True)
     start_date = serializers.DateTimeField(read_only=True)
     end_date = serializers.DateTimeField(read_only=True)
+    username = serializers.SerializerMethodField()
+
+    def get_username(self, obj):
+        return obj.proctor.username
 
     class Meta:
         model = InProgressEventSession

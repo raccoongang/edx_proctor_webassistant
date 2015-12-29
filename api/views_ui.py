@@ -219,8 +219,29 @@ class EventSessionViewSet(mixins.ListModelMixin,
         BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        hash_key = self.request.query_params.get('session')
+        if hash_key:
+            response = InProgressEventSession.objects.filter(hash_key=hash_key)
+            response = InProgressEventSession.update_queryset_with_permissions(
+                response, self.request.user
+            )
+        else:
+            response = InProgressEventSession.objects.all()
+        return response
+
     def create(self, request, *args, **kwargs):
-        fields_for_create = ['testing_center', 'course_id', 'course_event_id']
+        fields_for_create = [
+            'testing_center',
+            'course_id',
+            'course_event_id',
+            'course_name',
+            'exam_name'
+        ]
         data = {}
         for field in fields_for_create:
             data[field] = request.data.get(field)

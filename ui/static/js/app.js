@@ -147,6 +147,22 @@
                     }
                 }
             })
+            .when('/session/:hash', {
+                // templateUrl: app.path + 'ui/sessions/view.html',
+                controller: 'MainController',
+                resolve: {
+                    deps: function ($location, TestSession, $q, $route) {
+                        console.log(TestSession);
+                        var deferred = $q.defer();
+                        TestSession.fetchSession($route.current.params.hash)
+                        .then(function(){
+                            deferred.resolve();
+                            $location.path('/');
+                        });
+                        return deferred.promise;
+                    }
+                }
+            })
             .when('/archive', {
                 templateUrl: app.path + 'ui/archive/view.html',
                 controller: 'ArchCtrl',

@@ -45,6 +45,8 @@
                 $scope.test_center = session.testing_center;
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;
+                $scope.exam_link = window.location.href + "session/" + session.hash_key;
+
                 $scope.exams = {
                     checked: [],
                     ended: []
@@ -67,6 +69,10 @@
                         if (obj[0].review_sent !== true)
                             obj[0]['status'] = status;
                     }
+                };
+
+                $scope.is_owner = function () {
+                    return TestSession.is_owner();
                 };
 
                 $scope.websocket_callback = function (msg) {
