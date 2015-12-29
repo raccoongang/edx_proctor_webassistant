@@ -1,5 +1,5 @@
 import json
-from datetime import  datetime
+from datetime import datetime
 from rest_framework.test import APIRequestFactory, force_authenticate
 from rest_framework import status
 
@@ -47,6 +47,7 @@ class JournalingTestCase(TestCase):
         self.assertEqual(type(data), dict)
         self.assertEqual(len(data.get('results')), Journaling.objects.count())
 
+        # test filters
         request = factory.get(
             '/api/journaling/?proctor=%s&exam_code=%s&type=%s&'
             'date=%s' % (
@@ -64,3 +65,17 @@ class JournalingTestCase(TestCase):
         data = json.loads(response.content)
         self.assertEqual(type(data), dict)
         self.assertEqual(len(data.get('results')), Journaling.objects.count())
+
+        # test filter by hash key and wrong date
+        request = factory.get(
+            '/api/journaling/?event_hash=%s&date=%s' % (
+                'test',
+                'wrong_date'
+            ))
+        force_authenticate(request, user=self.user)
+        view = api_views.JournalingViewSet.as_view({'get': 'list'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data.get('results')), 0)

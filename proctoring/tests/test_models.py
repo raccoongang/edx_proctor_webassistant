@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from person.models import Permission
-from proctoring.models import Exam
+from proctoring.models import Exam, Course
 
 
 class HasPermissionToCourseTestCase(TestCase):
@@ -16,28 +16,10 @@ class ExamByUserPermsManagerTestCase(TestCase):
         self.user = User.objects.create_user(
             'test1', 'test1@test.com', 'testpassword'
         )
-        exam1 = _create_exam(1)
-        exam1.course_organization = "org1"
-        exam1.course_identify = "org1/course1"
-        exam1.course_run = "org1/course1/run1"
-        exam1.save()
-        exam2 = _create_exam(2)
-        exam2.course_organization = "org1"
-        exam2.course_identify = "org1/course2"
-        exam2.course_run = "org1/course2/run1"
-        exam2.save()
-        exam3 = _create_exam(3)
-        exam3.course_organization = "org1"
-        exam3.course_identify = "org1/course2"
-        exam3.course_run = "org1/course2/run2"
-        exam3.save()
-        exam4 = _create_exam(4)
-        exam4.course_organization = "org2"
-        exam4.course_identify = "org2/course1"
-        exam4.course_run = "org2/course1/run1"
-        exam4.save()
-
-        # self.user.save()
+        exam1 = _create_exam(1, 'org1/course1/run1')
+        exam2 = _create_exam(2, 'org1/course2/run1')
+        exam3 = _create_exam(3, 'org1/course2/run2')
+        exam4 = _create_exam(4, 'org2/course1/run1')
 
     def test_by_user_perms(self):
         exams = Exam.objects.by_user_perms(self.user)
@@ -84,7 +66,6 @@ class ExamByUserPermsManagerTestCase(TestCase):
         self.assertEqual(len(exams), 4)
 
 
-
 class ExamTestCase(TestCase):
     def setUp(self):
         self.exam = _create_exam(1)
@@ -95,7 +76,7 @@ class ExamTestCase(TestCase):
         self.assertRegexpMatches(result, r"([a-fA-F\d]{32})")
 
 
-def _create_exam(id):
+def _create_exam(id, course_id):
     exam = Exam()
     exam.exam_code = 'examCode_%s' % id
     exam.duration = 1
@@ -106,7 +87,10 @@ def _create_exam(id):
     exam.exam_name = 'examName_%s' % id
     exam.ssi_product = 'ssiProduct_%s' % id
     exam.first_name = 'firstName_%s' % id
-    exam.last_name = 'lastName_%s' % id
+    exam.last_name = 'lastName_%s' % id,
+    exam.course = Course.create_by_course_run(course_id)
     exam.exam_id = '1'
+    exam.email = 'test@test.com'
+    exam.student_id = '1'
     exam.save()
     return exam

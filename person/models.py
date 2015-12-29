@@ -52,7 +52,7 @@ class Permission(models.Model):
             self.TYPE_COURSE: "course_identify",
             self.TYPE_COURSERUN: "course_run"
         }
-        return fields[self.object_type]
+        return fields.get(self.object_type)
 
     def prepare_object_id(self):
         """
@@ -73,7 +73,8 @@ class Permission(models.Model):
         :return: str
         """
         try:
-            edxorg, edxcourse, edxcourserun = Permission.get_course_data(
+            from proctoring.models import Course
+            edxorg, edxcourse, edxcourserun = Course.get_course_data(
                 courserun)
             return "/".join((edxorg, edxcourse))
         except:
