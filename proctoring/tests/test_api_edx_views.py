@@ -1,12 +1,13 @@
 import json
+from mock import patch
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIRequestFactory, force_authenticate
-from proctoring.models import Exam, EventSession
-from person.models import Permission
+from proctoring.models import Course, Exam, EventSession, \
+    InProgressEventSession
+from person.models import Permission, Student
 from proctoring.api_edx_views import APIRoot, ExamViewSet
-from mock import patch
 
 
 class APIRootTestCase(TestCase):
@@ -23,9 +24,10 @@ class APIRootTestCase(TestCase):
 
 class ExamViewSetTestCase(TestCase):
     def setUp(self):
-        self.event = EventSession()
+        self.course = Course.create_by_course_run('org1/course1/run1')
+        self.event = InProgressEventSession()
         self.event.testing_center = 'testing center'
-        self.event.course_id = 'org1/course1/run1'
+        self.event.course = self.course
         self.event.course_event_id = '1'
         self.event.status = EventSession.IN_PROGRESS
         self.user = User.objects.create_user(
@@ -41,6 +43,12 @@ class ExamViewSetTestCase(TestCase):
             object_id="*",
             role=Permission.ROLE_PROCTOR
         )
+        student = Student.objects.create(
+            sso_id=1,
+            email='test@email.com',
+            first_name='first_name',
+            last_name='last_name'
+        )
         exam = Exam()
         exam.exam_code = 'examCode'
         exam.organization = 'organization'
@@ -55,9 +63,10 @@ class ExamViewSetTestCase(TestCase):
         exam.last_name = 'lastName'
         exam.username = 'username'
         exam.user_id = '1'
+        exam.student = student
         exam.email = 'test@test.com'
         exam.exam_id = self.event.course_event_id
-        exam.course_id = self.event.course_id
+        exam.course = self.course
         exam.event = self.event
         exam.save()
         self.exam = exam
@@ -75,6 +84,34 @@ class ExamViewSetTestCase(TestCase):
         data = json.loads(response.content)
         self.assertEqual(type(data), list)
         self.assertTrue(len(data) > 0)
+
+    def test_get_exam_by_without_session(self):
+        factory = APIRequestFactory()
+        request = factory.get(
+            '/api/exam_register/')
+        force_authenticate(request, user=self.user)
+        view = ExamViewSet.as_view({'get': 'list'})
+
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), 0)
+
+    def test_get_exam_by_wrong_session(self):
+        factory = APIRequestFactory()
+        request = factory.get(
+            '/api/exam_register/?session=%s' % "wrong_session")
+        force_authenticate(request, user=self.user)
+        view = ExamViewSet.as_view({'get': 'list'})
+
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), 0)
 
     def test_register_exam(self):
         factory = APIRequestFactory()
@@ -101,16 +138,40 @@ class ExamViewSetTestCase(TestCase):
                 "userID": "1"
             }'''
         }
-        with patch('api.views_edx.send_ws_msg') as send_ws:
+        with patch('proctoring.api_edx_views.send_ws_msg') as send_ws:
             send_ws.return_value = None
+            # send wrong data
             request = factory.post('/api/exam_register/',
                                    data=exam_data,
                                    )
             view = ExamViewSet.as_view({'post': 'create'})
             response = view(request)
             response.render()
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
+            # event non exists
+            exam_data['orgExtra'] = '''{
+                "examStartDate": "2015-10-10 11:00",
+                "examEndDate": "2015-10-10 15:00",
+                "noOfStudents": 1,
+                "examID": "wrong",
+                "courseID": "org1/course1/run1",
+                "firstName": "first_name",
+                "lastName": "last_name",
+                "email": "test@test.com",
+                "username": "test",
+                "userID": "1"
+            }'''
+            request = factory.post(
+                '/api/exam_register/',
+                data=exam_data,
+            )
+            view = ExamViewSet.as_view({'post': 'create'})
+            response = view(request)
+            response.render()
+            self.assertEqual(response.status_code,status.HTTP_403_FORBIDDEN)
+
+            # correct data
             exam_data['orgExtra'] = '''{
                 "examStartDate": "2015-10-10 11:00",
                 "examEndDate": "2015-10-10 15:00",
@@ -146,10 +207,6 @@ class ExamViewSetTestCase(TestCase):
             },
                 exam_data
             )
-            self.assertListEqual(
-                ["org1", "org1/course1", "org1/course1/run1"],
-                [exam.course_organization, exam.course_identify,
-                 exam.course_run]
-            )
             self.assertEqual(data['ID'], exam.generate_key())
             self.assertEqual(Exam.objects.count(), 2)
+
