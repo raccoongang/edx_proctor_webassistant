@@ -94,6 +94,11 @@
                                 attempt_end(msg.hash);
                             }
                         }
+                        if (msg['end_session']) {
+                            session.flush();
+                            session = null;
+                            $location.path('/');
+                        }
                     }
                 };
 
