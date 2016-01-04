@@ -52,8 +52,10 @@
                     headers: {Authorization: "Token " + Auth.get_token()},
                     params: {'session': hash_key}
                 }).then(function(data){
-                    Session = data.data.length ? data.data[0]: null;
-                    window.sessionStorage['proctoring'] = JSON.stringify(Session);
+                    Session = data.data.length == 1 ? data.data[0]: null;
+                    if (Session){
+                        window.sessionStorage['proctoring'] = JSON.stringify(Session);
+                    }
                 });
             };
 
@@ -78,7 +80,7 @@
             };
 
             this.is_owner = function(){
-                return Auth.get_proctor() == Session['username'];
+                return Auth.get_proctor() == Session['owner_username'];
             };
 
         });
