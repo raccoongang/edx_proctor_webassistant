@@ -7,12 +7,15 @@
             {[ course_name ]}
             <br>
             {[ exam_name ]}
+            <br>
+            {[ exam_link ]}
         </h5>
     </div>
     <div class="col-xs-12 col-sm-6">
         <div>
             <h3>
                 <button class="btn btn-xs btn-warning pull-right"
+                        ng-if="is_owner()"
                         ng-click="end_session()">
                     {[ i18n('END_SESSION') ]}
                 </button>

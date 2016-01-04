@@ -183,6 +183,9 @@ class EventSession(models.Model):
         db_index=True
     )
 
+    course_name = models.CharField(max_length=128, blank=True, null=True)
+    exam_name = models.CharField(max_length=128, blank=True, null=True)
+
     @staticmethod
     def update_queryset_with_permissions(queryset, user):
         if user.permission_set.filter(
