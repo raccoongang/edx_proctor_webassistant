@@ -221,8 +221,8 @@ class EventSessionViewSet(mixins.ListModelMixin,
 
     def get_queryset(self):
         """
-        This view should return a list of all the purchases for
-        the user as determined by the username portion of the URL.
+        This method should return a list of all the sessions or
+        list with one session for any hash_key.
         """
         hash_key = self.request.query_params.get('session')
         if hash_key:
