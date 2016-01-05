@@ -3,9 +3,9 @@ from proctoring import models
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('display_name',)
-    list_filter = ('course_org',)
-    search_fields = ('display_name',)
+    list_display = ('display_name', 'course_name')
+    list_filter = ('course_org', 'course_name')
+    search_fields = ('display_name', 'course_name')
 
     def has_add_permission(self, request):
         return False
@@ -56,12 +56,12 @@ class EventSessionAdmin(admin.ModelAdmin):
     Event Session admin class
     """
     list_display = (
-        'testing_center', 'course_id', 'course_event_id', 'proctor', 'status',
-        'start_date', 'hash_key', 'end_date')
+        'testing_center', 'course_id', 'course_event_id', 'exam_name',
+        'proctor', 'status', 'start_date', 'hash_key', 'end_date')
     list_filter = ('proctor', 'status')
     search_fields = (
-        'testing_center', 'course_id', 'course_event_id', 'start_date',
-        'end_date')
+        'testing_center', 'course_id', 'course_event_id', 'exam_name',
+        'start_date', 'end_date')
     readonly_fields = ('hash_key', 'start_date', 'end_date')
 
 
