@@ -10,9 +10,9 @@ log = logging.getLogger(__name__)
 
 @transaction.atomic
 def set_roles_for_edx_users(user, permissions):
-    '''
+    """
     This function create roles for proctors from sso permissions.
-    '''
+    """
     proctor_perm = {
         u'Proctoring', u'*'
     }

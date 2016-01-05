@@ -4,6 +4,9 @@ from journaling import models
 
 
 class JournalingAdmin(admin.ModelAdmin):
+    """
+    Journaling admin
+    """
     list_display = (
         'id', 'journaling_type', 'datetime', 'event', 'proctor', 'exam'
     )

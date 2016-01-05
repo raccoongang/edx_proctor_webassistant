@@ -35,6 +35,11 @@ from proctoring.edx_api import (start_exam_request, stop_exam_request,
 
 
 def _get_status(code):
+    """
+    Get exam status calling EdX API
+    :param code: str
+    :return: str
+    """
     try:
         res = poll_status(code)
         ret_data = res.json()
@@ -44,6 +49,10 @@ def _get_status(code):
 
 
 class StartExam(APIView):
+    """
+    Start Exam endpoint
+    Supports only GET request
+    """
     authentication_classes = (SsoTokenAuthentication,)
     permission_classes = (IsAuthenticated, IsProctor)
 
@@ -81,6 +90,14 @@ class StartExam(APIView):
 
 
 def _stop_attempt(code, action, user_id):
+    """
+    Stop exam using EdX API
+    Send `max_retries` request until status won't be `submitted`
+    :param code: str
+    :param action: str
+    :param user_id: int
+    :return: tuple (response data and status)
+    """
     max_retries = 3
     attempt = 0
     response = stop_exam_request(code, action, user_id)
@@ -93,6 +110,10 @@ def _stop_attempt(code, action, user_id):
 
 
 class StopExam(APIView):
+    """
+    Stop Exam endpoint
+    Supports only PUT request
+    """
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
@@ -126,6 +147,10 @@ class StopExam(APIView):
 
 
 class StopExams(APIView):
+    """
+    Bulk exams stop endpoint
+    Support only PUT reqest
+    """
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
@@ -168,6 +193,10 @@ class StopExams(APIView):
 
 
 class PollStatus(APIView):
+    """
+    Endpoint for getting status
+    Supports only POST method
+    """
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
@@ -329,6 +358,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session.end_date = datetime.now()
             event_session.save()
             serializer = self.get_serializer(event_session)
+            ws_data = {
+                'end_session': change_end_date
+            }
+            send_ws_msg(ws_data, channel=instance.hash_key)
         return Response(serializer.data)
 
 
@@ -352,6 +385,10 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
     permission_classes = (IsAuthenticated, IsProctorOrInstructor)
 
     def get_queryset(self):
+        """
+        Filters for Archived Event Session List
+        :return: queryset
+        """
         queryset = super(ArchivedEventSessionViewSet, self).get_queryset()
         queryset = models.EventSession.update_queryset_with_permissions(
             queryset,
@@ -401,6 +438,9 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
         return queryset
 
     def list(self, request, *args, **kwargs):
+        """
+        List endpoint
+        """
         queryset = self.filter_queryset(self.get_queryset())
 
         page = self.paginate_queryset(queryset)
@@ -494,6 +534,11 @@ class Review(APIView):
 
     @staticmethod
     def _sent(_status):
+        """
+        Check is review sent
+        :param _status: str
+        :return: bool
+        """
         return _status in ['verified', 'rejected']
 
     def send_review(self, payload):
@@ -510,6 +555,10 @@ class Review(APIView):
 
 
 class GetExamsProctored(APIView):
+    """
+    Endpoint for getting all Courses with proctored exams
+    Supports only GET request
+    """
     def get(self, request):
         response = get_proctored_exams_request()
         content = json.loads(response.content)
@@ -527,6 +576,9 @@ class GetExamsProctored(APIView):
 
 
 class BulkStartExams(APIView):
+    """
+    Bulk exams start endpoint
+    """
     authentication_classes = (SsoTokenAuthentication,
                               CsrfExemptSessionAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)

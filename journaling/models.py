@@ -6,6 +6,9 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 
 class Journaling(models.Model):
+    """
+    Journaling model
+    """
     PROCTOR_ENTER = 1
     PROCTOR_EXIT = 2
     EVENT_SESSION_START = 3
@@ -39,6 +42,10 @@ class Journaling(models.Model):
     datetime = models.DateTimeField(auto_now=True)
 
     def get_student(self):
+        """
+        Student info
+        :return:  str
+        """
         if self.exam:
             return " ".join(
                 (self.exam.first_name, self.exam.last_name, self.exam.email)
@@ -46,6 +53,9 @@ class Journaling(models.Model):
 
 
 def login_journaling(sender, user, request, **kwargs):
+    """
+    Journaling login event
+    """
     Journaling.objects.create(
         journaling_type=Journaling.PROCTOR_ENTER,
         proctor=user
@@ -53,6 +63,9 @@ def login_journaling(sender, user, request, **kwargs):
 
 
 def logout_journaling(sender, user, request, **kwargs):
+    """
+    Journaling logout event
+    """
     Journaling.objects.create(
         journaling_type=Journaling.PROCTOR_EXIT,
         proctor=user

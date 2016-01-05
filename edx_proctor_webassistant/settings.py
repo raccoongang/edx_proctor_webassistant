@@ -109,6 +109,8 @@ USE_TZ = True
 
 
 LOGIN_URL = LOGIN_REDIRECT_URL = LOGOUT_REDIRECT_URL = "/"
+
+# Auth settings with/without sso
 AUTH_BACKEND_NAME = 'sso_pwa-oauth2'
 SSO_ENABLED = False
 
@@ -222,6 +224,7 @@ WS4REDIS_ALLOWED_CHANNELS = (
 )
 WS4REDIS_HEARTBEAT = '--heartbeat--'
 
+# Config for Single Page Application
 SPA_CONFIG = {
     "sso_enabled": SSO_ENABLED,
     "language": "ru",

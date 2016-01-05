@@ -11,6 +11,9 @@ from person.models import Student, Permission
 
 
 class Course(models.Model):
+    """
+    Course model
+    """
     course_org = models.CharField(max_length=60)
     course_id = models.CharField(max_length=60)
     course_run = models.CharField(max_length=60)
@@ -18,10 +21,19 @@ class Course(models.Model):
     course_name = models.CharField(max_length=128, blank=True, null=True)
 
     def get_full_course(self):
+        """
+        Slash separated org, id and course run
+        :return: str
+        """
         return "/".join((self.course_org, self.course_id, self.course_run))
 
     @classmethod
     def get_by_course_run(cls, course_run):
+        """
+        Get Course by course string
+        :param course_run: str
+        :return: Course object
+        """
         course_org, course_id, course_run = Course.get_course_data(course_run)
         return Course.objects.get(
             course_org=course_org,
@@ -31,6 +43,11 @@ class Course(models.Model):
 
     @classmethod
     def create_by_course_run(cls, name):
+        """
+        Create Course by course string
+        :param name: str
+        :return: Course object
+        """
         course_org, course_id, course_run = Course.get_course_data(name)
         return cls.objects.get_or_create(
             course_org=course_org,
@@ -54,6 +71,12 @@ class Course(models.Model):
 
     @classmethod
     def filter_courses_by_permission(cls, q_objects, permission):
+        """
+        Queryset by permission
+        :param q_objects: queryset
+        :param permission: Permission object
+        :return: queryset
+        """
         if permission.object_type == Permission.TYPE_ORG:
             q_objects.append(Q(**{
                 "course__course_org":

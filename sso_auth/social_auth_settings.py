@@ -1,4 +1,4 @@
-# social auth settings
+# general social auth settings
 
 LOGIN_URL = '/login/sso_pwa-oauth2'
 AUTHENTICATION_BACKENDS = (
