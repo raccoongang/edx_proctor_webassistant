@@ -303,9 +303,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session.end_date = datetime.now()
             event_session.save()
             serializer = self.get_serializer(event_session)
-
-            send_ws_msg({'end_session': change_end_date},
-                        channel=instance.hash_key)
+            ws_data = {
+                'end_session': change_end_date
+            }
+            send_ws_msg(ws_data, channel=instance.hash_key)
 
         return Response(serializer.data)
 

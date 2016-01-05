@@ -76,12 +76,14 @@
             };
 
             this.flush = function(){
+                Session = null;
                 delete window.sessionStorage['proctoring'];
             };
 
-            this.is_owner = function(){
-                return Auth.get_proctor() == Session['owner_username'];
+            this.is_owner = function() {
+                if (Session && Session.hasOwnProperty('owner_username')) {
+                    return Auth.get_proctor() == Session['owner_username'];
+                }
             };
-
         });
 })();

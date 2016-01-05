@@ -1,8 +1,10 @@
 (function () {
     angular.module('websocket', []).factory('WS', ['$rootScope', function ($rootScope) {
-        var ws, ws_msg = null;
+        var ws, ws_params = {}, ws_msg = null;
 
         var init = function (subcribe, callback, reconnect) {
+            ws_params.channel = subcribe;
+            ws_params.callback = callback;
             if (["function", "object"].indexOf(typeof window.WebSocket) >= 0){
                 var protocol = 'ws://';
                 if("https:" == document.location.protocol){
@@ -25,6 +27,7 @@
             ws.onmessage = function (e) {
                 try {
                     ws_msg = JSON.parse(e.data);
+
                     callback(ws_msg);
                 }
                 catch (err) { }
@@ -39,6 +42,7 @@
                 }
             };
             $rootScope.$on('$locationChangeStart', function (event, next, current) {
+                init(ws_params.channel, ws_params.callback, false);
                 ws.close();
             });
         };

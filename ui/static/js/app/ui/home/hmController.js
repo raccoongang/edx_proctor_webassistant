@@ -3,11 +3,11 @@
 (function () {
     angular.module('proctor').controller(
         'MainCtrl', ['$scope', '$interval', '$location',
-            '$q', 'WS', 'Api', 'Auth', 'i18n',
+            '$q', '$route', 'WS', 'Api', 'Auth', 'i18n',
             'NgTableParams', '$uibModal',
             'TestSession', 'Polling',
             'DateTimeService', 'students',
-            function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
+            function ($scope, $interval, $location, $q, $route, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
@@ -94,10 +94,9 @@
                                 attempt_end(msg.hash);
                             }
                         }
-                        if (msg['end_session']) {
-                            session.flush();
-                            session = null;
-                            $location.path('/');
+                        if (msg.hasOwnProperty('end_session')) {
+                            estSession.flush(); 
+                            $route.reload();
                         }
                     }
                 };
