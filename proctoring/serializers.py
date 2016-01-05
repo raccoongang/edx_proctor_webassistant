@@ -201,6 +201,14 @@ class EventSessionSerializer(serializers.ModelSerializer):
     start_date = serializers.DateTimeField(read_only=True)
     end_date = serializers.DateTimeField(read_only=True)
     course_id = serializers.SerializerMethodField()
+    course_name = serializers.SerializerMethodField()
+    owner_username = serializers.SerializerMethodField()
+
+    def get_owner_username(self, obj):
+        return obj.proctor.username
+
+    def get_course_name(self, obj):
+        return obj.course.course_name
 
     def get_course_id(self, obj):
         return obj.course.display_name

@@ -32,6 +32,7 @@ class Migration(migrations.Migration):
                 ('course_id', models.CharField(max_length=60)),
                 ('course_run', models.CharField(max_length=60)),
                 ('display_name', models.CharField(max_length=60)),
+                ('course_name', models.CharField(max_length=128, null=True, blank=True)),
             ],
         ),
         migrations.CreateModel(
@@ -46,6 +47,7 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateTimeField(auto_now_add=True)),
                 ('end_date', models.DateTimeField(null=True, blank=True)),
                 ('comment', models.TextField(null=True, blank=True)),
+                ('exam_name', models.CharField(max_length=128, null=True, blank=True)),
                 ('course', models.ForeignKey(to='proctoring.Course')),
                 ('proctor', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],

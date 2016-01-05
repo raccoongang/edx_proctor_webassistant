@@ -15,6 +15,7 @@ class Course(models.Model):
     course_id = models.CharField(max_length=60)
     course_run = models.CharField(max_length=60)
     display_name = models.CharField(max_length=60)
+    course_name = models.CharField(max_length=128, blank=True, null=True)
 
     def get_full_course(self):
         return "/".join((self.course_org, self.course_id, self.course_run))
@@ -257,6 +258,7 @@ class EventSession(models.Model):
     start_date = models.DateTimeField(auto_now_add=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
+    exam_name = models.CharField(max_length=128, blank=True, null=True)
 
     @staticmethod
     def update_queryset_with_permissions(queryset, user):

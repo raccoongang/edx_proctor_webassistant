@@ -2,14 +2,11 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('proctoring', '0001_initial'),
-        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
@@ -21,9 +18,6 @@ class Migration(migrations.Migration):
                 ('note', models.TextField(null=True, blank=True)),
                 ('proctor_ip', models.GenericIPAddressField(null=True, blank=True)),
                 ('datetime', models.DateTimeField(auto_now=True)),
-                ('event', models.ForeignKey(blank=True, to='proctoring.EventSession', null=True)),
-                ('exam', models.ForeignKey(blank=True, to='proctoring.Exam', null=True)),
-                ('proctor', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
             ],
         ),
     ]

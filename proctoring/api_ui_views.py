@@ -10,7 +10,8 @@ from edx_proctor_webassistant.auth import (CsrfExemptSessionAuthentication,
                                            IsProctor, IsProctorOrInstructor)
 from person.models import Permission
 from proctoring import models
-from proctoring.models import has_permission_to_course, Course
+from proctoring.models import has_permission_to_course, Course, \
+    InProgressEventSession
 from proctoring.serializers import (EventSessionSerializer, CommentSerializer,
                                     ArchivedEventSessionSerializer,
                                     ArchivedExamSerializer)
@@ -230,12 +231,32 @@ class EventSessionViewSet(mixins.ListModelMixin,
                               BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases for
+        the user as determined by the username portion of the URL.
+        """
+        hash_key = self.request.query_params.get('session')
+        if hash_key:
+            queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
+            queryset = InProgressEventSession.update_queryset_with_permissions(
+                queryset, self.request.user
+            )
+        else:
+            queryset = InProgressEventSession.objects.all()
+        return queryset
+
     def create(self, request, *args, **kwargs):
         """
         Create endpoint for event session
         Validate session and check user permissions before create
         """
-        fields_for_create = ['testing_center', 'course_id', 'course_event_id']
+        fields_for_create = [
+            'testing_center',
+            'course_id',
+            'course_event_id',
+            'exam_name'
+        ]
         data = {}
 
         for field in fields_for_create:
@@ -245,6 +266,8 @@ class EventSessionViewSet(mixins.ListModelMixin,
                 else:
                     course = Course.create_by_course_run(
                         request.data.get(field))
+                course.course_name = request.data.get('course_name')
+                course.save()
                 data['course'] = course.pk
             else:
                 data[field] = request.data.get(field)
@@ -351,7 +374,7 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
                 course = Course.get_by_course_run(params["course_id"])
                 queryset = queryset.filter(course=course)
             except Course.DoesNotExist:
-                queryset =  queryset.filter(pk__lt=0)
+                queryset = queryset.filter(pk__lt=0)
         if "course_event_id" in params:
             queryset = queryset.filter(
                 course_event_id=params["course_event_id"])
