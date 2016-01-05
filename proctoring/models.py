@@ -258,6 +258,7 @@ class ArchivedEventSessionManager(models.Manager):
 class EventSession(models.Model):
     """
     Event session model
+    Attention! hash key generates only for InProgressEventSession proxy model
     """
     IN_PROGRESS = 'in_progress'
     ARCHIVED = 'archived'

@@ -266,6 +266,45 @@ class ViewsUITestCase(TestCase):
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class GetExamsProctoredTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            'test', 'test@example.com', 'testpassword'
+        )
+        Permission.objects.create(
+            user=self.user,
+            object_id='*',
+            object_type='*'
+        )
+
+    def test_get(self):
+        factory = APIRequestFactory()
+        with patch(
+            'proctoring.api_ui_views.get_proctored_exams_request') as exams:
+            exams.return_value = MockResponse(status_code=200, content="""{
+                "results": [
+                    {
+                        "id": "org/course/id",
+
+                        "proctored_exams": ["exam"]
+                    }
+                ]
+            }""")
+            request = factory.get('/api/proctored_exams/')
+            force_authenticate(request, user=self.user)
+            view = api_ui_views.GetExamsProctored.as_view()
+            response = view(request)
+            response.render()
+            data = json.loads(response.content)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(type(data), dict)
+            self.assertDictContainsSubset({
+                "id": "org/course/id",
+                "proctored_exams": ['exam'],
+                "has_access": True
+            },data['results'][0])
+
+
 class EventSessionViewSetTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
@@ -282,7 +321,9 @@ class EventSessionViewSetTestCase(TestCase):
         event_data = {
             'testing_center': u'test_center',
             'course_id': u'test/course/id',
-            'course_event_id': u'test course event'
+            'course_event_id': u'test course event',
+            "course_name": "Display Course Name"
+
         }
         request = factory.post(
             '/api/event_session/', data=event_data)
@@ -301,7 +342,9 @@ class EventSessionViewSetTestCase(TestCase):
         },
             event_data
         )
+        self.assertEqual(event.course.course_name, "Display Course Name")
 
+        # Try to create event wich already exists
         request = factory.post(
             '/api/event_session/', data=event_data)
         force_authenticate(request, user=self.user)
@@ -320,7 +363,8 @@ class EventSessionViewSetTestCase(TestCase):
             event_data
         )
 
-    def test_update_event(self):
+    @patch('proctoring.api_ui_views.send_ws_msg')
+    def test_update_event(self, send_ws_msg):
         event = EventSession()
         event.testing_center = "new center"
         event.course = Course.create_by_course_run("new/course/id")
@@ -352,6 +396,40 @@ class EventSessionViewSetTestCase(TestCase):
             event_data
         )
         self.assertNotEqual(event.end_date, None)
+
+    def test_list(self):
+        event = InProgressEventSession()
+        event.testing_center = "another center"
+        event.course = Course.create_by_course_run("another/course/id")
+        event.course_event_id = "another event"
+        event.proctor = self.user
+        event.save()
+        event = InProgressEventSession.objects.get(pk=event.pk)
+        factory = APIRequestFactory()
+        request = factory.get(
+            '/api/event_session/')
+        force_authenticate(request, user=self.user)
+        view = api_ui_views.EventSessionViewSet.as_view({'get': 'list'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), InProgressEventSession.objects.count())
+
+        # test filters by hash key
+        request = factory.get(
+            '/api/event_session/?session=%s' % event.hash_key
+        )
+        force_authenticate(request, user=self.user)
+        view = api_ui_views.EventSessionViewSet.as_view({'get': 'list'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(type(data), list)
+        self.assertEqual(len(data), InProgressEventSession.objects.filter(
+            hash_key=event.hash_key).count())
 
 
 class ArchivedEventSessionViewSetTestCase(TestCase):
@@ -435,7 +513,8 @@ class ArchivedEventSessionViewSetTestCase(TestCase):
                 'wrong_date',
             ))
         force_authenticate(request, user=self.user)
-        view = api_ui_views.ArchivedEventSessionViewSet.as_view({'get': 'list'})
+        view = api_ui_views.ArchivedEventSessionViewSet.as_view(
+            {'get': 'list'})
         response = view(request)
         response.render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)

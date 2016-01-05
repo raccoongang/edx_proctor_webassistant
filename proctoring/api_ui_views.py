@@ -266,6 +266,7 @@ class EventSessionViewSet(mixins.ListModelMixin,
         the user as determined by the username portion of the URL.
         """
         hash_key = self.request.query_params.get('session')
+        print hash_key
         if hash_key:
             queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
             queryset = InProgressEventSession.update_queryset_with_permissions(
@@ -563,15 +564,15 @@ class GetExamsProctored(APIView):
         response = get_proctored_exams_request()
         content = json.loads(response.content)
         permissions = request.user.permission_set.all()
-        ret = []
-        for result in content.get('results', []):
-            if result['proctored_exams']:
-                result['has_access'] = has_permission_to_course(
-                    request.user, result.get('id'), permissions)
-                ret.append(result)
+        results = []
+        for row in content.get('results', []):
+            if row['proctored_exams']:
+                row['has_access'] = has_permission_to_course(
+                    request.user, row.get('id'), permissions)
+                results.append(row)
         return Response(
             status=response.status_code,
-            data={"results": ret}
+            data={"results": results}
         )
 
 
