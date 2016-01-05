@@ -113,7 +113,8 @@ class ExamViewSetTestCase(TestCase):
         self.assertEqual(type(data), list)
         self.assertEqual(len(data), 0)
 
-    def test_register_exam(self):
+    @patch('proctoring.api_edx_views.send_ws_msg')
+    def test_register_exam(self, send_ws_msg):
         factory = APIRequestFactory()
         exam_data = {
             "examCode": "newEamCode",
@@ -138,75 +139,72 @@ class ExamViewSetTestCase(TestCase):
                 "userID": "1"
             }'''
         }
-        with patch('proctoring.api_edx_views.send_ws_msg') as send_ws:
-            send_ws.return_value = None
-            # send wrong data
-            request = factory.post('/api/exam_register/',
-                                   data=exam_data,
-                                   )
-            view = ExamViewSet.as_view({'post': 'create'})
-            response = view(request)
-            response.render()
-            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        # send wrong data
+        request = factory.post('/api/exam_register/',
+                               data=exam_data,
+                               )
+        view = ExamViewSet.as_view({'post': 'create'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-            # event non exists
-            exam_data['orgExtra'] = '''{
-                "examStartDate": "2015-10-10 11:00",
-                "examEndDate": "2015-10-10 15:00",
-                "noOfStudents": 1,
-                "examID": "wrong",
-                "courseID": "org1/course1/run1",
-                "firstName": "first_name",
-                "lastName": "last_name",
-                "email": "test@test.com",
-                "username": "test",
-                "userID": "1"
-            }'''
-            request = factory.post(
-                '/api/exam_register/',
-                data=exam_data,
-            )
-            view = ExamViewSet.as_view({'post': 'create'})
-            response = view(request)
-            response.render()
-            self.assertEqual(response.status_code,status.HTTP_403_FORBIDDEN)
+        # event non exists
+        exam_data['orgExtra'] = '''{
+            "examStartDate": "2015-10-10 11:00",
+            "examEndDate": "2015-10-10 15:00",
+            "noOfStudents": 1,
+            "examID": "wrong",
+            "courseID": "org1/course1/run1",
+            "firstName": "first_name",
+            "lastName": "last_name",
+            "email": "test@test.com",
+            "username": "test",
+            "userID": "1"
+        }'''
+        request = factory.post(
+            '/api/exam_register/',
+            data=exam_data,
+        )
+        view = ExamViewSet.as_view({'post': 'create'})
+        response = view(request)
+        response.render()
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-            # correct data
-            exam_data['orgExtra'] = '''{
-                "examStartDate": "2015-10-10 11:00",
-                "examEndDate": "2015-10-10 15:00",
-                "noOfStudents": 1,
-                "examID": "1",
-                "courseID": "org1/course1/run1",
-                "firstName": "first_name",
-                "lastName": "last_name",
-                "email": "test@test.com",
-                "username": "test",
-                "userID": "1"
-            }'''
-            request = factory.post(
-                '/api/exam_register/',
-                data=exam_data,
-            )
-            view = ExamViewSet.as_view({'post': 'create'})
-            response = view(request)
-            response.render()
-            data = json.loads(response.content)
-            self.assertEqual(type(data), dict)
-            exam = Exam.objects.get(exam_code=exam_data['examCode'])
-            self.assertDictContainsSubset({
-                "examCode": exam.exam_code,
-                "duration ": exam.duration,
-                "organization ": exam.organization,
-                "reviewedExam ": exam.reviewed_exam,
-                "reviewerNotes ": exam.reviewer_notes,
-                "examPassword ": exam.exam_password,
-                "examSponsor ": exam.exam_sponsor,
-                "examName ": exam.exam_name,
-                "ssiProduct ": exam.ssi_product,
-            },
-                exam_data
-            )
-            self.assertEqual(data['ID'], exam.generate_key())
-            self.assertEqual(Exam.objects.count(), 2)
-
+        # correct data
+        exam_data['orgExtra'] = '''{
+            "examStartDate": "2015-10-10 11:00",
+            "examEndDate": "2015-10-10 15:00",
+            "noOfStudents": 1,
+            "examID": "1",
+            "courseID": "org1/course1/run1",
+            "firstName": "first_name",
+            "lastName": "last_name",
+            "email": "test@test.com",
+            "username": "test",
+            "userID": "1"
+        }'''
+        request = factory.post(
+            '/api/exam_register/',
+            data=exam_data,
+        )
+        view = ExamViewSet.as_view({'post': 'create'})
+        response = view(request)
+        response.render()
+        data = json.loads(response.content)
+        self.assertEqual(type(data), dict)
+        exam = Exam.objects.get(exam_code=exam_data['examCode'])
+        self.assertDictContainsSubset({
+            "examCode": exam.exam_code,
+            "duration ": exam.duration,
+            "organization ": exam.organization,
+            "reviewedExam ": exam.reviewed_exam,
+            "reviewerNotes ": exam.reviewer_notes,
+            "examPassword ": exam.exam_password,
+            "examSponsor ": exam.exam_sponsor,
+            "examName ": exam.exam_name,
+            "ssiProduct ": exam.ssi_product,
+        },
+            exam_data
+        )
+        self.assertEqual(data['ID'], exam.generate_key())
+        self.assertEqual(Exam.objects.count(), 2)

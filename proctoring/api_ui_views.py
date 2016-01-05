@@ -347,7 +347,11 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
         if "hash_key" in params:
             queryset = queryset.filter(hash_key=params["hash_key"])
         if "course_id" in params:
-            queryset = queryset.filter(course_id=params["course_id"])
+            try:
+                course = Course.get_by_course_run(params["course_id"])
+                queryset = queryset.filter(course=course)
+            except Course.DoesNotExist:
+                queryset =  queryset.filter(pk__lt=0)
         if "course_event_id" in params:
             queryset = queryset.filter(
                 course_event_id=params["course_event_id"])
