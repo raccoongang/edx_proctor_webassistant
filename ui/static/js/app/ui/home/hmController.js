@@ -95,7 +95,7 @@
                             }
                         }
                         if (msg.hasOwnProperty('end_session')) {
-                            estSession.flush(); 
+                            TestSession.flush(); 
                             $route.reload();
                         }
                     }
