@@ -55,6 +55,24 @@
             return ("" + diff).toHHMMSS();
         };
 
+        this.get_diff_from_string = function(date_str1, date_str2){
+            var diff = null;
+            var d1 = Date.parse(date_str1)/1000;
+            var d2 = Date.parse(date_str2)/1000;
+            if (date_str1 && date_str2){
+                if (d1 > d2){
+                    diff = parseInt(d1 - d2);
+                }
+                else{
+                    diff = parseInt(d2 - d1);
+                }
+                return ("" + diff).toHHMMSS();
+            }
+            else{
+                return '';
+            }
+        };
+
         this.get_now_date = function(){
             var today = new Date();
             var dd = today.getDate();
@@ -73,7 +91,14 @@
         };
 
         this.get_now_time = function(){
+            // Returns localized time based on `time_options`
+            // Example: 3:45:07 PM
             return localDate(window.localStorage['NG_TRANSLATE_LANG_KEY'], time_options);
+        };
+
+        this.get_now_timestamp = function(){
+            var d = new Date();
+            return d.getTime();
         };
 
         this.get_localized_date_from_string = function(string){
@@ -108,13 +133,13 @@
 
     app.filter('date_localize', function(DateTimeService) {
         return function(input) {
-            return DateTimeService.get_localized_date_from_string(input);
+            return input?DateTimeService.get_localized_date_from_string(input):'';
         };
     });
 
     app.filter('date_localize_timestamp', function(DateTimeService) {
         return function(input) {
-            return DateTimeService.get_localized_date_from_timestamp(input);
+            return input?DateTimeService.get_localized_date_from_timestamp(input):'';
         };
     });
 })();

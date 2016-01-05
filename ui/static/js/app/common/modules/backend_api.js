@@ -63,17 +63,24 @@
             });
         };
 
-        this.restore_session = function(){
-            if (window.sessionStorage['proctoring'] !== undefined){
-                var session = TestSession.getSession();
-                if (session) {
-                    return generic_api_call({
-                        'url':  get_url('exam_register'),
-                        'method': 'GET',
-                        'params': {session: session.hash_key}
-                    });
+        this.restore_session = function(session_hash){
+            var hash_key = null;
+            if (session_hash !== undefined) {
+                hash_key = session_hash;
+            }
+            else {
+                if (window.sessionStorage['proctoring'] !== undefined) {
+                    var session = TestSession.getSession();
+                    if (session) {
+                        hash_key = session.hash_key;
+                    }
                 }
             }
+            return generic_api_call({
+                'url': get_url('exam_register'),
+                'method': 'GET',
+                'params': {session: hash_key}
+            });
         };
 
         this.start_all_exams = function(list){

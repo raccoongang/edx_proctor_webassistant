@@ -3,11 +3,11 @@
 (function () {
     angular.module('proctor').controller(
         'MainCtrl', ['$scope', '$interval', '$location',
-            '$q', 'WS', 'Api', 'Auth', 'i18n',
+            '$q', '$route', 'WS', 'Api', 'Auth', 'i18n',
             'NgTableParams', '$uibModal',
             'TestSession', 'Polling',
             'DateTimeService', 'students',
-            function ($scope, $interval, $location, $q, WS, Api, Auth, i18n,
+            function ($scope, $interval, $location, $q, $route, WS, Api, Auth, i18n,
                       NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
@@ -45,6 +45,8 @@
                 $scope.test_center = session.testing_center;
                 $scope.course_name = session.course_name;
                 $scope.exam_name = session.exam_name;
+                $scope.exam_link = window.location.href + "session/" + session.hash_key;
+
                 $scope.exams = {
                     checked: [],
                     ended: []
@@ -69,6 +71,10 @@
                     }
                 };
 
+                $scope.is_owner = function () {
+                    return TestSession.is_owner();
+                };
+
                 $scope.websocket_callback = function (msg) {
                     if (msg) {
                         if (msg.examCode) {
@@ -87,6 +93,10 @@
                             if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
                                 attempt_end(msg.hash);
                             }
+                        }
+                        if (msg.hasOwnProperty('end_session')) {
+                            TestSession.flush();
+                            $route.reload();
                         }
                     }
                 };
@@ -224,8 +234,8 @@
 
                 var there_are_not_reviewed_attempts = function () {
                     var list = [];
-                    angular.forEach($scope.ws_data, function (val, key) {
-                        if (!['verified', 'rejected'].in_array(val.status)) {
+                    angular.forEach($scope.ws_data, function (val) {
+                        if (!['verified', 'rejected', 'error'].in_array(val.status)) {
                             list.push(val.hash);
                         }
                     });

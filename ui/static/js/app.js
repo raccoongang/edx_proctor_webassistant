@@ -145,6 +145,20 @@
                     }
                 }
             })
+            .when('/session/:hash', {
+                controller: 'MainController',
+                resolve: {
+                    deps: function ($location, TestSession, $q, $route) {
+                        var deferred = $q.defer();
+                        TestSession.fetchSession($route.current.params.hash)
+                        .then(function(){
+                            deferred.resolve();
+                            $location.path('/');
+                        });
+                        return deferred.promise;
+                    }
+                }
+            })
             .when('/archive', {
                 templateUrl: app.path + 'ui/archive/view.html',
                 controller: 'ArchCtrl',
@@ -244,8 +258,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n',
-        function ($scope, $translate, $http, i18n) {
+    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n', 'TestSession',
+        function ($scope, $translate, $http, i18n, TestSession) {
 
             var lng_is_supported = function (val) {
                 return app.language.supported.indexOf(val) >= 0 ? true : false;
@@ -270,6 +284,7 @@
             };
 
             $scope.logout = function () {
+                TestSession.flush();
                 window.location = window.app.logoutUrl;
             };
 
