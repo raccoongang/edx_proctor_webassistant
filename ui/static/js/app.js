@@ -150,10 +150,12 @@
             .when('/session/:hash', {
                 controller: 'MainController',
                 resolve: {
-                    deps: function ($location, TestSession, $q, $route) {
+                    deps: function ($location, TestSession, $q, $route, Auth) {
                         var deferred = $q.defer();
                         Auth.is_instructor().then(function (is) {
                             if (is) {
+                                $location.path('/archive');
+                            } else {
                                 TestSession.fetchSession($route.current.params.hash)
                                 .then(function(){
                                     deferred.resolve();
@@ -163,9 +165,8 @@
                                         $location.path('/archive');
                                     }
                                 });
-                            } else {
-                                $location.path('/archive');
                             }
+                        });
                         return deferred.promise;
                     }
                 }
