@@ -226,13 +226,13 @@ class EventSessionViewSet(mixins.ListModelMixin,
         """
         hash_key = self.request.query_params.get('session')
         if hash_key:
-            response = InProgressEventSession.objects.filter(hash_key=hash_key)
-            response = InProgressEventSession.update_queryset_with_permissions(
-                response, self.request.user
+            queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
+            queryset = InProgressEventSession.update_queryset_with_permissions(
+                queryset, self.request.user
             )
         else:
-            response = InProgressEventSession.objects.all()
-        return response
+            queryset = InProgressEventSession.objects.all()
+        return queryset
 
     def create(self, request, *args, **kwargs):
         fields_for_create = [
