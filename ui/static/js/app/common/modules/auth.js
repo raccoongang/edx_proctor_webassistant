@@ -46,11 +46,11 @@
         };
 
         this.is_proctor = function(){
-            return this.is_role('proctor')
+            return this.is_role('proctor');
         };
 
         this.is_instructor = function(){
-            return this.is_role('instructor')
+            return this.is_role('instructor');
         };
 
         this.get_profile = function(){
