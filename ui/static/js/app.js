@@ -152,11 +152,20 @@
                 resolve: {
                     deps: function ($location, TestSession, $q, $route) {
                         var deferred = $q.defer();
-                        TestSession.fetchSession($route.current.params.hash)
-                        .then(function(){
-                            deferred.resolve();
-                            $location.path('/');
-                        });
+                        Auth.is_instructor().then(function (is) {
+                            if (is) {
+                                TestSession.fetchSession($route.current.params.hash)
+                                .then(function(){
+                                    deferred.resolve();
+                                    $location.path('/');
+                                }, function(reason) {
+                                    if(reason.status == 403){
+                                        $location.path('/archive');
+                                    }
+                                });
+                            } else {
+                                $location.path('/archive');
+                            }
                         return deferred.promise;
                     }
                 }
