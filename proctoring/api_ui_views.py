@@ -438,21 +438,6 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
                 pass
         return queryset
 
-    def list(self, request, *args, **kwargs):
-        """
-        List endpoint
-        """
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-
-        return Response(serializer.data)
-
 
 class Review(APIView):
     """
@@ -758,6 +743,8 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             exam_code=request.data.get('examCode')
         )
         comment = request.data.get('comment')
+        if isinstance(comment, basestring):
+            comment = json.loads(comment)
         comment['exam'] = exam.pk
         serializer = self.get_serializer(data=comment)
         serializer.is_valid(raise_exception=True)
