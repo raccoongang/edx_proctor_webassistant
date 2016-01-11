@@ -4,9 +4,10 @@ There are requests to edX API
 See https://github.com/edx/edx-proctoring/blob/master/edx_proctoring/api.py
 """
 import json
-
 import requests
+
 from bs4 import BeautifulSoup
+
 from django.conf import settings
 
 from edx_proctor_webassistant.utils import date_handler

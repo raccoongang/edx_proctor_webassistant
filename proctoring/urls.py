@@ -1,11 +1,14 @@
 from django.conf.urls import url, patterns
+
 from proctoring import api_ui_views
 
 urlpatterns = patterns(
     '',
-    url(r'start_exam/(?P<attempt_code>[-\w]+)$', api_ui_views.StartExam.as_view(),
+    url(r'start_exam/(?P<attempt_code>[-\w]+)$',
+        api_ui_views.StartExam.as_view(),
         name='start_exam'),
-    url(r'stop_exam/(?P<attempt_code>[-\w]+)$', api_ui_views.StopExam.as_view(),
+    url(r'stop_exam/(?P<attempt_code>[-\w]+)$',
+        api_ui_views.StopExam.as_view(),
         name='stop_exam'),
     url(r'stop_exams/$', api_ui_views.StopExams.as_view(),
         name='stop_exams'),

@@ -1,4 +1,8 @@
+"""
+Views for UI application
+"""
 from datetime import datetime, timedelta
+
 from rest_framework import mixins, viewsets
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import IsAuthenticated

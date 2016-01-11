@@ -1,8 +1,12 @@
+"""
+Tests for methods in model.py
+"""
 from django.test import TestCase
 from django.contrib.auth.models import User
+
 from person.models import Permission
-from proctoring.models import Exam, Course, has_permission_to_course, \
-    EventSession, InProgressEventSession
+from proctoring.models import (Exam, Course, has_permission_to_course,
+                               EventSession, InProgressEventSession)
 
 
 class HasPermissionToCourseTestCase(TestCase):
@@ -163,8 +167,6 @@ class ExamTestCase(TestCase):
         result = self.exam.generate_key()
         self.assertEqual(type(result), str)
         self.assertRegexpMatches(result, r"([a-fA-F\d]{32})")
-
-
 
 
 class EventSessionTestCase(TestCase):

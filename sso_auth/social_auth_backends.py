@@ -1,9 +1,12 @@
+"""
+Backend for python social auth authentication
+"""
 import logging
-
-from django.conf import settings
 
 from social.utils import handle_http_errors
 from social.backends.oauth import BaseOAuth2
+
+from django.conf import settings
 
 log = logging.getLogger(__name__)
 

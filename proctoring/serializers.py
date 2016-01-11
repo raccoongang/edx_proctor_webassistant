@@ -1,13 +1,20 @@
+"""
+Serializers for Django Rest Framework
+"""
 import re
 import json
+
 from dateutil import parser
 from collections import OrderedDict
 from rest_framework import serializers
+
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
-from models import (Exam, ArchivedEventSession, Comment,
-                    has_permission_to_course, InProgressEventSession, Course)
-from person.models import Permission, Student
+
+from proctoring.models import (Exam, ArchivedEventSession, Comment,
+                               InProgressEventSession, Course,
+                               has_permission_to_course)
+from person.models import Student
 
 
 class JSONSerializerField(serializers.Field):

@@ -1,9 +1,14 @@
+"""
+Python social auth pypelines
+"""
 import logging
+
+from social.pipeline import partial
 
 from django.contrib.auth.models import User
 from django.db import transaction
+
 from person.models import Permission
-from social.pipeline import partial
 
 log = logging.getLogger(__name__)
 

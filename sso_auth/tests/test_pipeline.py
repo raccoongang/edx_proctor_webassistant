@@ -1,6 +1,10 @@
-from django.contrib.auth.models import User
-from django.test import TestCase
+"""
+Tests for SSO Auth Pypelines
+"""
 from mock import patch
+
+from django.test import TestCase
+from django.contrib.auth.models import User
 
 from person.models import Permission
 from sso_auth.pipeline import (set_roles_for_edx_users,

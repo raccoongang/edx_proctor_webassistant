@@ -1,7 +1,12 @@
+"""
+Decorators for sso_auth authentication
+"""
 import hashlib
+
+from social.apps.django_app.default.models import UserSocialAuth
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from social.apps.django_app.default.models import UserSocialAuth
 
 
 def set_token_cookie(view):

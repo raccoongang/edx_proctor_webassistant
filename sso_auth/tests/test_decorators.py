@@ -1,6 +1,8 @@
-from django.test import TestCase
+"""
+Tests for SSO Auth decorators
+"""
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from django.test import Client
 from django.core.urlresolvers import reverse
 
 

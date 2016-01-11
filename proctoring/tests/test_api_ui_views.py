@@ -1,3 +1,6 @@
+"""
+Tests for API endpoints called by UI
+"""
 import json
 from datetime import datetime
 from mock import patch
@@ -8,9 +11,9 @@ from rest_framework.test import APIRequestFactory, force_authenticate
 from django.contrib.auth.models import User
 from django.test import TestCase
 
-from proctoring.models import Exam, EventSession, ArchivedEventSession, \
-    Comment, Course, InProgressEventSession
 from person.models import Permission, Student
+from proctoring.models import (Exam, EventSession, ArchivedEventSession,
+                               Comment, Course, InProgressEventSession)
 from proctoring import api_ui_views
 
 

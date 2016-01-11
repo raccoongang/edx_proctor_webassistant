@@ -1,6 +1,10 @@
+"""
+Working with websockets
+"""
 import json
 from ws4redis.redis_store import RedisMessage
 from ws4redis.publisher import RedisPublisher
+
 from django.conf import settings
 
 

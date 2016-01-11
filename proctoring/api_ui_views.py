@@ -5,28 +5,25 @@ Views for UI application
 import json
 from datetime import datetime, timedelta
 
-from edx_proctor_webassistant.auth import (CsrfExemptSessionAuthentication,
-                                           SsoTokenAuthentication,
-                                           IsProctor, IsProctorOrInstructor)
-from person.models import Permission
-from proctoring import models
-from proctoring.models import has_permission_to_course, Course, \
-    InProgressEventSession
-from proctoring.serializers import (EventSessionSerializer, CommentSerializer,
-                                    ArchivedEventSessionSerializer,
-                                    ArchivedExamSerializer)
-from django.shortcuts import redirect
 from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.decorators import (api_view, authentication_classes,
-                                       permission_classes)
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.shortcuts import redirect
+
 from edx_proctor_webassistant.web_soket_methods import send_ws_msg
+from edx_proctor_webassistant.auth import (CsrfExemptSessionAuthentication,
+                                           SsoTokenAuthentication,
+                                           IsProctor, IsProctorOrInstructor)
+from person.models import Permission
 from journaling.models import Journaling
+from proctoring import models
+from proctoring.serializers import (EventSessionSerializer, CommentSerializer,
+                                    ArchivedEventSessionSerializer,
+                                    ArchivedExamSerializer)
 from proctoring.edx_api import (start_exam_request, stop_exam_request,
                                 poll_status_request, poll_status,
                                 send_review_request,
@@ -267,12 +264,13 @@ class EventSessionViewSet(mixins.ListModelMixin,
         """
         hash_key = self.request.query_params.get('session')
         if hash_key:
-            queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
-            queryset = InProgressEventSession.update_queryset_with_permissions(
+            queryset = models.InProgressEventSession.objects.filter(
+                hash_key=hash_key)
+            queryset = models.InProgressEventSession.update_queryset_with_permissions(
                 queryset, self.request.user
             )
         else:
-            queryset = InProgressEventSession.objects.all()
+            queryset = models.InProgressEventSession.objects.all()
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -291,9 +289,10 @@ class EventSessionViewSet(mixins.ListModelMixin,
         for field in fields_for_create:
             if field == 'course_id':
                 if request.data.get('course'):
-                    course = Course.objects.get(pk=request.data.get('course'))
+                    course = models.Course.objects.get(
+                        pk=request.data.get('course'))
                 else:
-                    course = Course.create_by_course_run(
+                    course = models.Course.create_by_course_run(
                         request.data.get(field))
                 course.course_name = request.data.get('course_name')
                 course.save()
@@ -408,9 +407,9 @@ class ArchivedEventSessionViewSet(mixins.ListModelMixin,
             queryset = queryset.filter(hash_key=params["hash_key"])
         if "course_id" in params:
             try:
-                course = Course.get_by_course_run(params["course_id"])
+                course = models.Course.get_by_course_run(params["course_id"])
                 queryset = queryset.filter(course=course)
-            except Course.DoesNotExist:
+            except models.Course.DoesNotExist:
                 queryset = queryset.filter(pk__lt=0)
         if "course_event_id" in params:
             queryset = queryset.filter(
@@ -544,6 +543,7 @@ class GetExamsProctored(APIView):
     Endpoint for getting all Courses with proctored exams
     Supports only GET request
     """
+
     def get(self, request):
         response = get_proctored_exams_request()
         content = json.loads(response.content)
@@ -551,7 +551,7 @@ class GetExamsProctored(APIView):
         results = []
         for row in content.get('results', []):
             if row['proctored_exams']:
-                row['has_access'] = has_permission_to_course(
+                row['has_access'] = models.has_permission_to_course(
                     request.user, row.get('id'), permissions)
                 results.append(row)
         return Response(

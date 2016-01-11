@@ -1,4 +1,9 @@
+"""
+Views for application
+"""
 import json
+
+from sso_auth.social_auth_backends import PWABackend
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,8 +19,6 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import View
-
-from sso_auth.social_auth_backends import PWABackend
 
 
 class Index(View):

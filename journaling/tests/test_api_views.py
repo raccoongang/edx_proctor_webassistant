@@ -1,3 +1,6 @@
+"""
+Tests for Journaling's API endpoints
+"""
 import json
 from datetime import datetime
 

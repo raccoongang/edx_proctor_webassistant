@@ -1,4 +1,8 @@
+"""
+Test methods in admin.py
+"""
 from django.test import TestCase
+
 from journaling.admin import JournalingAdmin
 from journaling.models import Journaling
 

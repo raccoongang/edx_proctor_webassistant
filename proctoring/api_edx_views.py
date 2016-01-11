@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+"""
+API Views for OpenEdX's calls
+APIRoot view - list of all available API endpoints
+"""
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import viewsets, status, mixins
 from rest_framework.authentication import BasicAuthentication

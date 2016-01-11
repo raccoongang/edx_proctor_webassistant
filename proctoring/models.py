@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+"""
+Models for data from Open EdX, Exam data and comments for each exam
+"""
 import hashlib
 import operator
 from django.db import models

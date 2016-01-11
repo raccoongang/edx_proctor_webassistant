@@ -1,13 +1,17 @@
+"""
+Tests for Open EdX API calls
+"""
 import json
 
-from django.contrib.auth.models import User
-from mock import patch, DEFAULT
+from mock import patch
+
 from django.test import TestCase
+from django.contrib.auth.models import User
 
 from person.models import Student
 from proctoring import edx_api
-from journaling.models import Journaling
 from proctoring.models import EventSession, Exam, Course
+from journaling.models import Journaling
 
 
 class RequestsTestCase(TestCase):

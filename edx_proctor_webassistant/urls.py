@@ -13,20 +13,21 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from rest_framework.routers import DefaultRouter
+from social.apps.django_app.views import complete
+from social.utils import setting_name
+
 from django.conf import settings
 from django.conf.urls import include, url, patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from rest_framework.routers import DefaultRouter
-from social.apps.django_app.views import complete
-from social.utils import setting_name
 
 from journaling.api_views import JournalingViewSet
 from person.api_views import PermissionViewSet
 from proctoring import api_edx_views, api_ui_views
 from sso_auth.decorators import set_token_cookie
-from ui.views import Index, logout,login as login_view
+from ui.views import Index, logout, login as login_view
 
 router = DefaultRouter()
 router.register(r'exam_register', api_edx_views.ExamViewSet,
@@ -64,7 +65,8 @@ if not settings.SSO_ENABLED:
         url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout')
     ]
 else:
-    extra = getattr(settings, setting_name('TRAILING_SLASH'),True) and '/' or ''
+    extra = getattr(settings, setting_name('TRAILING_SLASH'),
+                    True) and '/' or ''
     urlpatterns += [
         url(r'^complete/(?P<backend>[^/]+){0}$'.format(extra),
             set_token_cookie(complete), name='complete'),

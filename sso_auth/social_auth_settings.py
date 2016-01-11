@@ -1,4 +1,7 @@
-# general social auth settings
+"""
+General social auth settings
+Automatically includes on `SSO_AUTH = True`
+"""
 
 LOGIN_URL = '/login/sso_pwa-oauth2'
 AUTHENTICATION_BACKENDS = (

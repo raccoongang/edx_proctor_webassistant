@@ -1,3 +1,6 @@
+"""
+Serializers for Django Rest Framework
+"""
 from rest_framework import serializers
 
 from journaling.models import Journaling
