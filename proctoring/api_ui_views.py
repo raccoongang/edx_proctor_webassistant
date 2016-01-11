@@ -266,7 +266,6 @@ class EventSessionViewSet(mixins.ListModelMixin,
         the user as determined by the username portion of the URL.
         """
         hash_key = self.request.query_params.get('session')
-        print hash_key
         if hash_key:
             queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
             queryset = InProgressEventSession.update_queryset_with_permissions(

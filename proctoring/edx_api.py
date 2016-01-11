@@ -109,24 +109,6 @@ def bulk_start_exams_request(exam_list):
     return result
 
 
-def bulk_send_review_request(payload_list):
-    """
-    Endpoint for send reviews for list of exams
-    :param payload_list: list
-    :return: List of Responses
-    """
-    result = {}
-    for payload in payload_list:
-        response = _journaling_request(
-            'post',
-            "api/edx_proctoring/proctoring_review_callback/",
-            json.dumps(payload, default=date_handler)
-        )
-        result[payload_list["examMetaData"]["examCode"]] = json.loads(
-            response.content)
-    return result
-
-
 def _journaling_request(request_type, url, data=None, headers=None):
     """
     Method wich journaling all requests and responses for edX
