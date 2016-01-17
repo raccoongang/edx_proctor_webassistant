@@ -14,11 +14,11 @@
                 }
             };
 
-            var filterExamCode = function (msg) {
-                if (!msg.hasOwnProperty('comments')) {
-                    msg.comments = [];
+            var add_attempt = function (attempt) {
+                if (!attempt.hasOwnProperty('comments')) {
+                    attempt.comments = [];
                 };
-                self.attempts.push(angular.copy(msg));
+                self.attempts.push(angular.copy(attempt));
             };
 
             var recievedComments = function (msg) {
@@ -53,7 +53,7 @@
             this.websocket_callback = function(msg) {
                 if (msg) {
                     if (msg.examCode) {
-                        filterExamCode(msg);
+                        add_attempt(msg);
                         return;
                     }
                     if (msg['hash'] && msg.hasOwnProperty('comments')) {
