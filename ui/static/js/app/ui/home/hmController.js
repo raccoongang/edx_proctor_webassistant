@@ -5,10 +5,10 @@
         'MainCtrl', ['$scope', '$interval', '$location',
             '$q', '$route', 'WS', 'Api', 'Auth', 'i18n',
             'NgTableParams', '$uibModal',
-            'TestSession', 'Polling',
+            'TestSession', 'wsData', 'Polling',
             'DateTimeService', 'students',
             function ($scope, $interval, $location, $q, $route, WS, Api, Auth, i18n,
-                      NgTableParams, $uibModal, TestSession, Polling, DateTimeService, students) {
+                      NgTableParams, $uibModal, TestSession, wsData, Polling, DateTimeService, students) {
 
                 var session = TestSession.getSession();
 
@@ -20,12 +20,24 @@
 
                 $scope.ws_data = [];
 
+                // Update table with students attempts on next new attempt
+                $scope.$watch(
+                    function() {
+                        return wsData.attempts;
+                    },
+                    function(new_val) {
+                        $scope.ws_data = angular.copy(new_val);
+                        $scope.tableParams.reload();
+                    },
+                    true
+                );
+
                 // get student exams from session
                 if (students !== undefined) {
                     angular.forEach(students.data, function (attempt) {
                         // restore attempt comments
                         Api.get_comments(attempt.examCode).then(function (data) {
-                            var comments = data.data.results;
+                            var started_at = '', comments = data.data.results;
                             attempt.comments = [];
                             angular.forEach(comments, function (comment) {
                                 var item = {
@@ -35,8 +47,14 @@
                                 };
                                 attempt.comments.push(item);
                             });
+
+                            if (attempt.actual_start_date) {
+                                started_at = DateTimeService.get_localized_time_from_string(attempt.actual_start_date);
+                            };
+
+                            attempt.started_at = started_at;
                             attempt.status = attempt.attempt_status;
-                            $scope.ws_data.push(attempt);
+                            wsData.attempts.push(attempt);
                             Polling.add_item(attempt.examCode); // first item starts cyclic update
                         });
                     });
@@ -56,53 +74,19 @@
                     page: 1,
                     count: 10
                 }, {
-                    data: $scope.ws_data
+                    data: wsData.attempts
                 });
-
-                var attempt_end = function (hash) {
-                    Polling.stop(hash);
-                };
-
-                var update_status = function (idx, status) {
-                    var obj = $scope.ws_data.filterBy({hash: idx});
-                    if (obj.length > 0) {
-                        if (obj[0].review_sent !== true)
-                            obj[0]['status'] = status;
-                    }
-                };
 
                 $scope.is_owner = function () {
                     return TestSession.is_owner();
                 };
 
-                $scope.websocket_callback = function (msg) {
-                    if (msg) {
-                        if (msg.examCode) {
-                            $scope.ws_data.push(angular.copy(msg));
-                            $scope.$apply();
-                            return;
-                        }
-                        if (msg['hash'] && msg['status']) {
-                            var item = $scope.ws_data.filterBy({hash: msg.hash});
-                            item = item.length ? item[0] : null;
-                            if (msg.status == 'started' && item && item.status == 'ready_to_start') {
-                                // variable to display in view
-                                item.started_at = DateTimeService.get_now_time();
-                            }
-                            update_status(msg['hash'], msg['status']);
-                            if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
-                                attempt_end(msg.hash);
-                            }
-                        }
-                        if (msg.hasOwnProperty('end_session')) {
-                            TestSession.flush(); 
-                            $route.reload();
-                        }
-                    }
+                var attempt_end = function (hash) {
+                    Polling.stop(hash);
                 };
 
                 // Start websocket connection
-                WS.init(session.hash_key, $scope.websocket_callback, true);
+                WS.init(session.hash_key, wsData.websocket_callback, true);
 
                 $scope.accept_exam_attempt = function (exam) {
                     if (exam.accepted) {
@@ -200,9 +184,9 @@
                                 idx++;
                             }
                             if (status == 'Clean')
-                                $scope.ws_data[idx].status = 'verified';
+                                wsData.attempts[idx].status = 'verified';
                             else if (status == 'Suspicious')
-                                $scope.ws_data[idx].status = 'rejected';
+                                wsData.attempts[idx].status = 'rejected';
                             exam.review_sent = true;
                             attempt_end(exam.hash);
                         }).error(function () {
@@ -210,13 +194,6 @@
                         });
                     }
                 };
-
-                // Update table with students attempts on next new attempt
-                $scope.$watch('ws_data', function (newValue, oldValue) {
-                    if (newValue != oldValue) {
-                        $scope.tableParams.reload();
-                    }
-                }, true);
 
                 $scope.check_all_attempts = function () {
                     var list = [];

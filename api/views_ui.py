@@ -850,6 +850,18 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             duration=comment.get('duration'),
             exam=exam
         )
+
+        ws_data = {
+            'hash': exam.generate_key(),
+            'proctor': exam.proctor.username,
+            'comments': {
+                'comment': comment.get('comments'),
+                'timestamp': comment.get('eventStart'),
+                'status': comment.get('eventStatus')
+            }
+        }
+        send_ws_msg(ws_data, channel=exam.event.hash_key)
+
         return Response(status=status.HTTP_201_CREATED)
 
 

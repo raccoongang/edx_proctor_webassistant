@@ -191,24 +191,24 @@ class EventSession(models.Model):
         if user.permission_set.filter(
                 role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
+            q_objects = []
             for permission in user.permission_set.filter(
-                    role=Permission.ROLE_PROCTOR).all():
-                if permission.object_id == "*":
-                    is_super_proctor = True
-                    break
-            if not is_super_proctor:
-                queryset = queryset.filter(
-                    proctor=user)
-        elif user.permission_set.filter(
-                role=Permission.ROLE_INSTRUCTOR).exists():
-            for permission in user.permission_set.filter(
-                    role=Permission.ROLE_INSTRUCTOR).all():
-                q_objects = []
+                    role=Permission.ROLE_PROCTOR):
                 if permission.object_id != "*":
                     q_objects.append(Q(**{"course_run__startswith":
                                               permission.prepare_object_id()}))
-            if len(q_objects):
-                queryset = queryset.filter(reduce(operator.or_, q_objects))
+                else:
+                    q_objects = []
+                    break
+        elif user.permission_set.filter(
+                role=Permission.ROLE_INSTRUCTOR).exists():
+            for permission in user.permission_set.filter(
+                    role=Permission.ROLE_INSTRUCTOR):
+                if permission.object_id != "*":
+                    q_objects.append(Q(**{"course_run__startswith":
+                                              permission.prepare_object_id()}))
+        if len(q_objects):
+            queryset = queryset.filter(reduce(operator.or_, q_objects))
 
         return queryset
 
