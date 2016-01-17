@@ -6,7 +6,7 @@
 
             this.attempts = [];
 
-            var update_status = function (idx, status) {
+            var updateStatus = function (idx, status) {
                 var obj = self.attempts.filterBy({hash: idx});
                 if (obj.length > 0) {
                     if (obj[0].review_sent !== true)
@@ -14,7 +14,7 @@
                 }
             };
 
-            var add_attempt = function (attempt) {
+            var addAttempt = function (attempt) {
                 if (!attempt.hasOwnProperty('comments')) {
                     attempt.comments = [];
                 };
@@ -39,7 +39,7 @@
                     // variable to display in view
                     item.started_at = DateTimeService.get_now_time();
                 }
-                update_status(msg['hash'], msg['status']);
+                updateStatus(msg['hash'], msg['status']);
                 if (['verified', 'error', 'rejected'].in_array(msg['status'])) {
                     Polling.stop(hash);
                 }
@@ -53,7 +53,7 @@
             this.websocket_callback = function(msg) {
                 if (msg) {
                     if (msg.examCode) {
-                        add_attempt(msg);
+                        addAttempt(msg);
                         return;
                     }
                     if (msg['hash'] && msg.hasOwnProperty('comments')) {
@@ -62,6 +62,7 @@
                     }
                     if (msg['hash'] && msg['status']) {
                         pollStatus(msg);
+                        return;
                     }
                     if (msg.hasOwnProperty('end_session')) {
                         endSession();
