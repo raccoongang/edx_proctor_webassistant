@@ -225,6 +225,7 @@
                             TestSession.endSession(data.comment).then(function () {
                                 delete window.sessionStorage['proctoring'];
                                 Polling.stop_all();
+                                wsData.clear();
                                 $location.path('/session');
                             }, function () {
                             });
