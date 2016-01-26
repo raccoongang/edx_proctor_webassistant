@@ -219,8 +219,29 @@ class EventSessionViewSet(mixins.ListModelMixin,
         BasicAuthentication)
     permission_classes = (IsAuthenticated, IsProctor)
 
+    def get_queryset(self):
+        """
+        This method should return a list of all the sessions or
+        list with one session for any hash_key.
+        """
+        hash_key = self.request.query_params.get('session')
+        if hash_key:
+            queryset = InProgressEventSession.objects.filter(hash_key=hash_key)
+            queryset = InProgressEventSession.update_queryset_with_permissions(
+                queryset, self.request.user
+            )
+        else:
+            queryset = InProgressEventSession.objects.all()
+        return queryset
+
     def create(self, request, *args, **kwargs):
-        fields_for_create = ['testing_center', 'course_id', 'course_event_id']
+        fields_for_create = [
+            'testing_center',
+            'course_id',
+            'course_event_id',
+            'course_name',
+            'exam_name'
+        ]
         data = {}
         for field in fields_for_create:
             data[field] = request.data.get(field)
@@ -282,6 +303,11 @@ class EventSessionViewSet(mixins.ListModelMixin,
             event_session.end_date = datetime.now()
             event_session.save()
             serializer = self.get_serializer(event_session)
+            ws_data = {
+                'end_session': change_end_date
+            }
+            send_ws_msg(ws_data, channel=instance.hash_key)
+
         return Response(serializer.data)
 
 
@@ -417,7 +443,8 @@ class Review(APIView):
                 Comment.objects.get(
                     comment=comment.get('comments'),
                     event_status=comment.get('eventStatus'),
-                    exam=exam
+                    exam=exam,
+                    event_start=comment.get('eventStart')
                 )
             except Comment.DoesNotExist:
                 Comment.objects.get_or_create(
@@ -823,6 +850,18 @@ class CommentViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
             duration=comment.get('duration'),
             exam=exam
         )
+
+        ws_data = {
+            'hash': exam.generate_key(),
+            'proctor': exam.proctor.username,
+            'comments': {
+                'comment': comment.get('comments'),
+                'timestamp': comment.get('eventStart'),
+                'status': comment.get('eventStatus')
+            }
+        }
+        send_ws_msg(ws_data, channel=exam.event.hash_key)
+
         return Response(status=status.HTTP_201_CREATED)
 
 

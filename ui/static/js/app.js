@@ -89,6 +89,8 @@
                                 resolver.load_deps([
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
+                                    app.path + 'common/services/exam_polling.js',
+                                    app.path + 'common/services/ws_data.js',
                                     app.path + 'common/services/exam_polling.js'
                                 ], function(){
                                     deferred.resolve();
@@ -144,6 +146,30 @@
                     },
                     data: function (Api) {
                         return Api.get_session_data();
+                    }
+                }
+            })
+            .when('/session/:hash', {
+                controller: 'MainController',
+                resolve: {
+                    deps: function ($location, TestSession, $q, $route, Auth) {
+                        var deferred = $q.defer();
+                        Auth.is_instructor().then(function (is) {
+                            if (is) {
+                                $location.path('/archive');
+                            } else {
+                                TestSession.fetchSession($route.current.params.hash)
+                                .then(function(){
+                                    deferred.resolve();
+                                    $location.path('/');
+                                }, function(reason) {
+                                    if(reason.status == 403){
+                                        $location.path('/archive');
+                                    }
+                                });
+                            }
+                        });
+                        return deferred.promise;
                     }
                 }
             })
@@ -246,8 +272,8 @@
     });
 
     // MAIN CONTROLLER
-    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n',
-        function ($scope, $translate, $http, i18n) {
+    app.controller('MainController', ['$scope', '$translate', '$http', 'i18n', 'TestSession',
+        function ($scope, $translate, $http, i18n, TestSession) {
 
             var lng_is_supported = function (val) {
                 return app.language.supported.indexOf(val) >= 0 ? true : false;
@@ -271,6 +297,7 @@
             };
 
             $scope.logout = function () {
+                TestSession.flush();
                 window.location = window.app.logoutUrl;
             };
 

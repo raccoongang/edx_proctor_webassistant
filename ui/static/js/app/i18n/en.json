@@ -4,6 +4,7 @@
   "PROFILE": "Profile",
   "LOGOUT": "Logout",
   "AUTHORIZE": "Authorize",
+  "CHARS": "characters",
 
   "STUDENT_SESSIONS": "Student Sessions",
   "END_STUDENT_SESSIONS": "End Student Sessions",
