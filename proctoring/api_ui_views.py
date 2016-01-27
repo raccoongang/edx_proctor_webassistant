@@ -641,7 +641,7 @@ class ArchivedExamViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             is_super_proctor = False
             for permission in permissions.filter(
                 role=Permission.ROLE_PROCTOR
-            ).all():
+            ):
                 if permission.object_id == "*":
                     is_super_proctor = True
                     break

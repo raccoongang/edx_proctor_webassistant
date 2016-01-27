@@ -87,7 +87,8 @@
                                 resolver.load_deps([
                                     app.path + 'ui/home/hmController.js',
                                     app.path + 'ui/home/hmDirectives.js',
-                                    app.path + 'common/services/exam_polling.js'
+                                    app.path + 'common/services/exam_polling.js',
+                                    app.path + 'common/services/ws_data.js'
                                 ], function(){
                                     deferred.resolve();
                                 });
@@ -148,12 +149,22 @@
             .when('/session/:hash', {
                 controller: 'MainController',
                 resolve: {
-                    deps: function ($location, TestSession, $q, $route) {
+                    deps: function ($location, TestSession, $q, $route, Auth) {
                         var deferred = $q.defer();
-                        TestSession.fetchSession($route.current.params.hash)
-                        .then(function(){
-                            deferred.resolve();
-                            $location.path('/');
+                        Auth.is_instructor().then(function (is) {
+                            if (is) {
+                                $location.path('/archive');
+                            } else {
+                                TestSession.fetchSession($route.current.params.hash)
+                                .then(function(){
+                                    deferred.resolve();
+                                    $location.path('/');
+                                }, function(reason) {
+                                    if(reason.status == 403){
+                                        $location.path('/archive');
+                                    }
+                                });
+                            }
                         });
                         return deferred.promise;
                     }

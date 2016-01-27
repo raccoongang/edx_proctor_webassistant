@@ -28,12 +28,12 @@
             return username;
         };
 
-        this.is_proctor = function(){
+        this.is_role = function(rolename) {
             var deferred = $q.defer();
             if (self.authenticate()) {
                 permissions.get().then(function(data){
                     restrictions = data.data;
-                    deferred.resolve(restrictions.role == 'proctor');
+                    deferred.resolve(restrictions.role == rolename);
                 }, function(){
                     deferred.resolve(false);
                 });
@@ -43,6 +43,15 @@
             }
             return deferred.promise;
         };
+
+        this.is_proctor = function(){
+            return this.is_role('proctor');
+        };
+
+        this.is_instructor = function(){
+            return this.is_role('instructor');
+        };
+
         this.get_profile = function(){
             if (token){
                 $http({

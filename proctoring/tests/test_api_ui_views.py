@@ -392,7 +392,7 @@ class BulkStartExamTestCase(TestCase):
             view = api_ui_views.BulkStartExams.as_view()
             response = view(request)
             response.render()
-            exams = Exam.objects.filter(exam_code__in=data['list']).all()
+            exams = Exam.objects.filter(exam_code__in=data['list'])
             for exam in exams:
                 self.assertEqual(exam.exam_status, Exam.STARTED)
 

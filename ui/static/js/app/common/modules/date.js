@@ -101,6 +101,14 @@
             return d.getTime();
         };
 
+        this.get_localized_time_from_string = function(string){
+            var date = new Date(Date.parse(string));
+            return date.toLocaleString(
+                window.localStorage['NG_TRANSLATE_LANG_KEY'],
+                time_options
+            );
+        };
+
         this.get_localized_date_from_string = function(string){
             var date = new Date(Date.parse(string));
             return date.toLocaleString(
