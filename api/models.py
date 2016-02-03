@@ -188,10 +188,10 @@ class EventSession(models.Model):
 
     @staticmethod
     def update_queryset_with_permissions(queryset, user):
+        q_objects = []
         if user.permission_set.filter(
                 role=Permission.ROLE_PROCTOR).exists():
             is_super_proctor = False
-            q_objects = []
             for permission in user.permission_set.filter(
                     role=Permission.ROLE_PROCTOR):
                 if permission.object_id != "*":

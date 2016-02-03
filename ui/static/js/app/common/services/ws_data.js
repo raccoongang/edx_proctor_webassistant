@@ -69,5 +69,9 @@
                     }
                 }
             };
+
+            this.clear = function () {
+                this.attempts = [];
+            }
         });
 })();
