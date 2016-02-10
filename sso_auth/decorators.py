@@ -19,6 +19,18 @@ def set_token_cookie(view):
         response = view(request, *args, **kwargs)
         user = request.user
         is_auth = user.is_authenticated()
+
+        if not settings.SSO_ENABLED:
+            response.set_cookie('authenticated', str(int(is_auth)),
+                                domain=settings.AUTH_SESSION_COOKIE_DOMAIN,
+                                secure=settings.SESSION_COOKIE_SECURE or None,
+                                max_age=settings.SESSION_COOKIE_AGE)
+            response.set_cookie('authenticated_user',
+                                is_auth and user.username or 'Anonymous',
+                                domain=settings.AUTH_SESSION_COOKIE_DOMAIN,
+                                secure=settings.SESSION_COOKIE_SECURE or None,
+                                max_age=settings.SESSION_COOKIE_AGE)
+
         if is_auth:
             try:
                 if not settings.SSO_ENABLED:
@@ -37,12 +49,15 @@ def set_token_cookie(view):
                     access_token = user.social_auth.latest('pk').extra_data[
                         'access_token']
 
-                response.set_cookie('authenticated_token',
-                                    access_token,
-                                    domain=settings.AUTH_SESSION_COOKIE_DOMAIN
-                                    )
             except ObjectDoesNotExist:
                 pass
+        response.set_cookie('authenticated_token',
+                            is_auth and access_token or '',
+                            domain=settings.AUTH_SESSION_COOKIE_DOMAIN,
+                            secure=settings.SESSION_COOKIE_SECURE or None,
+                            max_age=settings.SESSION_COOKIE_AGE
+                            )
+
         return response
 
     return wrapper

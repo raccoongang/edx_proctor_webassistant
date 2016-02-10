@@ -1,6 +1,7 @@
 """
 Authentication classes for Django REST framework
 """
+import json
 from social.apps.django_app.default.models import UserSocialAuth
 from rest_framework.authentication import SessionAuthentication, \
     TokenAuthentication
