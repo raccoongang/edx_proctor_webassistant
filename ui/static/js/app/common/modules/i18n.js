@@ -15,8 +15,10 @@
             var translated = translateFilter(text);
             div.innerHTML = translated;
             var ret = $sce.trustAsHtml(div.textContent).toString();
-            language_cache[text] = ret;
-            return ret == translated?translated:ret;
+            var res = ret == translated?translated:ret;
+            res.replace(/_\*/g, '<b>').replace(/\*_/g, '</b>').replace(/_n_/g, '</br>');
+            language_cache[text] = res;
+            return res;
         };
 
         this.clear_cache = function(){
