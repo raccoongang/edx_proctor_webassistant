@@ -23,13 +23,13 @@
             uib-tooltip=""
             filter="{start_date: 'text'}"
             sortable="'start_date'">
-            {[ event.start_date ]}
+            {[ event.start_date | date_localize ]}
         </td>
         <td data-title="i18n('EVENT_END_TIME')"
             uib-tooltip=""
             filter="{end_date: 'text'}"
             sortable="'end_date'">
-            {[ event.end_date ]}
+            {[ event.end_date | date_localize ]}
         </td>
         <td data-title="i18n('PROCTOR')"
             uib-tooltip=""

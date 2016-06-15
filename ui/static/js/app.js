@@ -179,7 +179,8 @@
                 resolve: {
                     deps: function (resolver) {
                         return resolver.load_deps([
-                            app.path + 'ui/archive/archController.js'
+                            app.path + 'ui/archive/archController.js',
+                            app.path + 'common/modules/date.js'
                         ]);
                     },
                     events: function (Api) {
