@@ -82,5 +82,7 @@
   "STOP_EXAM_FAILED": "Failed to stop exam attempt",
   "STOP_EXAMS_FAILED": "Failed to stop selected attempts",
   "ONLY_PROCTORS_INSTRUCTORS_ALLOWED": "Only proctor or instructor has an access to this service",
-  "EVENT_COMMENT_ERROR": "Failed to add session review"
+  "EVENT_COMMENT_ERROR": "Failed to add session review",
+
+  "SESSION_NOTES": "Type in conventional name of your organization and proctoring session to <b>Testing Centre</b> field.<br/>Try to follow established format, this will help you to find required session fast.<br/>Recommended format:<br/><b>Testing Centre Name, Lecture hall name, Proctor name, Date(year-month-day), time(Hh:mm)</b><br/>Example:<br/><b>MIT, LH 306, John Brown, 2015-12-20, 09:00</b>"
 }
