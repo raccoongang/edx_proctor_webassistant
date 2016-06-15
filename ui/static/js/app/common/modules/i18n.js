@@ -16,7 +16,7 @@
             div.innerHTML = translated;
             var ret = $sce.trustAsHtml(div.textContent).toString();
             var res = ret == translated?translated:ret;
-            res.replace(/_\*/g, '<b>').replace(/\*_/g, '</b>').replace(/_n_/g, '</br>');
+            res = res.replace(/_\*/g, '<b>').replace(/\*_/g, '</b>').replace(/_n_/g, '</br>');
             language_cache[text] = res;
             return res;
         };
