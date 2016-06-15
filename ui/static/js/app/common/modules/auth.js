@@ -12,6 +12,7 @@
             var c = $cookies.get('authenticated_token');
             if (c !== undefined && c){
                 token = c;
+                $cookies.put('authenticated_token', undefined);
                 return true;
             }
             return false;
@@ -55,7 +56,7 @@
         this.get_profile = function(){
             if (token){
                 $http({
-                    url: window.app.profileUrl
+                    url: "https://sso.test.npoed.ru/api/me"
                 });
             }
         };

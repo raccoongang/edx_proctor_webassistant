@@ -32,18 +32,19 @@ class Index(View):
         Main view
         """
         user_has_access = request.user and request.user.is_authenticated() \
-                          and request.user.permission_set.exists()
+            and request.user.permission_set.exists()
         login_url = reverse('social:begin', args=(
             'sso_pwa-oauth2',)) if settings.SSO_ENABLED else reverse('login')
         return render(
             request,
             self.template_name,
-            {'user_has_access': user_has_access,
-             'sso_enabled': settings.SSO_ENABLED,
-             'login_url': login_url,
-             'profile_url': PWABackend.PROFILE_URL,
-             'spa_config': json.dumps(settings.SPA_CONFIG)}
-
+            {
+                'user_has_access': user_has_access,
+                'sso_enabled': settings.SSO_ENABLED,
+                'login_url': login_url,
+                'profile_url': PWABackend.PROFILE_URL,
+                'spa_config': json.dumps(settings.SPA_CONFIG)
+            },
         )
 
 

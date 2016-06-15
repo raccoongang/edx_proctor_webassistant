@@ -31,6 +31,8 @@
                          $translateProvider,
                          $translateLocalStorageProvider,
                          $interpolateProvider) {
+
+        // Redefine angular entities for lazy loading feature
         app.controller = $controllerProvider.register;
         app.directive = $compileProvider.directive;
         app.routeProvider = $routeProvider;
@@ -40,8 +42,9 @@
 
         app.path = window.app.rootPath;
         app.language = {
-            current: window.app.spaConfig['language'],
-            supported: window.app.spaConfig['supported_languages']
+            // current: (window.localStorage['NG_TRANSLATE_LANG_KEY'] !== undefined && window.localStorage['NG_TRANSLATE_LANG_KEY']) ? window.localStorage['NG_TRANSLATE_LANG_KEY'] : 'en',
+            current: 'en',
+            supported: ['en', 'ru']
         };
 
         $locationProvider.html5Mode(true);
@@ -56,11 +59,13 @@
             prefix: app.path + 'i18n/',
             suffix: '.json'
         });
-        //$translateProvider.preferredLanguage(app.language.current);
         $translateProvider.preferredLanguage(app.language.current);
+        $translateProvider.preferredLanguage('ru');
         $translateProvider.useSanitizeValueStrategy('sanitize');
         $translateProvider.useLocalStorage();
 
+        // Decorators for modals and popups
+        // Redefine bootstrap ui templates
         $provide.decorator('uibModalBackdropDirective', function ($delegate) {
             $delegate[0].templateUrl = app.path + 'ui/partials/modal/backdrop.html';
             return $delegate;
@@ -69,7 +74,6 @@
             $delegate[0].templateUrl = app.path + 'ui/partials/modal/window.html';
             return $delegate;
         });
-
         $provide.decorator('uibTooltipPopupDirective', function ($delegate) {
             $delegate[0].templateUrl = app.path + 'ui/partials/tooltip/tooltip-popup.html';
             return $delegate;
@@ -238,6 +242,7 @@
         };
 
         // Preload language files
+        // Use only if `allow_language_change` is true
         //angular.forEach(app.language.supported, function (val) {
         //    if (val !== app.language.current) {
         //        $translate.use(val);
@@ -245,9 +250,11 @@
         //});
     }]);
 
+    // Lazy loading feature for angular 1.x
     app.factory('resolver', function ($rootScope, $q, $timeout, $location, Auth) {
         return {
             load_deps: function (dependencies, callback) {
+                // Preload resources only if authenticated
                 if (Auth.authenticate()) {
                     var deferred = $q.defer();
                     $script(dependencies, function () {
@@ -288,7 +295,6 @@
                     app.language.current = langKey;
                 }
             };
-            $scope.allow_language_change = window.app.spaConfig['allow_language_change'];
 
             $scope.sso_auth = function () {
                 window.location = window.app.loginUrl;

@@ -227,7 +227,7 @@ WS4REDIS_HEARTBEAT = '--heartbeat--'
 # Config for Single Page Application
 SPA_CONFIG = {
     "sso_enabled": SSO_ENABLED,
-    "language": "ru",
+    "language": "en",
     "allow_language_change": False,
     "supported_languages": ['en', 'ru']
 }
