@@ -146,11 +146,11 @@
                     attempt.comments.push(data);
                     Api.save_comment(attempt.examCode,
                         {
-                            "comments": data.comment,
+                            "comment": data.comment,
                             "duration": 1,
-                            "eventFinish": data.timestamp,
-                            "eventStart": data.timestamp,
-                            "eventStatus": data.status
+                            "event_finish": data.timestamp,
+                            "event_start": data.timestamp,
+                            "event_status": data.status
                         }
                     );
                 };
