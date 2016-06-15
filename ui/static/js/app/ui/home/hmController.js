@@ -209,11 +209,25 @@
                     $scope.exams.checked = [];
                 };
 
+                var get_not_started_attempts = function () {
+                    var list = [];
+                    angular.forEach($scope.ws_data, function (val, key) {
+                        if (val.status == undefined || !val.status || val.status == 'created') {
+                            if ($scope.exams.checked.in_array(val.examCode)) {
+                                list.push(val.examCode);
+                            }
+                        }
+                    });
+                    return list;
+                };
+
                 var there_are_not_reviewed_attempts = function () {
                     var list = [];
                     angular.forEach($scope.ws_data, function (val) {
                         if (!['verified', 'rejected', 'error', 'timed_out'].in_array(val.status)) {
-                            list.push(val.hash);
+                            var not_started_attempts = get_not_started_attempts();
+                            if (!not_started_attempts.in_array(val.examCode))
+                                list.push(val.hash);
                         }
                     });
                     return list.length > 0;
@@ -236,18 +250,6 @@
                     else {
                         alert(i18n.translate('NOT_REVIEWED_SESSIONS'));
                     }
-                };
-
-                var get_not_started_attempts = function () {
-                    var list = [];
-                    angular.forEach($scope.ws_data, function (val, key) {
-                        if (val.status == undefined || !val.status || val.status == 'created') {
-                            if ($scope.exams.checked.in_array(val.examCode)) {
-                                list.push(val.examCode);
-                            }
-                        }
-                    });
-                    return list;
                 };
 
                 $scope.start_all_attempts = function () {
