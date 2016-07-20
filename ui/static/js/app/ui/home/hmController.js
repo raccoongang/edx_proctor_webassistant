@@ -254,7 +254,7 @@
 
                 $scope.start_all_attempts = function () {
                     if (confirm(i18n.translate('APPROVE_ALL_STUDENTS')) === true) {
-                        Api.start_all_exams(get_not_started_attempts()).then(function () {
+                        Api.start_all_exams($scope.exams.checked).then(function () {
                             angular.forEach($scope.exams.checked, function (val, key) {
                                 Polling.add_item(val);
                             });
